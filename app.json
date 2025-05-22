@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "sana",
+    "slug": "sana",
+    "version": "1.0.1",
+    "orientation": "portrait",
+    "icon": "./assets/ic_launcher.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/ic_launcher.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#058604"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "buildNumber": "2"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/ic_launcher.png",
+        "backgroundColor": "#058604"
+      },
+      "package": "com.hrms",
+      "versionCode": 2 
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Louis_George_Cafe_Bold.ttf",
+            "./assets/fonts/Louis_George_Cafe_Regular.ttf",
+            "./assets/fonts/Louis_George_Cafe_Light.ttf",
+            "./assets/fonts/Louis_George_Cafe.ttf",
+            "./assets/fonts/CooperBlack-Std.ttf"
+          ]
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "dbc64690-6e18-4a4d-9d07-d6856c6e7af1"
+      }
+    }
+  }
+}

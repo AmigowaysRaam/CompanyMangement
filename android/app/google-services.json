@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "675193451565",
+    "project_id": "sana-d792b",
+    "storage_bucket": "sana-d792b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675193451565:android:250aa36a65b61fce12f4a4",
+        "android_client_info": {
+          "package_name": "com.hrms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_c3-KRrhQkjFw5VAsZM99SybKDX9Zgqc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675193451565:android:8ee97dd17e2d832812f4a4",
+        "android_client_info": {
+          "package_name": "com.vivekpandi616.StickerSmash"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_c3-KRrhQkjFw5VAsZM99SybKDX9Zgqc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

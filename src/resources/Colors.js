@@ -1,0 +1,17 @@
+export const COLORS = {
+  background:'#FFF',
+  cardBackground:"#FFF",
+  backgroundColor: "#FFF",
+  button_bg_color: "#013CA3",
+  next_bg_color: "rgb(116 ,116 ,116)",
+  input_background: "#D7E3FF",
+  search_bg_color: "#ebecf1",
+  accent_color: "rgb(247, 255, 43)",
+  white: "#FFF",
+  text_color: "rgb(255 ,255 ,255)",
+  black: "#000",
+  timestamp: "#888",
+  unseen: "rgb(104, 255, 0)",
+  validation: "#ff0000",
+  borderColor: '#1484CD',
+};
