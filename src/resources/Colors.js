@@ -11,7 +11,7 @@ export const COLORS = {
   text_color: "rgb(255 ,255 ,255)",
   black: "#000",
   timestamp: "#888",
-  unseen: "rgb(104, 255, 0)",
+  unseen: "#D6D6D6",
   validation: "#ff0000",
   borderColor: '#1484CD',
 };

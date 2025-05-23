@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -21,6 +21,14 @@ const SetMpin = () => {
   const navigation = useNavigation();
   const [mpin, setMpin] = useState(['', '', '', '']);
   const [confirmMpin, setConfirmMpin] = useState(['', '', '', '']);
+
+  useEffect(() => {
+    if (__DEV__) {
+      const devMpin = ['1', '2', '3', '4']; // example dev mpin
+      setMpin(devMpin);
+      setConfirmMpin(devMpin);
+    }
+  }, []);
 
   const mpinRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const confirmRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];

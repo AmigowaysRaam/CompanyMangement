@@ -15,12 +15,8 @@ const Splash = () => {
   const navigation = useNavigation();
   const Stack = createNativeStackNavigator();
   const dispatch = useDispatch();
-
   const [isLoading, setIsLoading] = useState(true);
-  const { isAuthenticated, error } = useSelector((state) => state.auth);
-
   const scaleAnim = new Animated.Value(0); // Start with 0 width (closed door)
-
   async function fnAssignUserData() {
     const userData = await AsyncStorage.getItem('user_data');
     const obj = JSON.parse(userData);
@@ -37,7 +33,8 @@ const Splash = () => {
 
   async function redirect() {
     const userData = await getUserData();
-    navigation.navigate('ChooseLanguage')
+    // navigation.navigate('ChooseLanguage')
+    navigation.navigate('HomeScreen')
     // if (userData || isAuthenticated) {
     //   navigation.replace("HomeScreen");
     // } else {

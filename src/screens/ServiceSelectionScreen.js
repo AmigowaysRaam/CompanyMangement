@@ -102,11 +102,13 @@ const styles = StyleSheet.create({
   radioText: {
     // fontSize: 16,
   },
+
   separator: {
     height: 1,
     backgroundColor: '#ddd',
     // marginLeft: 27, 
   },
+  
 });
 
 export default ServiceSelectionScreen;

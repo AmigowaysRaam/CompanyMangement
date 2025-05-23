@@ -19,7 +19,6 @@ export default function App() {
   });
 
 
-
   return fontsLoaded ? (
     <Provider store={store}>
       <LanguageProvider>

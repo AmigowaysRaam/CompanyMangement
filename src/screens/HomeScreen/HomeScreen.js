@@ -1,34 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
-  Image,
   StyleSheet,
-  Text,
   ScrollView,
   Alert,
+  PanResponder, BackHandler
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useSelector } from "react-redux";
 import { wp, hp } from "../../resources/dimensions";
 import { COLORS } from "../../resources/Colors";
-import { Louis_George_Cafe } from "../../resources/fonts";
 import ButtonComponent from "../../components/Button/Button";
+import HeaderComponent from "../../components/HeaderComponent";
+import HomeScreenModal from "../HomescreenModal";
+import WorkForceCard from "../WorkforceCard";
+import PieChart from "../../ScreenComponents/HeaderComponent/PieChart";
+import TaskTable from "../../ScreenComponents/HeaderComponent/TaskTable";
+import PieChartWebView from "../../ScreenComponents/HeaderComponent/GraphChart";
+import EmployeeTable from "../../ScreenComponents/HeaderComponent/TableData";
 
 const HomeScreen = () => {
+
   const navigation = useNavigation();
   const userId = useSelector((state) => state.auth.user?._id);
   const profile = useSelector((state) => state.auth.profile);
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Assuming user is logged in
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        return true; // Prevent back action
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, [])
+  );
   const handleLogout = () => {
     Alert.alert(
       "Confirm Logout",
       "Are you sure you want to log out?",
       [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
+        { text: "Cancel", style: "cancel" },
         {
           text: "OK",
           onPress: () => {
@@ -40,40 +54,49 @@ const HomeScreen = () => {
     );
   };
 
+  const handleMenuClick = () => {
+    setIsModalVisible(true);
+  };
+
+  // 🔄 Add gesture handler (swipe from left to right)
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) =>
+        Math.abs(gestureState.dx) > 20, // Only respond to horizontal swipes
+      onPanResponderRelease: (evt, gestureState) => {
+        if (gestureState.dx > 50) {
+          setIsModalVisible(true);
+        }
+      },
+    })
+  ).current;
+
   return (
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <View style={[styles.container, { backgroundColor: COLORS.cardBackground }]}>
-        <View style={styles.header}>
-          <Text style={[Louis_George_Cafe.bold.h1, { color: COLORS.primary }]}>
-            Hi, Admin
-          </Text>
-        </View>
-
-        {/* Profile Section */}
-        {profile && (
-          <View style={styles.profileSection}>
-            <Image
-              source={{ uri: profile?.avatarUrl || "https://via.placeholder.com/150" }}
-              style={styles.profileImage}
-            />
-            <Text style={[Louis_George_Cafe.bold.h4, styles.profileName]}>
-              {profile.name || "Admin Name"}
-            </Text>
-          </View>
-        )}
-
-        {/* Action Button Section */}
-        <View style={styles.buttonSection}>
-          <ButtonComponent title="Logout" onPress={handleLogout} />
-        </View>
-      </View>
-    </ScrollView>
+    <View style={{ flex: 1, backgroundColor: COLORS.background }} {...panResponder.panHandlers}>
+      <HeaderComponent title={"home"} openModal={handleMenuClick} />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <WorkForceCard />
+        <PieChart />
+        <TaskTable />
+        <PieChartWebView />
+        <EmployeeTable />
+      </ScrollView>
+      {isModalVisible && (
+        <HomeScreenModal
+          visible={isModalVisible}
+          logout={() => alert("kljklkljkl")}
+          onClose={() => setIsModalVisible(false)}
+        />
+      )}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    paddingBottom: hp(2)
+
   },
   container: {
     flex: 1,
