@@ -7,30 +7,63 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { wp, hp } from '../resources/dimensions';
-import { COLORS } from '../resources/Colors';
 import { Louis_George_Cafe } from '../resources/fonts';
+import { THEMECOLORS } from '../resources/colors/colors';
+import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import { useCurrentLocation } from '../hooks/location';
 
 const options = [
-  { label: 'Services', value: 'services' },
-  { label: 'Products', value: 'products' },
-  { label: 'Both (Services and Products)', value: 'both' },
+  { label: 'services', value: 'services' },
+  { label: 'products', value: 'products' },
+  { label: 'both_service_and_product', value: 'both' },
 ];
+
 const ServiceSelectionScreen = () => {
   const [selected, setSelected] = useState(null);
   const navigation = useNavigation();
+  const { currency, langCode } = useCurrentLocation();
+  const { themeMode } = useTheme();
+  const { t, i18n } = useTranslation();
+
+  const isTamil = i18n.language === 'ta'; // Check if the current language is Tamil
+
   const handleSelect = (value) => {
     setSelected(value);
     setTimeout(() => {
-      navigation.replace('HomeScreen');
-    }, 500)
+      navigation.replace('CategoryListScreen', {
+        value
+      });
+    }, 500);
   };
+
   return (
-    <View style={styles.container}>
-      <Text style={[Louis_George_Cafe.bold.h5, styles.title]}>
-        What would you like to offer?
+    <View style={[
+      styles.container,
+      { backgroundColor: THEMECOLORS[themeMode].background }
+    ]}>
+      <Text style={[
+        Louis_George_Cafe.bold.h4,
+        styles.title,
+        {
+          color: THEMECOLORS[themeMode].primary,
+          lineHeight: wp(7),
+          fontSize: isTamil ? wp(4.2) : wp(5),
+        }
+      ]}>
+        {t('wht_would_u_like_to_offer') + '?'}
       </Text>
-      <Text style={[Louis_George_Cafe.regular.h5, styles.title]}>
-        Please select any one
+
+      <Text style={[
+        Louis_George_Cafe.regular.h5,
+        styles.title,
+        {
+          color: THEMECOLORS[themeMode].primary,
+          lineHeight: wp(7),
+          fontSize: isTamil ? wp(3.6) : wp(4.5),
+        }
+      ]}>
+        {t('pls_select_any_one')}
       </Text>
 
       {/* Box wrapping all radio options */}
@@ -42,11 +75,22 @@ const ServiceSelectionScreen = () => {
               onPress={() => handleSelect(option.value)}
               activeOpacity={0.8}
             >
-              <View style={styles.outerCircle}>
-                {selected === option.value && <View style={styles.innerCircle} />}
+              <View style={[
+                styles.outerCircle,
+                { borderColor: THEMECOLORS[themeMode].primaryApp }
+              ]}>
+                {selected === option.value && <View style={[styles.innerCircle, { backgroundColor: THEMECOLORS[themeMode].primaryApp }]} />}
               </View>
-              <Text style={[Louis_George_Cafe.regular.h5, styles.radioText]}>
-                {option.label}
+              <Text style={[
+                Louis_George_Cafe.regular.h5,
+                styles.radioText,
+                {
+                  color: THEMECOLORS[themeMode].primaryApp,
+                  lineHeight: wp(7),
+                  fontSize: isTamil ? wp(3.6) : wp(4.5),
+                }
+              ]}>
+                {t(option.label)}
               </Text>
             </TouchableOpacity>
 
@@ -63,7 +107,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: wp(4),
-    backgroundColor: '#fff',
     justifyContent: 'center',
   },
   title: {
@@ -72,7 +115,6 @@ const styles = StyleSheet.create({
   },
   optionBox: {
     borderWidth: 1,
-    borderColor: COLORS.borderColor || '#ccc',
     borderRadius: wp(3),
     backgroundColor: '#fff',
     paddingVertical: hp(1),
@@ -84,31 +126,27 @@ const styles = StyleSheet.create({
     paddingVertical: hp(1.5),
   },
   outerCircle: {
-    height: 24,
-    width: 24,
+    height: wp(4),
+    width: wp(4),
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: COLORS.button_bg_color,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: wp(3),
   },
   innerCircle: {
-    height: 12,
-    width: 12,
+    height: wp(2),
+    width: wp(2),
     borderRadius: 6,
-    backgroundColor: COLORS.button_bg_color,
+    // backgroundColor: '#000',
   },
   radioText: {
-    // fontSize: 16,
+    // fontSize is handled inline
   },
-
   separator: {
     height: 1,
     backgroundColor: '#ddd',
-    // marginLeft: 27, 
   },
-  
 });
 
 export default ServiceSelectionScreen;

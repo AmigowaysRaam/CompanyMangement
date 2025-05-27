@@ -4,13 +4,18 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
 import { useFonts } from 'expo-font';
-import firebase from '@react-native-firebase/app';
 import Toast from 'react-native-toast-message';
 import InitialRouter from './src/navigations/initial-router';
 import { WallpaperProvider } from './src/context/WallpaperContext';
 import { LanguageProvider } from './src/context/Language';
+import { ThemeProvider } from './src/context/ThemeContext';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './src/resources/config/i18';
+import { Provider as PaperProvider } from 'react-native-paper';
+
 
 export default function App() {
+  
   const [fontsLoaded] = useFonts({
     Louis_George_Cafe: require('./assets/fonts/Louis_George_Cafe.ttf'),
     Louis_George_Cafe_Bold: require('./assets/fonts/Louis_George_Cafe_Bold.ttf'),
@@ -20,18 +25,24 @@ export default function App() {
 
 
   return fontsLoaded ? (
-    <Provider store={store}>
-      <LanguageProvider>
-        <WallpaperProvider>
-          <SafeAreaProvider>
-            <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
-              <InitialRouter />
-              <Toast ref={(ref) => Toast.setRef(ref)} />
-            </SafeAreaView>
-          </SafeAreaProvider>
-        </WallpaperProvider>
-      </LanguageProvider>
-    </Provider>
+    <PaperProvider>
+    <I18nextProvider i18n={i18n}>
+      <Provider store={store}>
+        <LanguageProvider>
+          <WallpaperProvider>
+            <ThemeProvider>
+              <SafeAreaProvider>
+                <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
+                  <InitialRouter />
+                  <Toast ref={(ref) => Toast.setRef(ref)} />
+                </SafeAreaView>
+              </SafeAreaProvider>
+            </ThemeProvider>
+          </WallpaperProvider>
+        </LanguageProvider>
+      </Provider>
+    </I18nextProvider>
+    </PaperProvider>
   ) : (
     <Text>Loading Fonts...</Text>
   );

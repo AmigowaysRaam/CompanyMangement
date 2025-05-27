@@ -5,12 +5,18 @@ import { useNavigation } from '@react-navigation/native'; // 👈 Import navigat
 import { hp, wp } from '../resources/dimensions';
 import { COLORS } from '../resources/Colors';
 import { Louis_George_Cafe } from '../resources/fonts';
+import { THEMECOLORS } from '../resources/colors/colors';
+import { useTheme } from '../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
+import i18n from '../resources/config/i18';
 
 const CarouselData = () => {
   const [currrentIndexz, setcurrrentIndexz] = useState(0);
   const [currentImageName, setCurrentImageName] = useState('carousel_1');
   const carouselRef = useRef(null);
   const navigation = useNavigation(); // 👈 Get navigation instance
+  const { theme, themeMode } = useTheme();
+  const { t } = useTranslation();
 
   const data = [
     {
@@ -46,7 +52,7 @@ manage  everything in one place
       carouselRef.current?.scrollTo({ index: nextIndex, animated: true });
     } else {
       // 👇 Navigate to another screen when on the last item
-      navigation.navigate('LoginScreen'); // 🔁 Replace 'Home' with your actual screen name
+              navigation.replace('LoginScreen')
     }
   };
 
@@ -57,23 +63,28 @@ manage  everything in one place
     if (index === data.length - 1) {
       // Automatically navigate when last item is reached via swipe
       setTimeout(() => {
-        navigation.navigate('LoginScreen');
+        // navigation.navigate('LoginScreen');
+        navigation.replace('LoginScreen')
+
       }, 800)
     }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, {
+      backgroundColor: THEMECOLORS[themeMode].background,
+    }]}>
       {/* Skip button at top right */}
       <TouchableOpacity
         style={styles.skipButton}
         onPress={handleSkip}
       >
-        <Text style={styles.skipButtonText}>
-          {currrentIndexz < data.length - 1 ? 'Skip' : 'Get Started'}
+        <Text style={[styles.skipButtonText, {
+          color: THEMECOLORS[themeMode].primary
+        }]}>
+          {currrentIndexz < data.length - 1 ? t('skip') :  t('get_started') }
         </Text>
       </TouchableOpacity>
-
       <Carousel
         ref={carouselRef}
         pagingEnabled={true}
@@ -91,10 +102,13 @@ manage  everything in one place
               style={styles.carouselImage}
               resizeMode="contain" // Optional: keep aspect ratio
             />
-            <Text style={[Louis_George_Cafe.bold.h5, styles.title]}>{data[index].title}</Text>
-            <Text style={[Louis_George_Cafe.bold.h7, styles.description]}>{data[index].description}</Text>
+            <Text style={[Louis_George_Cafe.bold.h5, styles.title, {
+              color: THEMECOLORS[themeMode].primary
+            }]}>{data[index].title}</Text>
+            <Text style={[Louis_George_Cafe.bold.h7, styles.description, {
+              color: THEMECOLORS[themeMode].primary
+            }]}>{data[index].description}</Text>
           </View>
-
         )}
         loop={false}
       />
@@ -106,7 +120,7 @@ manage  everything in one place
             key={item.imageName}
             style={[
               styles.indicator,
-              currentImageName === item.imageName && styles.activeIndicator,
+              currentImageName === item.imageName && { backgroundColor: THEMECOLORS[themeMode].primaryApp }
             ]}
           />
         ))}
@@ -118,7 +132,6 @@ manage  everything in one place
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -126,13 +139,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 50,
     right: 20,
-    backgroundColor: '#fff',
     paddingVertical: 5,
     paddingHorizontal: 15,
 
   },
   skipButtonText: {
-    color: COLORS.button_bg_color,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -182,7 +193,6 @@ const styles = StyleSheet.create({
   },
 
   activeIndicator: {
-    backgroundColor: COLORS.button_bg_color,
   },
 });
 

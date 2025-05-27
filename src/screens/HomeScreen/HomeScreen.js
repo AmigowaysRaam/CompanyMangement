@@ -4,7 +4,8 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
-  PanResponder, BackHandler
+  PanResponder, BackHandler,
+  FlatList
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useSelector } from "react-redux";
@@ -18,13 +19,16 @@ import PieChart from "../../ScreenComponents/HeaderComponent/PieChart";
 import TaskTable from "../../ScreenComponents/HeaderComponent/TaskTable";
 import PieChartWebView from "../../ScreenComponents/HeaderComponent/GraphChart";
 import EmployeeTable from "../../ScreenComponents/HeaderComponent/TableData";
-
+import { THEMECOLORS } from "../../resources/colors/colors";
+import { useTheme } from "../../context/ThemeContext";
 const HomeScreen = () => {
 
   const navigation = useNavigation();
   const userId = useSelector((state) => state.auth.user?._id);
   const profile = useSelector((state) => state.auth.profile);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { theme, themeMode, toggleTheme } = useTheme();
+  const userdata = useSelector((state) => state.auth.user);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -32,11 +36,11 @@ const HomeScreen = () => {
         return true; // Prevent back action
       };
       BackHandler.addEventListener('hardwareBackPress', onBackPress);
-
       return () =>
         BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-    }, [])
+    }, [isModalVisible])
   );
+
   const handleLogout = () => {
     Alert.alert(
       "Confirm Logout",
@@ -57,6 +61,7 @@ const HomeScreen = () => {
   const handleMenuClick = () => {
     setIsModalVisible(true);
   };
+  const dummyData = [{ key: 'static-content' }];
 
   // 🔄 Add gesture handler (swipe from left to right)
   const panResponder = useRef(
@@ -72,15 +77,25 @@ const HomeScreen = () => {
   ).current;
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.background }} {...panResponder.panHandlers}>
+    <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background }} {...panResponder.panHandlers}>
       <HeaderComponent title={"home"} openModal={handleMenuClick} />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <WorkForceCard />
-        <PieChart />
-        <TaskTable />
-        <PieChartWebView />
-        <EmployeeTable />
-      </ScrollView>
+      {/* <HeaderComponent title={"home"} openModal={handleMenuClick} /> */}
+      <FlatList
+        data={dummyData}
+        renderItem={() => (
+          <>
+            <WorkForceCard />
+            <PieChart />
+            <TaskTable />
+            <PieChartWebView />
+            <EmployeeTable />
+          </>
+        )}
+        keyExtractor={(item) => item.key}
+        // ListHeaderComponent={() =>}
+        contentContainerStyle={styles.scrollContainer}
+      />
+
       {isModalVisible && (
         <HomeScreenModal
           visible={isModalVisible}

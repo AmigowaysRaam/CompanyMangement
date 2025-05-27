@@ -11,7 +11,8 @@ import LinearGradient from "react-native-linear-gradient";
 import { wp, hp } from "../resources/dimensions";
 import { COLORS } from "../resources/Colors";
 import { Louis_George_Cafe } from "../resources/fonts";
-
+import { THEMECOLORS } from "../resources/colors/colors";
+import { useTheme } from "../context/ThemeContext";
 const CARD_WIDTH = wp(60);
 const CARD_HEIGHT = hp(12);
 
@@ -56,6 +57,7 @@ const gradients = [
 
 
 const WorkforceCard = () => {
+    const { theme, themeMode, toggleTheme } = useTheme();
 
     const renderItem = ({ item, index }) => {
         const gradient = gradients[index % gradients.length];
@@ -80,7 +82,7 @@ const WorkforceCard = () => {
 
 
     return (
-        <View style={[styles.container, { backgroundColor: COLORS.cardBackground }]}>
+        <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background}]}>
             <FlatList
                 horizontal
                 data={cardsData}
@@ -97,7 +99,7 @@ const WorkforceCard = () => {
 
 const styles = StyleSheet.create({
     container: {
-        paddingVertical: hp(2),
+        paddingVertical: hp(1),
     },
     scrollContent: {
         paddingLeft: wp(4),

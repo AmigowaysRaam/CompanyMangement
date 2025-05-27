@@ -1,15 +1,70 @@
-const BASE_URL = "https://sana.admin.in/";
+const BASE_URL = "https://amigo.scriptzol.in/";
+
 
 export const API_BASE_URL = `${BASE_URL}api/?url=`;
-
 /* ******  Authentication APIs Start ****** */
-
 const APP_GENERATE_TOKEN = {
   url: `${API_BASE_URL}generate-token`,
   method: "POST",
   responseDataKey: "data",
 };
 
+// API_SITE_URL
+const API_SITE_URL = {
+  url: `${API_BASE_URL}mob-getsitesettings`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_LANGUAGE_URL
+const API_LANGUAGE_URL = {
+  url: `${API_BASE_URL}mob-languages`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_LOGIN_URL
+const API_LOGIN_URL = {
+  url: `${API_BASE_URL}mob-employee-login`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_LANGUAGE_CONTENT_URL
+const API_LANGUAGE_CONTENT_URL = {
+  url: `${API_BASE_URL}mob-language-content`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// API_GET_CATEGORY_LIST
+const API_GET_CATEGORY_LIST = {
+  url: `${API_BASE_URL}mob-getcategories`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_SUB_CATEGORY_LIST
+const API_GET_SUB_CATEGORY_LIST = {
+  url: `${API_BASE_URL}mob-getsubcategories`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// GET_SIDE_MENU_API
+const GET_SIDE_MENU_API = {
+  url: `${API_BASE_URL}mob-getsidebarmenu`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// GET_PROFILE_MENU_API
+const GET_PROFILE_MENU_API = {
+  url: `${API_BASE_URL}mob-profilemenu`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
 export const API_REQUESTS = {
   APP_GENERATE_TOKEN,
+  API_SITE_URL, API_LANGUAGE_URL, API_LOGIN_URL, API_LANGUAGE_CONTENT_URL,
+  API_GET_CATEGORY_LIST,API_GET_SUB_CATEGORY_LIST,GET_SIDE_MENU_API,
+  GET_PROFILE_MENU_API
 };

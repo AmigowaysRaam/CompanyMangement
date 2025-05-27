@@ -20,7 +20,6 @@ const initialData = [
 
 const TaskTable = () => {
 
-
     const [data, setData] = useState(initialData);
 
     useEffect(() => {
@@ -66,11 +65,12 @@ const TaskTable = () => {
 
 const styles = StyleSheet.create({
     container: {
-        margin: wp(2),
+        margin: wp(1),
         backgroundColor: '#E6EDFF',
         borderRadius: wp(2),
         padding: wp(4),
-        elevation: 2, marginHorizontal: wp(3)
+        elevation: 2
+        , marginHorizontal: wp(3)
     },
     row: {
         flexDirection: "row",

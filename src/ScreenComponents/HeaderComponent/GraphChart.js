@@ -115,8 +115,8 @@ const initialHtml = `
 `;
 
 export default function AttendanceChart() {
-    const webviewRef = useRef(null);
 
+    const webviewRef = useRef(null);
     const chartData = {
         labels: ["January", "February", "March", "April", "May"],
         data: [60, 75, 80, 65, 90],
@@ -131,16 +131,16 @@ export default function AttendanceChart() {
             // Small delay to ensure WebView is ready
             setTimeout(() => {
                 webviewRef.current.injectJavaScript(jsToInject);
-            }, 500);
+            }, 1000);
         }
-    }, []);
+    }, [chartData]);
 
     return (
         <View
             style={{
-                height: hp(33),
+                height: hp(45),
                 width: screenWidth - 40,
-                margin: wp(4),
+                margin: wp(2),
                 backgroundColor: "#F2E8FF",
                 borderRadius: wp(2),
                 alignSelf: "center",
@@ -176,7 +176,7 @@ export default function AttendanceChart() {
                 style={{
                     flex: 1,
                     margin: wp(2),
-                    marginVertical: wp(3),
+                    marginVertical: wp(2),
                 }}
                 javaScriptEnabled
                 domStorageEnabled

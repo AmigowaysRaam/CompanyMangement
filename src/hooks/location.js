@@ -38,6 +38,14 @@ const countryDialCodes = {
   YE: '+967', ZM: '+260', ZW: '+263',
 };
 
+const countryCurrencies = {
+  US: 'USD', IN: 'INR', GB: 'GBP', CA: 'CAD', AU: 'AUD',
+  DE: 'EUR', FR: 'EUR', IT: 'EUR', JP: 'JPY', CN: 'CNY',
+  BR: 'BRL', RU: 'RUB', ZA: 'ZAR', MX: 'MXN', KR: 'KRW',
+  // Add more as needed or get a complete list from a reliable source
+};
+
+
 const getCountryFromCoords = async (lat, lon) => {
   const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${GOOGLE_MAPS_API_KEY}`;
 
@@ -63,6 +71,8 @@ export const useCurrentLocation = () => {
   const [countryCode, setCountryCode] = useState(null);
   const [dialCode, setDialCode] = useState(null);
   const [locationError, setLocationError] = useState(null);
+  const [currency, setCurrency] = useState(null);
+
 
   const hasLocationPermission = async () => {
     if (Platform.OS === 'ios') {
@@ -105,6 +115,8 @@ export const useCurrentLocation = () => {
           position.coords.longitude
         );
         setCountryCode(country);
+        const currencyCode = countryCurrencies[country] || 'USD'; // fallback to USD
+        setCurrency(currencyCode);
 
         const code = countryDialCodes[country] || '+91'; // fallback to India code
         setDialCode(code);
@@ -115,10 +127,10 @@ export const useCurrentLocation = () => {
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
   };
-
   useEffect(() => {
     getLocation();
   }, []);
 
-  return { location, countryCode, dialCode, locationError, refreshLocation: getLocation };
+  return { location, countryCode, dialCode, currency, locationError, refreshLocation: getLocation };
+
 };

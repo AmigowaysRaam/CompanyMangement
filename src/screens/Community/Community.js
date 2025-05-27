@@ -10,7 +10,7 @@ const Community = () => {
   return (
     <>
       <Text>
-        NEW Tab
+        New Tab
       </Text>
 
 

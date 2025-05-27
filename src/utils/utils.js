@@ -11,3 +11,7 @@ export const saveLanguage = async (language) => {
 export const getSavedLanguage = async () => {
   return await AsyncStorage.getItem('appLanguage');
 };
+
+export const setSiteData = async (sData) => {
+  await AsyncStorage.setItem('siteData', sData);
+};

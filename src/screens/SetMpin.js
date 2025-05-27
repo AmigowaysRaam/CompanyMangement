@@ -16,11 +16,15 @@ import { hp, wp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { COLORS } from '../resources/Colors';
 import { useNavigation } from '@react-navigation/native';
+import { THEMECOLORS } from '../resources/colors/colors';
+import { useTheme } from '../context/ThemeContext';
 
 const SetMpin = () => {
+
   const navigation = useNavigation();
   const [mpin, setMpin] = useState(['', '', '', '']);
   const [confirmMpin, setConfirmMpin] = useState(['', '', '', '']);
+  const { themeMode } = useTheme();
 
   useEffect(() => {
     if (__DEV__) {
@@ -56,7 +60,7 @@ const SetMpin = () => {
   const handleSetMpin = () => {
     if (isMpinComplete && isConfirmComplete && isMatch) {
       // Store securely or send to backend
-      navigation.navigate('ServiceSelection');
+      navigation.replace('ServiceSelection');
     }
   };
 
@@ -71,10 +75,12 @@ const SetMpin = () => {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.container}>
+          <View style={[styles.container, {
+            backgroundColor: THEMECOLORS[themeMode].background
+          }]}>
             <Text style={[Louis_George_Cafe.bold.h5, {
               alignSelf: "center",
-              marginVertical: wp(3),
+              marginVertical: wp(3), color: THEMECOLORS[themeMode].primary
             }]}>
               Create Your MPIN
             </Text>
@@ -90,13 +96,14 @@ const SetMpin = () => {
             <Text style={[Louis_George_Cafe.regular.h8, {
               alignSelf: "center",
               margin: wp(3),
-              textAlign: 'center',
+              textAlign: 'center', color: THEMECOLORS[themeMode].primary
+
             }]}>
               Create a 4-digit MPIN to secure your account
             </Text>
 
             {/* MPIN Input */}
-            <Text style={[Louis_George_Cafe.bold.h8, { marginBottom: hp(1), alignSelf: "center", }]}>
+            <Text style={[Louis_George_Cafe.bold.h8, { marginBottom: hp(1), alignSelf: "center", color: THEMECOLORS[themeMode].primary }]}>
               Enter Your MPIN
             </Text>
             <View style={styles.otpContainer}>
@@ -104,7 +111,9 @@ const SetMpin = () => {
                 <TextInput
                   key={`mpin-${index}`}
                   ref={mpinRefs[index]}
-                  style={styles.otpInput}
+                  style={[styles.otpInput, {
+                    color: THEMECOLORS[themeMode].primaryApp, backgroundColor: "#D7E3FF"
+                  }]}
                   keyboardType="number-pad"
                   maxLength={1}
                   value={digit}
@@ -122,7 +131,9 @@ const SetMpin = () => {
                 <TextInput
                   key={`confirm-${index}`}
                   ref={confirmRefs[index]}
-                  style={styles.otpInput}
+                  style={[styles.otpInput, {
+                    color: THEMECOLORS[themeMode].primaryApp, backgroundColor: "#D7E3FF"
+                  }]}
                   keyboardType="number-pad"
                   maxLength={1}
                   value={digit}
@@ -165,7 +176,7 @@ const SetMpin = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    // backgroundColor: '#ffffff',
     paddingTop: hp(2),
     paddingBottom: hp(10),
     paddingHorizontal: wp(5),
@@ -184,8 +195,6 @@ const styles = StyleSheet.create({
     width: wp(15),
     height: wp(15),
     borderRadius: wp(2),
-    backgroundColor: COLORS.input_background,
-    color: '#000',
     fontSize: 20,
     textAlign: 'center',
   },

@@ -1,54 +1,31 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-    Modal,
-    View,
-    Text,
-    StyleSheet,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    Image,
-    FlatList,
-    ImageBackground,
+    Modal, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Image,
+    FlatList, ImageBackground, ActivityIndicator,
 } from "react-native";
 import { hp, wp } from "../resources/dimensions";
 import { COLORS } from "../resources/Colors";
 import { Louis_George_Cafe } from "../resources/fonts";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import ThemeToggle from "../ScreenComponents/HeaderComponent/ThemeToggle";
+import { THEMECOLORS } from "../resources/colors/colors";
+import { useTheme } from "../context/ThemeContext";
+import { useDispatch, useSelector } from "react-redux";
+import { getSideMenus } from "../redux/authActions";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const HomeScreenModal = ({ visible, onClose, children, title, }) => {
+
     // Track which menus are expanded for submenu
     const [expandedMenus, setExpandedMenus] = useState({});
     const navigation = useNavigation();
-
-    // Example menu with submenu support
-    const defaultMenus = [
-        {
-            label: "My Profile",
-            onPress: () => alert("Go to Profile"),
-        },
-        {
-            label: "Notification",
-            onPress: () => alert("Open Notifications"),
-            submenus: [
-                { label: "Messages", onPress: () => alert("Open Messages") },
-                { label: "Alerts", onPress: () => alert("Open Alerts") },
-            ],
-        },
-        {
-            label: "Job Details",
-            onPress: () => alert("Go to Job Details"),
-        },
-        {
-            label: "Settings",
-            onPress: () => alert("Go to Settings"),
-            submenus: [
-                { label: "Account Settings", onPress: () => alert("Account Settings") },
-                { label: "Privacy", onPress: () => alert("Privacy Settings") },
-                { label: "Notifications", onPress: () => alert("Notification Settings") },
-            ],
-        },
-    ];
+    const { theme, themeMode, toggleTheme } = useTheme();
+    const userdata = useSelector((state) => state.auth.user);
+    const sideMenusArray = useSelector((state) => state.auth.sidemenu);
+    const dispatch = useDispatch();
+    const [sideMenusList, setsideMenusList] = useState(sideMenusArray ? sideMenusArray : []);
+    const [isLoading, setisLoading] = useState(false);
 
     // Toggle expand/collapse submenu for a menu index
     const toggleExpand = (index) => {
@@ -58,22 +35,52 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
         }));
     };
 
-    const handleLogout = () => {
-        navigation.replace('LoginScreen')
+    useEffect(() => {
+        setisLoading(true)
+        // alert(JSON.stringify(userdata))
+        dispatch(getSideMenus(userdata?.data?.id, (response) => {
+            if (response.success) {
+                setisLoading(false)
+                setsideMenusList(response.data)
+            } else {
+                setsideMenusList(sideMenusArray ? sideMenusArray : [])
+                setisLoading(true)
+            }
+        }));
+
+    }, [userdata?.data?.id])
+
+
+    const handleLogout = async () => {
+        // navigation.replace('LoginScreen')
+        try {
+            await AsyncStorage.clear();
+            console.log('AsyncStorage cleared. Logging out...');
+            navigation.replace('LoginScreen');
+            dispatch({ type: 'APP_USER_LOGIN_SUCCESS', payload: null });
+
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     }
 
     // Render submenu item
     const renderSubmenuItem = ({ item }) => (
         <TouchableOpacity
             onPress={() => {
-                item.onPress();
+                // item.onPress();
                 onClose();
             }}
             style={styles.submenuItem}
         >
-            <Text style={[Louis_George_Cafe.regular.h8, { color: COLORS.gray }]}>
+            <Text style={[Louis_George_Cafe.regular.h8, { color: THEMECOLORS[themeMode].textPrimary }]}>
                 {item.label}
             </Text>
+            <MaterialCommunityIcons
+                name={"arrow-right"}
+                size={hp(2.5)}
+                color={THEMECOLORS[themeMode].textPrimary}
+            />
         </TouchableOpacity>
     );
 
@@ -89,17 +96,19 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                         if (hasSubmenu) {
                             toggleExpand(index);
                         } else {
-                            item.onPress();
+                            // item.onPress();
                             onClose();
                         }
                     }}
                     style={styles.menuItem}
                 >
-                    <Text style={[Louis_George_Cafe.regular.h7]}>{item.label}</Text>
+                    <Text style={[Louis_George_Cafe.regular.h7, {
+                        color: THEMECOLORS[themeMode].textPrimary
+                    }]}>{item.label}</Text>
                     <MaterialCommunityIcons
                         name={hasSubmenu ? (isExpanded ? "chevron-up" : "chevron-down") : "chevron-right"}
                         size={hp(3)}
-                        color={COLORS.black}
+                        color={THEMECOLORS[themeMode].textPrimary}
                     />
                 </TouchableOpacity>
 
@@ -110,64 +119,76 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                         keyExtractor={(subItem, subIndex) => `${index}-${subIndex}`}
                         renderItem={renderSubmenuItem}
                         scrollEnabled={false}
-                        style={{ marginLeft: wp(8), backgroundColor: COLORS.lightBackground }}
+                        style={{ marginLeft: wp(8), backgroundColor: THEMECOLORS[themeMode].background }}
                     />
                 )}
             </View>
         );
     };
-
     return (
         <Modal visible={visible} transparent onRequestClose={onClose}>
             <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalBox}>
+                    <View style={[{
+                        backgroundColor: THEMECOLORS[themeMode].background,
+                    }, styles.modalBox]}>
                         <ImageBackground
                             source={require("../../src/assets/animations/profile_bg.png")}
                             resizeMode="stretch"
-                            style={{ width: "100%", height: hp(34) }}
+                            style={{ width: "100%", height: hp(42) }}
                         >
+
+                            <ThemeToggle />
                             <View style={{ width: "100%", height: hp(32), alignItems: "center" }}>
-                                <View style={{ marginVertical: hp(2) }}>
+                                <View style={{ marginVertical: hp(4) }}>
                                     <Image
                                         source={require("../assets/animations/user_1.png")}
-                                        style={{ width: wp(40), height: wp(40), borderRadius: wp(25) }}
+                                        style={{ width: wp(35), height: wp(35), borderRadius: wp(25) }}
                                     />
-                                    <View style={{ marginTop: wp(2) }}>
-                                        <Text
-                                            numberOfLines={1}
-                                            style={[
-                                                Louis_George_Cafe.bold.h6,
-                                                { alignSelf: "center", color: COLORS.background },
-                                            ]}
-                                        >
-                                            {"Admin"}
-                                        </Text>
-                                        <Text
-                                            numberOfLines={1}
-                                            style={[
-                                                Louis_George_Cafe.regular.h7,
-                                                { alignSelf: "center", color: COLORS.background },
-                                            ]}
-                                        >
-                                            {"App Developer"}
-                                        </Text>
-                                    </View>
+                                    <MaterialCommunityIcons
+                                        name="pencil-outline"
+                                        size={wp(7)}
+                                        color={COLORS.button_bg_color}
+                                        style={{ alignSelf: "flex-end", position: "relative", bottom: hp(3), right: hp(2), backgroundColor: THEMECOLORS[themeMode].white, borderRadius: wp(5), padding: wp(0.5) }}
+                                    />
+                                </View>
+                                <View style={{ position: "relative", bottom: wp(10) }} >
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            Louis_George_Cafe.bold.h5,
+                                            { alignSelf: "center", maxWidth: wp(60), color: THEMECOLORS[themeMode].white, alignSelf: "center" }
+                                        ]}
+                                    >
+                                        {userdata?.data?.full_name}
+                                    </Text>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            Louis_George_Cafe.regular.h7,
+                                            { alignSelf: "center", color: THEMECOLORS[themeMode].white, textTransform: "capitalize" },
+                                        ]}
+                                    >
+                                        {userdata?.data?.role}
+                                    </Text>
                                 </View>
                             </View>
                         </ImageBackground>
-
                         {/* Menu list */}
-                        <View style={{ marginVertical: hp(2), flex: 1 }}>
-                            <FlatList
-                                data={children || defaultMenus}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={renderMenuItem}
-                                scrollEnabled
-                                showsVerticalScrollIndicator={false}
-                            />
+                        <View style={{ marginVertical: hp(2), flex: 1, paddingHorizontal: wp(2) }}>
+                            {
+                                isLoading ?
+                                    <ActivityIndicator size={wp(10)} style={{ marginVertical: wp(10) }} color={THEMECOLORS[themeMode].primaryApp} />
+                                    :
+                                    <FlatList
+                                        data={sideMenusList}
+                                        keyExtractor={(item, index) => index.toString()}
+                                        renderItem={renderMenuItem}
+                                        scrollEnabled
+                                        showsVerticalScrollIndicator={false}
+                                    />
+                            }
                         </View>
-
                         <View
                             style={{
                                 margin: hp(2),
@@ -175,12 +196,14 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                 justifyContent: "space-around",
                             }}
                         >
-                            <TouchableOpacity style={styles.logoutBtn} onPress={() => handleLogout()}>
+                            <TouchableOpacity style={[styles.logoutBtn, {
+                                backgroundColor: THEMECOLORS[themeMode].buttonBg
+                            }]} onPress={() => handleLogout()}>
                                 <Text
                                     numberOfLines={1}
                                     style={[
                                         Louis_George_Cafe.bold.h7,
-                                        { alignSelf: "center", color: COLORS.background, lineHeight: wp(5) },
+                                        { alignSelf: "center", color: THEMECOLORS[themeMode].buttonText, lineHeight: wp(5) },
                                     ]}
                                 >
                                     {"Logout"}
@@ -188,17 +211,17 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                 <MaterialCommunityIcons
                                     name="logout"
                                     size={wp(4)}
-                                    color={COLORS.background}
+                                    color={THEMECOLORS[themeMode].buttonText}
                                 />
                             </TouchableOpacity>
                             <Text
                                 numberOfLines={1}
                                 style={[
                                     Louis_George_Cafe.bold.h9,
-                                    { alignSelf: "center", color: COLORS.button_bg_color },
+                                    { alignSelf: "center", color: THEMECOLORS[themeMode].primary },
                                 ]}
                             >
-                                {"1.0.0"}
+                                {"V 1.0.0"}
                             </Text>
                         </View>
                     </View>
@@ -217,7 +240,7 @@ const styles = StyleSheet.create({
     logoutBtn: {
         width: wp(30),
         height: wp(9),
-        backgroundColor: COLORS.button_bg_color,
+        // backgroundColor: COLORS.button_bg_color,
         alignItems: "center",
         justifyContent: "space-around",
         borderRadius: wp(5),
@@ -225,8 +248,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
     },
     modalBox: {
-        width: wp(80),
-        backgroundColor: COLORS.white,
+        width: wp(85),
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
@@ -237,20 +259,17 @@ const styles = StyleSheet.create({
         borderTopEndRadius: wp(10),
     },
     menuItem: {
-        paddingVertical: wp(3.5),
+        paddingVertical: wp(5),
         width: "100%",
         alignItems: "center",
-        borderBottomWidth: 0.5,
-        borderBottomColor: "#CCC",
         flexDirection: "row",
         justifyContent: "space-between",
         paddingHorizontal: wp(4),
     },
     submenuItem: {
+        flexDirection: "row", justifyContent: "space-between",
         paddingVertical: wp(2.5),
-        borderBottomWidth: 0.5,
-        borderBottomColor: "#EEE",
-        paddingHorizontal: wp(6),
+        paddingHorizontal: wp(4),
     },
 });
 

@@ -1,6 +1,12 @@
 import { Dimensions } from "react-native";
 import { wp } from "./dimensions";
 import { DefaultTheme } from "react-native-paper";
+import { useLanguage } from '../context/Language';
+
+export const useLanguageValues = () => {
+  const { language, setLanguage } = useLanguage();
+  return { language, setLanguage };
+};
 
 export const { width, height } = Dimensions.get("window");
 

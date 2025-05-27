@@ -2,18 +2,24 @@ import React, { useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen/HomeScreen";
+import ProfileScreen from "../screens/ProfileScreen";
 import Community from "../screens/Community/Community";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getSiteSettings } from "../redux/authActions";
 import { COLORS } from "../resources/Colors";
-import { wp } from "../resources/dimensions";
+import { hp, wp } from "../resources/dimensions";
 import { fontSizes, Louis_George_Cafe } from "../resources/fonts";
 import { Image } from "react-native"; // add this at the top
+import Employee from "../screens/Employee/Employee";
+import { THEMECOLORS } from "../resources/colors/colors";
+import { useTheme } from "../context/ThemeContext";
+
 
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
+  const { themeMode } = useTheme();
 
   const userId = useSelector((state) => state.auth.user?._id);
   const dispatch = useDispatch();
@@ -22,7 +28,8 @@ const TabNavigator = () => {
     <TouchableOpacity
       {...props}
       activeOpacity={1} // Disables ripple effect
-      style={props.style}
+      style={[props.style, {
+      }]}
     >
       {props.children}
     </TouchableOpacity>
@@ -45,7 +52,7 @@ const TabNavigator = () => {
               case 'HomeScreen':
                 imageSource = require('../assets/animations/home_tab.png');
                 break;
-              case 'myacctivity':
+              case 'Employee':
                 imageSource = require('../assets/animations/employee_tan.png');
 
                 break;
@@ -61,7 +68,7 @@ const TabNavigator = () => {
                 imageSource = require('../assets/animations/home_tab.png');
             }
             return (
-              <View style={styles.iconContainer}>
+              <View style={[styles.iconContainer,]}>
                 {focused && (
                   <View
                     style={{
@@ -89,7 +96,7 @@ const TabNavigator = () => {
               case 'HomeScreen':
                 label = 'Home';
                 break;
-              case 'myacctivity':
+              case 'Employee':
                 label = 'Employees';
                 break;
               case 'Community':
@@ -104,9 +111,9 @@ const TabNavigator = () => {
             return (
               <Text
                 style={[
-                  // Louis_George_Cafe.regular.h9,
+                  Louis_George_Cafe.regular.h9,
                   styles.tababel,
-                  { color: '#fff', fontSize: wp(2), marginTop: wp(0.5) },
+                  { color: '#fff', fontSize: wp(2), marginTop: wp(1) },
                 ]}
               >
                 {label}
@@ -115,19 +122,19 @@ const TabNavigator = () => {
           },
           headerShown: false,
           tabBarStyle: {
-            height: 60,
-            width: '100%', alignItems: "center"
+            height: hp(7),
+            width: '100%', borderColor: THEMECOLORS[themeMode].primaryApp
           },
           tabBarItemStyle: {
-            backgroundColor: COLORS.button_bg_color,
+            backgroundColor: THEMECOLORS[themeMode].primaryApp
           },
         };
       }}
     >
       <Tab.Screen name="HomeScreen" component={HomeScreen} />
-      <Tab.Screen name="myacctivity" component={Community} />
+      <Tab.Screen name="Employee" component={Employee} />
       <Tab.Screen name="Community" component={HomeScreen} />
-      <Tab.Screen name="chat" component={Community} />
+      <Tab.Screen name="chat" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

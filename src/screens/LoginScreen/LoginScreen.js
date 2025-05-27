@@ -11,6 +11,7 @@ import {
   Keyboard,
   ScrollView,
   Platform,
+  TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,77 +19,96 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hp, wp } from "../../resources/dimensions";
 import { Louis_George_Cafe } from "../../resources/fonts";
 import { COLORS } from "../../resources/Colors";
-import { loginUser } from "../../redux/authActions";
-import ButtonComponent from "../../components/Button/Button";
 import TextInputComponent from "../../components/TextInput/TextInput";
 import Icon from "react-native-vector-icons/Ionicons";
-import messaging from '@react-native-firebase/messaging';
 import Toast from "react-native-toast-message";
+import { THEMECOLORS } from "../../resources/colors/colors";
+import { useTheme } from "../../context/ThemeContext";
+import ThemeToggle from "../../ScreenComponents/HeaderComponent/ThemeToggle";
+import { loginUser } from "../../redux/authActions";
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from "../../context/Language";
+import i18n from "../../resources/config/i18";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-
-  const [username, setUsername] = useState(__DEV__ ? "admin@gmail.com" : "");
+  const { themeMode } = useTheme();
+  const { language } = useLanguage();
+  const [username, setUsername] = useState(__DEV__ ? "ram@gmail.com" : "");
+  const userdata = useSelector((state) => state.auth.user);
+  // const getFrontSiteData = useSelector((state) => state.auth.getFrontSite);
   const [password, setPassword] = useState(__DEV__ ? "1234" : "");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, lerror } = useSelector((state) => state.auth);
   const [fcmtoken, setfcmTorkn] = useState(null);
-
   const [usernameErr, setUsernameErr] = useState("");
   const [passwordErr, setPasswordErr] = useState("");
+  const { t } = useTranslation();
+  const isTamil = i18n.language === 'ta';
+  const scaleFont = (style) => ({
+    ...style,
+    fontSize: style?.fontSize ? style.fontSize * (isTamil ? 0.65 : 1) : undefined,
+  });
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
   const handleLogin = async () => {
+
     setUsernameErr('');
     setPasswordErr('');
+    let hasError = false;
 
     if (!username) {
-      setUsernameErr('Username must not be empty');
-      return;
+      setUsernameErr('user_name_must_not_be_empty');
+      Toast.show({ text1: t('pls_enter_user_name'), type: 'error' });
+      hasError = true;
     }
+
     if (!password) {
-      setPasswordErr('Password must not be empty');
-      return;
+      setPasswordErr('pls_enter_password');
+      Toast.show({ text1: t('pls_enter_password'), type: 'error' });
+      hasError = true;
     }
+
+    if (hasError) return;
+
     setIsLoading(true);
-    const credentials = { username, password, fcmtoken };
-    // TEMP NAVIGATION – Remove/comment when using real login
-    navigation.replace('MobileNumber');
-    // Uncomment below when login API is active
-    // dispatch(loginUser(credentials, fcmtoken, (response) => {
-    //   if (response) {
-    //     AsyncStorage.setItem('user_data', JSON.stringify(response));
-    //     setIsLoading(false);
-    //   } else {
-    //     setIsLoading(false);
-    //   }
-    // }));
+    const credentials = { email: username, password };
+    dispatch(loginUser(credentials, (response) => {
+      setIsLoading(false);
+      if (response.success) {
+        // alert(JSON.stringify(response.data))
+        AsyncStorage.setItem('user_data', JSON.stringify(response));
+        Toast.show({
+          type: 'success',
+          text1: 'Login successful!',
+        });
+        setTimeout(() => {
+          navigation.replace('MobileNumber')
+        }, 1000);
+        // navigation.replace('ServiceSelectionScreen')
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Login failed. Please check your credentials.',
+        });
+      }
+    }));
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      AsyncStorage.setItem('username', username);
-      AsyncStorage.setItem('password', password);
-      navigation.reset({
-        index: 0,
-        routes: [{ name: "HomeScreen" }],
-      });
-      setIsLoading(false);
-    }
-  }, [isAuthenticated]);
-
-  useEffect(() => {
+  
     if (lerror) {
       setIsLoading(false);
       Toast.show({
         text1: lerror,
         type: 'error',
         position: 'top',
+        visibilityTime: 4000,
       });
     }
   }, [lerror]);
@@ -109,13 +129,16 @@ const LoginScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
+
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
         <ScrollView
           contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingBottom: hp(0) }}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.container}>
-            <Toast />
+          <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
+            {/* <ThemeToggle /> */}
+
             <Image
               resizeMode="contain"
               source={require('../../../src/assets/animations/logo_hrms.png')}
@@ -123,62 +146,115 @@ const LoginScreen = () => {
             />
 
             <View style={{ margin: wp(3) }}>
-              <Text style={[Louis_George_Cafe.regular.h2, { fontFamily: "Louis_George_Cafe_Bold", marginVertical: wp(2) }]}>Hey,</Text>
-              <Text style={[Louis_George_Cafe.regular.h2, { fontFamily: "Louis_George_Cafe_Bold", marginVertical: wp(1) }]}>Welcome</Text>
-              <Text style={[Louis_George_Cafe.regular.h8, { fontFamily: "Louis_George_Cafe_Bold", color: "#747474", marginVertical: wp(1) }]}>
-                Hello there, Login to continue
+              <Text
+                style={[
+                  scaleFont(Louis_George_Cafe.regular.h2),
+                  { fontFamily: "Louis_George_Cafe_Bold", marginVertical: wp(2), color: THEMECOLORS[themeMode].primary }
+                ]}
+              >
+                {t('hey')}
+              </Text>
+
+              <Text
+                style={[
+                  scaleFont(Louis_George_Cafe.regular.h2),
+                  { fontFamily: "Louis_George_Cafe_Bold", marginVertical: wp(1), color: THEMECOLORS[themeMode].primary }
+                ]}
+              >
+                {t('welcome')}
+              </Text>
+
+              <Text
+                style={[
+                  scaleFont(Louis_George_Cafe.regular.h8),
+                  {
+                    fontFamily: "Louis_George_Cafe_Bold",
+                    color: THEMECOLORS[themeMode].primary,
+                    marginVertical: wp(1),
+                  }
+                ]}
+              >
+                {t('hey_there_login_to_continue')}
               </Text>
             </View>
 
             <View style={{ alignSelf: "center" }}>
-              <TextInputComponent
-                style={[styles.input, { backgroundColor: COLORS.background }]}
-                title="Enter Username or Email"
+              <TextInput
+                style={[styles.input, {
+                  backgroundColor: THEMECOLORS[themeMode].viewBackground, borderColor: THEMECOLORS[themeMode].textPrimary,
+                  color: THEMECOLORS[themeMode].textPrimary
+                }]}
+                title={t('enter_username_or_email')}
                 value={username}
                 onChangeText={setUsername}
+                placeholder={t('enter_username_or_email')}
+                placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
               />
               {usernameErr && (
-                <Text style={[Louis_George_Cafe.regular.h8, { color: "red", fontFamily: "Louis_George_Cafe_Bold" }]}>
-                  {usernameErr}
+                <Text
+                  style={[
+                    scaleFont(Louis_George_Cafe.regular.h8),
+                    { color: "red", fontFamily: "Louis_George_Cafe_Bold" }
+                  ]}
+                >
+                  {t(usernameErr)}
                 </Text>
               )}
 
               <View style={styles.passwordContainer}>
-                <TextInputComponent
-                  style={[styles.input, { backgroundColor: COLORS.background }]}
-                  title="Password"
+                <TextInput
+                  style={[styles.input, {
+                    backgroundColor: THEMECOLORS[themeMode].viewBackground, borderColor: THEMECOLORS[themeMode].textPrimary,
+                    color: THEMECOLORS[themeMode].textPrimary
+                  }]}
+                  placeholder={t('password')}
                   value={password}
                   secureTextEntry={!isPasswordVisible}
                   onChangeText={setPassword}
+                  placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
+
                 />
+
                 <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
-                  <Icon name={isPasswordVisible ? "eye-off" : "eye"} size={wp(6)} color={COLORS.button_bg_color} />
+                  <Icon name={isPasswordVisible ? "eye-off" : "eye"} size={wp(6)} color={THEMECOLORS[themeMode].textPrimary} />
                 </TouchableOpacity>
               </View>
               {passwordErr && (
-                <Text style={[Louis_George_Cafe.regular.h8, { color: "red", fontFamily: "Louis_George_Cafe_Bold" }]}>
-                  {passwordErr}
+                <Text
+                  style={[
+                    scaleFont(Louis_George_Cafe.regular.h8),
+                    { color: "red", fontFamily: "Louis_George_Cafe_Bold" }
+                  ]}
+                >
+                  {t(passwordErr)}
                 </Text>
               )}
             </View>
 
-            <TouchableOpacity onPress={handleForgot} style={{ alignItems: "flex-end", marginHorizontal: wp(4) }}>
-              <Text style={[Louis_George_Cafe.regular.h7, { color: COLORS.button_bg_color }]}>Forgot Password?</Text>
+            <TouchableOpacity onPress={handleForgot} style={{ alignItems: "flex-end", marginTop: hp(1), marginHorizontal: wp(4) }}>
+              <Text
+                style={[
+                  scaleFont(Louis_George_Cafe.regular.h7),
+                  { color: THEMECOLORS[themeMode].primary, lineHeight: wp(5), marginTop: wp(1) }
+                ]}
+              >
+                {t('forget_password')}
+              </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.loginButton}
               onPress={handleLogin}
             >
-              <Text style={[Louis_George_Cafe.bold.h5, styles.loginButtonText]}>Login</Text>
-            </TouchableOpacity>
-
-            {/* Uncomment below for Register screen */}
-            {/* <TouchableOpacity onPress={() => navigation.navigate("RegisterScreen")}>
-              <Text style={[Louis_George_Cafe.regular.h7, { color: COLORS.black, marginTop: hp(2) }]}>
-                Don't have an account? Register
+              <Text
+                style={[
+                  scaleFont(Louis_George_Cafe.bold.h5),
+                  styles.loginButtonText
+                ]}
+              >
+                {t('login')}
               </Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -190,19 +266,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: wp(3),
-    backgroundColor: COLORS.background,
     justifyContent: "center",
   },
   input: {
     width: wp(90),
     height: hp(6),
     marginTop: 20,
-    borderColor: COLORS.borderColor,
     borderWidth: 1,
-    marginBottom: 16,
-    paddingHorizontal: 8,
-    borderRadius: 10,
-    color: "#1484CD",
+    borderRadius: wp(10), paddingHorizontal: wp(5)
   },
   passwordContainer: {
     flexDirection: "row",
@@ -212,7 +283,8 @@ const styles = StyleSheet.create({
   },
   eyeIcon: {
     position: "absolute",
-    right: 10,
+    right: wp(5),
+    bottom: wp(3)
   },
   loginButton: {
     width: wp(90),
@@ -225,7 +297,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.button_bg_color,
   },
   loginButtonText: {
-    color: '#fff',
+    color: '#fff', lineHeight: wp(10)
   },
 });
 
