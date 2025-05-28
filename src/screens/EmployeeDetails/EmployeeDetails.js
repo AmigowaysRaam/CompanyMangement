@@ -1,85 +1,154 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Image,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { hp, wp } from '../../resources/dimensions';
 import HeaderComponent from '../../components/HeaderComponent';
-import { COLORS } from '../../resources/Colors';
+import { THEMECOLORS } from '../../resources/colors/colors';
 import { Louis_George_Cafe } from '../../resources/fonts';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../context/ThemeContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { getEmplyeeDetails } from '../../redux/authActions';
+import ThemeToggle from '../../ScreenComponents/HeaderComponent/ThemeToggle';
 
 const EmplyeeDetails = () => {
-
   const route = useRoute();
-  const user = route.params?.item;
+  const user = route.params;
+  const { themeMode } = useTheme();
+  const theme = THEMECOLORS[themeMode];
+  const { t } = useTranslation();
+  const userdata = useSelector((state) => state.auth.user?.data);
+  const dispatch = useDispatch();
+
+  const [employeeDetails, setEmployeeDetails] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const renderImageSource = () => {
-
     if (!user || !user.profilePic) return null;
     if (typeof user.profilePic === 'string') {
       return { uri: user.profilePic };
     }
     return user.profilePic;
   };
+  useFocusEffect(
+    React.useCallback(() => {
+      // alert(JSON.stringify(user.id, null, 2))
+      setIsLoading(true);
+      dispatch(getEmplyeeDetails(user.id, (response) => {
+        if (response.success) {
+          setEmployeeDetails(response.data[0]);
+        }
+        setIsLoading(false);
+      }));
+    }, [userdata])
+  );
+
+  const getStatusLabel = (status) => {
+    return status === '1' ? t('active') : t('inactive');
+  };
+
+  if (!employeeDetails) {
+    return (
+      <View style={styles.centered}>
+        <Text style={{ color: theme.textPrimary }}>{t('nodatafound')}</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
-      <HeaderComponent title="Employee Details" />
-      <View style={{ alignSelf: "center", marginVertical: hp(4) }}>
-        <Image source={renderImageSource()} style={styles.profileImage} />
-        <Text style={[Louis_George_Cafe.bold.h5, styles.name]}>{user.name}</Text>
-        <Text style={[Louis_George_Cafe.regular.h5, { alignSelf: "center" }]}>{user.position}</Text>
-      </View>
-      <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.infoContainer}>
-          <Text style={[Louis_George_Cafe.regular.h7, styles.label]}>Position</Text>
-          <Text style={[Louis_George_Cafe.bold.h7, styles.value]}>{user.position}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={[Louis_George_Cafe.regular.h7, styles.label]}>Department</Text>
-          <Text style={[Louis_George_Cafe.bold.h7, styles.value]}>{user.department}</Text>
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={[Louis_George_Cafe.regular.h7, styles.label]}>Status</Text>
-          <View style={{ backgroundColor: "#C2FFC8", paddingHorizontal: wp(2), borderRadius: wp(5) }}>
-            <Text style={[Louis_George_Cafe.bold.h7, {
-              color: '#369F23'
-            }]}>{user.status}</Text>
+    <View style={{ backgroundColor: theme.background, flex: 1 }}>
+      <HeaderComponent title={t('employeedetails')} showBackArray={true} />
+
+      {isLoading ?
+
+        <ActivityIndicator style={{ marginTop: wp(20) }} size={wp(10)} />
+        :
+        <>
+          <View style={{ alignSelf: "center", marginVertical: hp(4) }}>
+            <Image source={renderImageSource()} style={styles.profileImage} />
+            <Text style={[Louis_George_Cafe.bold.h5, styles.name, { color: theme.textPrimary }]}>
+              {employeeDetails.full_name}
+            </Text>
+            <Text style={[Louis_George_Cafe.regular.h5, { alignSelf: "center", color: theme.textPrimary }]}>
+              {employeeDetails.designation}
+            </Text>
           </View>
+          <ScrollView contentContainerStyle={styles.container}>
+            <View style={styles.infoContainer}>
+              <Text style={[Louis_George_Cafe.regular.h7, styles.label, { color: theme.textPrimary }]}>
+                {t('position')}
+              </Text>
+              <Text style={[Louis_George_Cafe.bold.h7, styles.value, { color: theme.textPrimary }]}>
+                {employeeDetails.designation}
+              </Text>
+            </View>
+            <View style={styles.infoContainer}>
+              <Text style={[Louis_George_Cafe.regular.h7, styles.label, { color: theme.textPrimary }]}>
+                {t('status')}
+              </Text>
+              <View style={{ backgroundColor: "#C2FFC8", paddingHorizontal: wp(2), borderRadius: wp(5) }}>
+                <Text style={[Louis_George_Cafe.bold.h7, { color: '#369F23' }]}>
+                  {getStatusLabel(employeeDetails.status)}
+                </Text>
+              </View>
+            </View>
 
-        </View>
-        <View style={styles.infoContainer}>
-          <Text style={[Louis_George_Cafe.regular.h7, styles.label]}>Salary</Text>
-          <Text style={[Louis_George_Cafe.bold.h7, styles.value]}>{user.salary}</Text>
-        </View>
+            <View style={styles.infoContainer}>
+              <Text style={[Louis_George_Cafe.regular.h7, styles.label, { color: theme.textPrimary }]}>
+                {t('salary')}
+              </Text>
+              <Text style={[Louis_George_Cafe.bold.h7, styles.value, { color: theme.textPrimary }]}>
+                ₹ {employeeDetails?.salary}
+              </Text>
+            </View>
 
-        <View style={{ marginVertical: wp(2) }}>
-          <TouchableOpacity style={styles.optionButton}>
-            <Text style={[Louis_George_Cafe.regular.h7, { color: "#000" }]}>Bank Details</Text>
-            <MaterialCommunityIcons
-              style={styles.slantedIcon}
-              name="arrow-right-circle-outline"
-              size={hp(3.5)}
-              color={COLORS.black}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.optionButton}>
-            <Text style={[Louis_George_Cafe.regular.h7, { color: "#000" }]}>Payroll History</Text>
-            <MaterialCommunityIcons
-              style={styles.slantedIcon}
-              name="arrow-right-circle-outline"
-              size={hp(3.5)}
-              color={COLORS.black}
-            />
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+            <View style={styles.infoContainer}>
+              <Text style={[Louis_George_Cafe.regular.h7, styles.label, { color: theme.textPrimary }]}>
+                {t('startdate')}
+              </Text>
+              <Text style={[Louis_George_Cafe.bold.h7, styles.value, { color: theme.textPrimary }]}>
+                {employeeDetails.start_date}
+              </Text>
+            </View>
+            <View style={{ marginVertical: wp(2) }}>
+              <TouchableOpacity style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
+                <Text style={[Louis_George_Cafe.regular.h7, { color: theme.textPrimary }]}>
+                  {t('bankdetails')}
+                </Text>
+                <MaterialCommunityIcons
+                  style={styles.slantedIcon}
+                  name="arrow-right-circle-outline"
+                  size={hp(3.5)}
+                  color={theme.textPrimary}
+                />
+              </TouchableOpacity>
+
+
+              <TouchableOpacity style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
+                <Text style={[Louis_George_Cafe.regular.h7, { color: theme.textPrimary }]}>
+                  {t('payrollhistory')}
+                </Text>
+                <MaterialCommunityIcons
+                  style={styles.slantedIcon}
+                  name="arrow-right-circle-outline"
+                  size={hp(3.5)}
+                  color={theme.textPrimary}
+                />
+              </TouchableOpacity>
+            </View>
+            {/* <ThemeToggle/> */}
+          </ScrollView>
+        </>
+      }
     </View>
   );
 };
@@ -88,7 +157,6 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: wp(4),
     alignItems: 'center',
-    backgroundColor: COLORS.background,
     flexGrow: 1,
   },
   profileImage: {
@@ -97,7 +165,6 @@ const styles = StyleSheet.create({
     borderRadius: wp(20),
     marginBottom: hp(3),
     borderWidth: wp(0.5),
-    borderColor: COLORS.button_bg_color
   },
   name: {
     marginBottom: wp(1),
@@ -116,7 +183,6 @@ const styles = StyleSheet.create({
   },
   optionButton: {
     width: wp(90),
-    backgroundColor: COLORS.background,
     height: hp(5),
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -124,7 +190,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(3),
     borderRadius: wp(5),
     marginVertical: hp(1),
-    borderWidth: wp(0.4)
+    borderWidth: wp(0.4),
   },
   centered: {
     flex: 1,

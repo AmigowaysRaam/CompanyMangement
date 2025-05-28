@@ -16,6 +16,10 @@ import {
   APP_USER_SIDE_MENUS_SUCCESS,
   APP_USER_SIDE_MENUS_FAILURE,
 
+  APP_TAB_MENU_REQUEST,
+  APP_TAB_MENU_SUCCESS,
+  APP_TAB_MENU_FAILURE,
+
 
 
 } from "./actionsTypes";
@@ -29,7 +33,7 @@ const initialState = {
   getFrontSite: null,
   error: null, // make sure error is part of state
   user: null,
-  sidemenu:null
+  sidemenu: null, tabMenuList: null
 };
 
 const authReducer = (state = initialState, action) => {
@@ -84,63 +88,85 @@ const authReducer = (state = initialState, action) => {
         isLoading: false,
         error: action.error,
       };
-      // 
-      case APP_USER_LOGIN_REQUEST:
-      console.log("Request started");
-        return {
-          ...state,
-          loading: true,
-          error: null,
-        };
-  
-      case APP_USER_LOGIN_SUCCESS:
-      console.log("LOGIN successfully:", action.payload);
-        return {
-          ...state,
-          loading: false,
-          user: action.payload,
-          error: null,
-        };
-  
-      case APP_USER_LOGIN_FAILURE:
-        return {
-          ...state,
-          loading: false,
-          user: null,
-          error: action.payload, // typically an error message or object
-        };
+    // 
+    case APP_USER_LOGIN_REQUEST:
+      // console.log("Request started");
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
+    case APP_USER_LOGIN_SUCCESS:
+      // console.log("LOGIN successfully:", action.payload);
+      return {
+        ...state,
+        loading: false,
+        user: action.payload,
+        error: null,
+      };
+
+    case APP_USER_LOGIN_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        user: null,
+        error: action.payload, // typically an error message or object
+      };
 
 
-        // APP_USER_SIDE_MENUS_REQUEST,
-        // APP_USER_SIDE_MENUS_SUCCESS,
-        // APP_USER_SIDE_MENUS_FAILURE,
-        // 
-        case APP_USER_SIDE_MENUS_REQUEST:
-          return {
-            ...state,
-            loading: true,
-            error: null,
-          };
-    
-        case APP_USER_SIDE_MENUS_SUCCESS:
-        // console.log("APP_USER_SIDE_MENUS_SUCCESS:", action.payload);
-          return {
-            ...state,
-            loading: false,
-            sidemenu: action.payload,
-            error: null,
-          };
-    
-        case APP_USER_SIDE_MENUS_FAILURE:
-          return {
-            ...state,
-            loading: false,
-            sidemenu: null,
-            error: action.payload, // typically an error message or object
-          };
-  
+    // APP_USER_SIDE_MENUS_REQUEST,
+    // APP_USER_SIDE_MENUS_SUCCESS,
+    // APP_USER_SIDE_MENUS_FAILURE,
+    // 
+    case APP_USER_SIDE_MENUS_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
 
+    case APP_USER_SIDE_MENUS_SUCCESS:
+      // console.log("APP_USER_SIDE_MENUS_SUCCESS:", action.payload);
+      return {
+        ...state,
+        loading: false,
+        sidemenu: action.payload,
+        error: null,
+      };
 
+    case APP_USER_SIDE_MENUS_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        sidemenu: null,
+        error: action.payload, // typically an error message or object
+      };
+
+    // Tab menu
+    case APP_TAB_MENU_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
+    case APP_TAB_MENU_SUCCESS:
+      console.log("APP_USER_SIDE_MENUS_SUCCESS:", action.payload);
+      return {
+        ...state,
+        loading: false,
+        tabMenuList: action.payload,
+        error: null,
+      };
+
+    case APP_TAB_MENU_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        tabMenuList: null,
+        error: action.payload, // typically an error message or object
+      };
 
 
 

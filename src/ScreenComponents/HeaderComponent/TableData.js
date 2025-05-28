@@ -3,6 +3,7 @@ import { View, Image, Text, StyleSheet, FlatList, Platform, TouchableOpacity } f
 import { wp } from '../../resources/dimensions';
 import { Louis_George_Cafe } from '../../resources/fonts';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const dummyData = [
     {
@@ -98,7 +99,8 @@ const dummyData = [
 ];
 
 export default function EmployeeTable() {
-
+    const { t, i18n } = useTranslation();
+    const isTamil = i18n.language === 'ta';
     const navigation = useNavigation();
     useEffect(() => {
     }, [])
@@ -123,14 +125,20 @@ export default function EmployeeTable() {
     return (
         <View style={styles.shadowWrapper}>
             <View style={styles.tableContainer}>
-                <Text style={[Louis_George_Cafe.bold.h5, { marginHorizontal: wp(3), marginTop: wp(3) }]}>{"Payroll Activities"}</Text>
+                <Text style={[isTamil ?
+                    Louis_George_Cafe.bold.h7 :
+                    Louis_George_Cafe.bold.h5, { marginHorizontal: wp(3), marginTop: wp(3) }]}>{t('payrollActivities')}</Text>
                 <View style={styles.line} />
                 <View style={styles.headerContainer}>
-                    <Text style={[Louis_George_Cafe.bold.h7, styles.headerText, styles.nameColumn]}>
-                        Employee
+                    <Text style={[isTamil ?
+                        Louis_George_Cafe.bold.h7 : 
+                        Louis_George_Cafe.bold.h8, styles.headerText, styles.nameColumn]}>
+                        {t('employee')}
                     </Text>
-                    <Text style={[Louis_George_Cafe.bold.h6, styles.headerText, styles.positionColumn]}>
-                        Position
+                    <Text style={[isTamil ?
+                        Louis_George_Cafe.bold.h7 :
+                        Louis_George_Cafe.bold.h8, , styles.headerText, styles.positionColumn]}>
+                        {t('position')}
                     </Text>
                 </View>
                 <View style={styles.line} />
@@ -140,7 +148,9 @@ export default function EmployeeTable() {
                     renderItem={renderItem}
                 />
                 <TouchableOpacity onPress={() => navigation.navigate('PayrollList', { item: dummyData })} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(2), borderWidth: wp(0.3), borderRadius: wp(5) }}>
-                    <Text style={[Louis_George_Cafe.bold.h8]}>View all</Text>
+                    <Text style={[Louis_George_Cafe.bold.h8, {
+                        lineHeight: wp(5)
+                    }]}>{t('viewAll')}</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -149,7 +159,8 @@ export default function EmployeeTable() {
 
 const styles = StyleSheet.create({
     shadowWrapper: {
-        margin: wp(2),
+        margin: wp(2), width: wp(95), alignSelf: "center",
+
         ...Platform.select({
             ios: {
                 shadowColor: '#000',
@@ -165,9 +176,10 @@ const styles = StyleSheet.create({
     tableContainer: {
         borderRadius: 8,
         overflow: 'hidden',
-        borderWidth: 1,
+        borderWidth: wp(0.2),
         borderColor: '#ddd',
         backgroundColor: '#FFFBF0',
+
     },
     profileContainer: {
         flexDirection: 'row',

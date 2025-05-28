@@ -55,7 +55,6 @@ const Splash = () => {
         dispatch({ type: 'APP_SITE_SETTINGS_SUCCESS', payload: { data: parsed } });
         setTimeout(() => {
           redirect();
-
         }, 1000);
       } else {
         fetchSiteSettings();

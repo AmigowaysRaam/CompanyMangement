@@ -6,6 +6,7 @@ import {
     Image,
     FlatList,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
@@ -18,60 +19,93 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProfileMenuList } from '../redux/authActions';
 import { ActivityIndicator } from 'react-native-paper';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import _ from 'lodash';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ProfileScreen = () => {
+
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
     const isTamil = i18n.language === 'ta';
-
     const dispatch = useDispatch();
-    const [menuItem, setMeniItems] = useState([]);
     const [isLoading, setisLoading] = useState(false);
     const userdata = useSelector((state) => state.auth.user?.data);
+    const tabMenuList = useSelector((state) => state.auth?.tabMenuList);
+    const [menuItem, setMeniItems] = useState(tabMenuList?.data);
+
+    const navigation = useNavigation();
 
     useFocusEffect(
         React.useCallback(() => {
-            setisLoading(true);
-            dispatch(getProfileMenuList(userdata?.id, (response) => {
-                if (response.success) {
-                    setMeniItems(response?.data);
-                }
-                setisLoading(false);
-            }));
+            dispatch(getProfileMenuList(userdata?.id))
+            if (_.isEmpty(tabMenuList?.data)) {
+                setisLoading(true);
+                dispatch(getProfileMenuList(userdata?.id, (response) => {
+                    if (response.success) {
+                        setMeniItems(response?.data);
+                    }
+                    setisLoading(false);
+                }));
+            }
         }, [userdata])
     );
+ 
+    const handleFnNavigate = (slug) => {
+        if (slug == 'my_profile') {
+            navigation.navigate('MyProfileUpdate');
+        };
+    };
+    const handleLogout = async (slug) => {
+        try {
+            await AsyncStorage.clear();
+            // console.log('AsyncStorage cleared. Logging out...');
+            navigation.replace('LoginScreen');
+            dispatch({ type: 'APP_USER_LOGIN_SUCCESS', payload: null });
+
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
+    }
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
             style={[styles.menuItem, { flexDirection: "row", justifyContent: "space-between" }]}
             onPress={() => {
-                if (item.slug === 'logout') {
-                    // Logout logic here
+                if (item.slug === 'log_out') {
+                    handleLogout(item.slug)
+                } else {
+                    handleFnNavigate(item.slug)
                 }
             }}
         >
             <View style={styles.menuContent}>
-                <MaterialCommunityIcons
-                    name={item.icon}
-                    size={hp(2.5)}
-                    color={THEMECOLORS[themeMode].textPrimary}
-                    style={{ marginRight: wp(3) }}
-                />
+                {item.showArrow ?
+                    <MaterialCommunityIcons
+                        name={item.icon}
+                        size={hp(2.5)}
+                        color={THEMECOLORS[themeMode].textPrimary}
+                        style={{ marginRight: wp(3) }}
+                    />
+                    :
+                    <View
+                        style={{ marginRight: hp(4.5) }}
+                    />
+                }
                 <Text style={[
-                    isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
-                    { color: THEMECOLORS[themeMode].textPrimary, textTransform: "capitalize" }
+                    isTamil ? Louis_George_Cafe.regular.h8 : Louis_George_Cafe.regular.h6,
+                    { color: THEMECOLORS[themeMode].textPrimary, textTransform: "capitalize", lineHeight: wp(5) }
                 ]}>
                     {t(item.slug)}
                 </Text>
             </View>
-            {item.showArrow && (
-                <MaterialCommunityIcons
-                    name="chevron-right"
-                    size={hp(2.5)}
-                    color={THEMECOLORS[themeMode].textPrimary}
-                />
-            )}
+            {/* {item.showArrow && ( */}
+            <MaterialCommunityIcons
+                name={item.showArrow ? "chevron-right" : "logout"}
+                size={hp(2.5)}
+                color={THEMECOLORS[themeMode].textPrimary}
+            />
+            {/* )} */}
         </TouchableOpacity>
     );
 
@@ -113,7 +147,7 @@ const ProfileScreen = () => {
                         maxWidth: wp(70)
                     }
                 ]}>
-                    {userdata?.role}
+                    {userdata?.designation}
                 </Text>
             </View>
 
@@ -143,8 +177,8 @@ const styles = StyleSheet.create({
         height: '80%',
         alignSelf: "center",
         justifyContent: "flex-end",
-        borderTopRightRadius: hp(3),
-        borderTopLeftRadius: hp(3),
+        // borderTopRightRadius: hp(3),
+        // borderTopLeftRadius: hp(3),
     },
     profileImageContainer: {
         zIndex: 2,

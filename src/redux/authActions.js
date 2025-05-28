@@ -16,6 +16,23 @@ import {
   APP_USER_SIDE_MENUS_SUCCESS,
   APP_USER_SIDE_MENUS_FAILURE,
 
+
+  APP_USER_HOMEPAGE_REQUEST,
+  APP_USER_HOMEPAGE_SUCCESS,
+  APP_USER_HOMEPAGE_FAILURE,
+
+
+  APP_TAB_MENU_REQUEST,
+  APP_TAB_MENU_SUCCESS,
+  APP_TAB_MENU_FAILURE,
+
+
+  APP_EMPLOYEE_TAB_MENU_REQUEST,
+  APP_EMPLOYEE_TAB_MENU_SUCCESS,
+  APP_EMPLOYEE_TAB_MENU_FAILURE,
+
+
+
 } from "./actionsTypes";
 import { API_REQUESTS } from "../api/api-end-points";
 
@@ -58,7 +75,6 @@ export const getLanguageList = (callback) => async (dispatch) => {
     dispatch({ type: APP_GET_LANGUAGE_SUCCESS, payload: response });
     if (callback) callback(response);
     return response;
-
   } catch (error) {
     console.error("Error fetching site settings:", error.message);
     dispatch({ type: APP_GET_LANGUAGE_FAILURE, error: error.message });
@@ -151,14 +167,123 @@ export const getSideMenus = (credentials, callback) => async (dispatch) => {
     dispatch({ type: APP_USER_SIDE_MENUS_FAILURE, error: error.message });
   }
 };
+
 // getProfileMenuList
 export const getProfileMenuList = (credentials, callback) => async (dispatch) => {
+  dispatch({ type: APP_TAB_MENU_REQUEST });
   try {
     const endpoint = API_REQUESTS.GET_PROFILE_MENU_API;
     const response = await sendRequest(endpoint, credentials);
+    dispatch({ type: APP_TAB_MENU_SUCCESS, payload: response });
     if (callback) callback(response);
     return response;
   } catch (error) {
-    console.error("Error getProfileMenuList:", error.message);
+    console.error("Error APP_TAB_MENU_FAILURE:", error.message);
+    dispatch({ type: APP_TAB_MENU_FAILURE, error: error.message });
+
   }
 };
+
+// getProfileDetailsById
+export const getEmplyeeDetails = (credentials, callback) => async (dispatch) => {
+  // dispatch({ type: APP_TAB_MENU_REQUEST });
+  try {
+    const endpoint = API_REQUESTS.GET_EMPLOYEE_DETAILS_API;
+    const response = await sendRequest(endpoint, { employeeId: credentials });
+    // dispatch({ type: APP_TAB_MENU_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("Error getProfileDetailsById:", error.message);
+    // dispatch({ type: APP_TAB_MENU_FAILURE, error: error.message });
+
+  }
+};
+
+
+// getHomePageData
+
+export const getHomePageData = (payLoad, callback) => async (dispatch) => {
+  dispatch({ type: APP_USER_HOMEPAGE_REQUEST });
+  try {
+    const endpoint = API_REQUESTS.API_HOME_SCREEN_CONTENT_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    dispatch({ type: APP_USER_HOMEPAGE_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("APP_USER_HOMEPAGE_FAILURE:", error.message);
+    dispatch({ type: APP_USER_HOMEPAGE_FAILURE, error: error.message });
+  }
+};
+
+
+// APP_EMPLOYEE_TAB_MENU_REQUEST,
+// APP_EMPLOYEE_TAB_MENU_SUCCESS,
+// APP_EMPLOYEE_TAB_MENU_FAILURE,
+
+// getemployeeDetails
+export const getemployeeDetails = (payLoad, callback) => async (dispatch) => {
+  dispatch({ type: APP_EMPLOYEE_TAB_MENU_REQUEST });
+  // alert(payLoad)
+  try {
+    const endpoint = API_REQUESTS.API_EMPLOYEE_CONTENT_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    dispatch({ type: APP_EMPLOYEE_TAB_MENU_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("APP_USER_HOMEPAGE_FAILURE:", error.message);
+    dispatch({ type: APP_EMPLOYEE_TAB_MENU_FAILURE, error: error.message });
+  }
+};
+
+
+
+
+// getProfileDetailsById
+export const getProfileDetailsById = (payLoad, callback) => async (dispatch) => {
+  // dispatch({ type: APP_USER_HOMEPAGE_REQUEST });
+  try {
+    const endpoint = API_REQUESTS.API_GET_USER_DETAILS_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    // dispatch({ type: APP_USER_HOMEPAGE_SUCCESS, payload: response });
+    // alert(JSON.stringify(response))
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getProfileDetailsById:", error.message);
+    // dispatch({ type: APP_USER_HOMEPAGE_FAILURE, error: error.message });
+  }
+};
+export const updateFormSubmit = (userId, payLoad, callback) => async (dispatch) => {
+
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_USER_DETAILS_URL.url;
+    // Create FormData and hardcode each field
+    const formData = new FormData();
+    formData.append('full_name', payLoad.fullname);
+    formData.append('username', payLoad.username);
+    formData.append('designation', payLoad.designation);
+    formData.append('dob', payLoad.dob);
+    formData.append('email', payLoad.email);
+    formData.append('phone', payLoad.phone);
+    formData.append('employeeId', userId);
+
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await response.json();
+    // alert(JSON.stringify(data.success))
+    if (data.success) {
+      dispatch({ type: APP_USER_LOGIN_SUCCESS, payload: data });
+    }
+    if (callback) callback(data);
+    return data;
+  } catch (error) {
+    console.error("updateFormSubmit:", error.message);
+    dispatch({ type: APP_USER_LOGIN_FAILURE, error: error.message });
+  }
+};
+

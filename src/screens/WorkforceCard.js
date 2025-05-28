@@ -9,36 +9,11 @@ import {
 } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import { wp, hp } from "../resources/dimensions";
-import { COLORS } from "../resources/Colors";
 import { Louis_George_Cafe } from "../resources/fonts";
 import { THEMECOLORS } from "../resources/colors/colors";
 import { useTheme } from "../context/ThemeContext";
 const CARD_WIDTH = wp(60);
 const CARD_HEIGHT = hp(12);
-
-const cardsData = [
-    {
-        id: "1",
-        title: "Total Employee",
-        description: "100",
-        image: require("../assets/animations/total_emp.png"),
-    },
-    {
-        id: "2",
-        title: "Today Attendance",
-        description: "80",
-        image: require("../assets/animations/attendance.png"),
-
-    },
-    {
-        id: "3",
-        title: "Interviews",
-        description: "09",
-        image: require("../assets/animations/interview.png"),
-
-    },
-];
-
 // Different gradient colors for each card
 const gradients = [
     {
@@ -56,8 +31,10 @@ const gradients = [
 ];
 
 
-const WorkforceCard = () => {
+const WorkforceCard = ({ data }) => {
     const { theme, themeMode, toggleTheme } = useTheme();
+
+    // (console.log(data))
 
     const renderItem = ({ item, index }) => {
         const gradient = gradients[index % gradients.length];
@@ -70,10 +47,14 @@ const WorkforceCard = () => {
                     style={styles.card}
                 >
                     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                        <Text style={[Louis_George_Cafe.bold.h6, styles.cardTitle]}>{item.title}</Text>
-                        <Image source={item.image} style={styles.cardImage} resizeMode="contain" />
+                        <Text style={[Louis_George_Cafe.bold.h6, styles.cardTitle]}>{item?.label}</Text>
+                        {item?.image &&
+                            <Image source={item?.image ? item?.image : null} style={styles.cardImage} resizeMode="contain"
+                            // Works on iOS only
+                            />
+                        }
                     </View>
-                    <Text style={[Louis_George_Cafe.bold.h3, styles.cardDescription]}>{item.description}</Text>
+                    <Text style={[Louis_George_Cafe.bold.h3, styles.cardDescription]}>{item.count}</Text>
                 </LinearGradient>
             </TouchableOpacity>
 
@@ -82,10 +63,10 @@ const WorkforceCard = () => {
 
 
     return (
-        <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background}]}>
+        <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <FlatList
                 horizontal
-                data={cardsData}
+                data={data}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 showsHorizontalScrollIndicator={false}
@@ -96,13 +77,13 @@ const WorkforceCard = () => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         paddingVertical: hp(1),
+        marginHorizontal: wp(1)
     },
     scrollContent: {
-        paddingLeft: wp(4),
+        paddingLeft: wp(1),
     },
     cardImage: {
         width: wp(10),

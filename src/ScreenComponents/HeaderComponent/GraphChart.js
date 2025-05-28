@@ -138,7 +138,7 @@ export default function AttendanceChart() {
     return (
         <View
             style={{
-                height: hp(45),
+                height: hp(34),
                 width: screenWidth - 40,
                 margin: wp(2),
                 backgroundColor: "#F2E8FF",

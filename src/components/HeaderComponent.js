@@ -3,7 +3,8 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  Image
+  Image,
+  ToastAndroid
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { wp, hp } from "../resources/dimensions";
@@ -27,7 +28,7 @@ function HeaderComponent({
   ...props
 }) {
   const navigation = useNavigation();
-  const {  themeMode } = useTheme();
+  const { themeMode } = useTheme();
   const { t, i18n } = useTranslation();
   const [menuVisible, setMenuVisible] = React.useState(false);
   const { language, setLanguage } = useLanguage();
@@ -36,7 +37,8 @@ function HeaderComponent({
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
 
-  const changeLanguage = (langCode) => {
+  const fnchangeLanguage = (langCode, flag) => {
+
     setLanguage(langCode); // Update context (if using Context API)
     dispatch(setLanguageSelected(langCode, (response) => {
       if (response.success && response.data) {
@@ -50,23 +52,30 @@ function HeaderComponent({
         );
         // Change the language
         i18n.changeLanguage(langCode);
-        console.log(`Language switched to ${langCode}`);
+        if (flag) {
+          ToastAndroid.show(`Language switched to ${langCode}`, ToastAndroid.SHORT);
+        }
+
 
       } else {
-        console.warn('Translation response is invalid or missing data.');
+        // console.warn('Translation response is invalid or missing data.');
       }
     }));
     i18n.changeLanguage(langCode);
     closeMenu();
+
+
   };
 
   useEffect(() => {
     dispatch(getLanguageList((response) => {
       if (response.success) {
         setSelectedLanguageList(response.data)
+        fnchangeLanguage(language, false)
       }
     }));
-  }, [])
+
+  }, [language])
 
   return (
     <View style={[styles.container, {
@@ -102,21 +111,27 @@ function HeaderComponent({
                   onDismiss={closeMenu}
                   anchor={
                     <TouchableOpacity onPress={openMenu} style={styles.iconButton}>
-                      <Text style={[Louis_George_Cafe.bold.h5, {
+                      {/* <Text style={[Louis_George_Cafe.bold.h5, {
                         color: THEMECOLORS[themeMode].primary,
                       }]}>
                         {language}
-                      </Text>
+                      </Text> */}
+                      <MaterialCommunityIcons
+                        name="translate"
+                        size={hp(3)}
+                        color={THEMECOLORS[themeMode].primary}
+                      />
+
                     </TouchableOpacity>
                   }
-                  contentStyle={{ backgroundColor: THEMECOLORS[themeMode].viewBackground ,marginTop:hp(4)}}
+                  contentStyle={{ backgroundColor: THEMECOLORS[themeMode].viewBackground, marginTop: hp(4) }}
                 >
                   {languagesList.map((lang) => (
                     <Menu.Item
                       key={lang.code}
-                      onPress={() => changeLanguage(lang.code)}
+                      onPress={() => fnchangeLanguage(lang.code, true)}
                       title={lang.nativeName}
-                      titleStyle={{ color: THEMECOLORS[themeMode].textPrimary }}
+                      titleStyle={{ color: language == lang.code ? THEMECOLORS[themeMode].accent : THEMECOLORS[themeMode].textPrimary, fontWeight: language == lang.code ? "900" : null, fontSize: wp(language == lang.code ? 4 : 3) }}
                     />
                   ))}
                 </Menu>

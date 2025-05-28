@@ -15,6 +15,7 @@ import { Image } from "react-native"; // add this at the top
 import Employee from "../screens/Employee/Employee";
 import { THEMECOLORS } from "../resources/colors/colors";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 
 const Tab = createBottomTabNavigator();
@@ -23,6 +24,7 @@ const TabNavigator = () => {
 
   const userId = useSelector((state) => state.auth.user?._id);
   const dispatch = useDispatch();
+  const { t, i18n } = useTranslation();
 
   const CustomTabBarButton = (props) => (
     <TouchableOpacity
@@ -50,20 +52,29 @@ const TabNavigator = () => {
             let imageSource;
             switch (route.name) {
               case 'HomeScreen':
-                imageSource = require('../assets/animations/home_tab.png');
+                imageSource = focused
+                  ? require('../assets/animations/home_filled.png')
+                  : require('../assets/animations/home_outline.png');
                 break;
+          
               case 'Employee':
-                imageSource = require('../assets/animations/employee_tan.png');
-
+                imageSource = focused
+                  ? require('../assets/animations/employee_fill.png')
+                  : require('../assets/animations/employee_outline.png'); // ✅ fixed typo "emplyee"
                 break;
+          
               case 'Community':
-                imageSource = require('../assets/animations/attedance_tab.png');
-
+                imageSource = focused
+                  ? require('../assets/animations/attendance_fill.png')
+                  : require('../assets/animations/attendance_outline.png');
                 break;
+          
               case 'chat':
-                imageSource = require('../assets/animations/profile_tab.png');
-
+                imageSource = focused
+                  ? require('../assets/animations/profile_fill.png')
+                  : require('../assets/animations/profile_outline.png');
                 break;
+          
               default:
                 imageSource = require('../assets/animations/home_tab.png');
             }
@@ -113,10 +124,10 @@ const TabNavigator = () => {
                 style={[
                   Louis_George_Cafe.regular.h9,
                   styles.tababel,
-                  { color: '#fff', fontSize: wp(2), marginTop: wp(1) },
+                  { color: '#fff', fontSize: wp(i18n.language == 'ta' ? 2 : 2.5), marginTop: wp(1), lineHeight: wp(3) },
                 ]}
               >
-                {label}
+                {t(label)}
               </Text>
             );
           },

@@ -1,0 +1,287 @@
+import React, { useState } from 'react';
+import {
+    View, Text, TextInput, TouchableOpacity,
+    StyleSheet, Image, Alert, ScrollView, KeyboardAvoidingView, Platform,
+    ToastAndroid
+} from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { THEMECOLORS } from '../resources/colors/colors';
+import { hp, wp } from '../resources/dimensions';
+import HeaderComponent from '../components/HeaderComponent';
+import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
+import { useTheme } from '../context/ThemeContext';
+import { Louis_George_Cafe } from '../resources/fonts';
+import { useTranslation } from 'react-i18next';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useDispatch, useSelector } from 'react-redux';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { getProfileDetailsById, updateFormSubmit } from '../redux/authActions';
+import { ActivityIndicator } from 'react-native-paper';
+
+const MyProfileUpdate = () => {
+
+    const { themeMode } = useTheme();
+    const { t, i18n } = useTranslation();
+    const isTamil = i18n.language === 'ta';
+    const [profileImage, setProfileImage] = useState(null);
+    const userdata = useSelector((state) => state.auth.user?.data);
+    const dispatch = useDispatch();
+    const navigation = useNavigation();
+    const [isLoading, setisLoading] = useState(true);
+
+    const [fields, setFields] = useState({
+        fullname: '',
+        username: '',
+        designation: '',
+        dob: "",
+        email: '',
+        phone: '',
+    });
+
+    useFocusEffect(
+        React.useCallback(() => {
+            dispatch(getProfileDetailsById(userdata?.id, (response) => {
+                if (response.success && response.data?.[0]) {
+                    const data = response.data[0];
+                    setisLoading(false)
+                    setFields({
+                        fullname: data.full_name || '',
+                        username: data.designation, // You can assign if you have a `username` in API
+                        designation: data.designation || '',
+                        dob: __DEV__ ? "TEST" : "",      // Assign if available in API
+                        email: data.email || '',
+                        phone: data.phone || '',
+                    });
+                }
+                else {
+                    // Alert.alert(response.message,"Error")
+                }
+            }));
+        }, [userdata])
+    );
+    const [errors, setErrors] = useState({});
+    const handleImagePick = () => {
+        launchImageLibrary({ mediaType: 'photo' }, (response) => {
+            if (!response.didCancel && !response.errorCode) {
+                const uri = response.assets?.[0]?.uri;
+                setProfileImage(uri);
+            }
+        });
+    };
+    const validate = () => {
+        const newErrors = {};
+        if (!fields.fullname) newErrors.fullname = t('fullnameisrequired');
+        if (!fields.username) newErrors.username = t('usernameisrequired');
+        if (!fields.designation) newErrors.designation = t('designationisrequired');
+        if (!fields.dob) newErrors.dob = t('dobisrequired');
+        if (!fields.email) newErrors.email = t('emailisrequired');
+        else if (!/\S+@\S+\.\S+/.test(fields.email)) newErrors.email = t('invalidemail');
+        if (!fields.phone) newErrors.phone = t('phoneisrequired');
+        else if (!/^[0-9]{10}$/.test(fields.phone)) newErrors.phone = t('invalidphonenumber');
+        return newErrors;
+    };
+    const handleSubmit = () => {
+        const validationErrors = validate();
+        if (Object.keys(validationErrors).length > 0) {
+            setErrors(validationErrors);
+            return;
+        }
+        dispatch(updateFormSubmit(userdata?.id, fields, (response) => {
+            if (response.success && response.data) {
+                navigation.goBack();
+                ToastAndroid.show(response.message, ToastAndroid.SHORT);
+            }
+        }));
+        // Alert.alert("Success", t("profileupdatedsuccessfully"));
+        // API submission logic can go here
+    };
+
+    const handleChange = (key, value) => {
+        setFields({ ...fields, [key]: value });
+        setErrors({ ...errors, [key]: '' });
+    };
+
+    return (
+        <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background }}>
+            <HeaderComponent title={t('My Profile')} showBackArray={true} />
+
+            {/* Profile Image Section */}
+            <View style={styles.coverContainer}>
+                <LinearGradient
+                    colors={['#C4A5EC', '#FFF7E3']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.coverImage}
+                >
+                    <View style={styles.profileImageContainer}>
+                        <TouchableOpacity onPress={handleImagePick}>
+                            <Image
+                                source={profileImage ? { uri: profileImage } : require('../assets/animations/propic.jpg')}
+                                style={styles.profileImage}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                </LinearGradient>
+            </View>
+            {/* Scrollable Form Section */}
+            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+                <ScrollView
+                    contentContainerStyle={[
+                        styles.container,
+                        { backgroundColor: THEMECOLORS[themeMode].background }
+                    ]}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    {
+                        isLoading ?
+                            <ActivityIndicator style={{ marginVertical: wp(5) }} />
+                            :
+                            <View style={styles.inputContainer}>
+                                {
+                                    [
+                                        { key: 'fullname', label: t('fullname'), placeholder: t('enteryourfullname'), editable: true },
+
+                                        { key: 'username', label: t('username'), placeholder: t('enteryourusername'), editable: false },
+                                        { key: 'designation', label: t('designation'), placeholder: t('enteryourdesignation'), editable: false },
+                                        { key: 'dob', label: t('dob'), placeholder: t('yyyy-mm-dd'), editable: false },
+                                        { key: 'email', label: t('email'), placeholder: t('enteryouremail'), editable: false },
+                                        { key: 'phone', label: t('phone'), placeholder: t('enteryourphonenumber'), editable: false }
+                                    ].map(field => (
+                                        <View key={field.key} style={{ marginBottom: hp(2) }}>
+                                            <Text style={[
+                                                isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
+                                                styles.label,
+                                                { color: THEMECOLORS[themeMode].textPrimary }
+                                            ]}>
+                                                {field.label}
+                                            </Text>
+                                            <TextInput
+                                                editable={field.editable}
+                                                value={fields[field.key]}
+                                                onChangeText={(value) => handleChange(field.key, value)}
+                                                placeholder={field.placeholder}
+                                                placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
+                                                style={[
+                                                    styles.input,
+                                                    {
+                                                        backgroundColor: THEMECOLORS[themeMode].viewBackground,
+                                                        color: THEMECOLORS[themeMode].textPrimary,
+                                                        borderColor: field.editable ? THEMECOLORS[themeMode].textPrimary :
+                                                           "#444"
+                                                    },
+                                                    isTamil && { fontSize: wp(3.5) }
+                                                ]}
+                                                keyboardType={
+                                                    field.key === 'email'
+                                                        ? 'email-address'
+                                                        : field.key === 'phone'
+                                                            ? 'phone-pad'
+                                                            : 'default'
+                                                }
+                                            />
+                                            {errors[field.key] && (
+                                                <Text style={[Louis_George_Cafe.regular.h8, { color: 'red', margin: wp(2) }]}>{errors[field.key]}</Text>
+                                            )}
+                                        </View>
+                                    ))}
+                            </View>
+                    }
+                    {/* <ThemeToggle /> */}
+                </ScrollView>
+            </KeyboardAvoidingView>
+            {!isLoading &&
+                <View style={styles.fixedButtonWrapper}>
+                    <TouchableOpacity
+                        style={[
+                            styles.submitButton,
+                            { backgroundColor: THEMECOLORS[themeMode].buttonBg }
+                        ]}
+                        onPress={handleSubmit}
+                    >
+                        <Text style={[
+                            Louis_George_Cafe.bold.h5,
+                            {
+                                color: THEMECOLORS[themeMode].viewBackground,
+                                lineHeight: wp(7)
+                            }
+                        ]}>
+                            {t('updateprofile')}
+                        </Text>
+                    </TouchableOpacity>
+                </View>}
+
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    container: {
+        paddingHorizontal: wp(4),
+        paddingBottom: hp(3),
+    },
+    imageSection: {
+        zIndex: 111,
+        alignItems: 'center',
+        marginTop: hp(2), position: "relative", top: hp(12), marginBottom: hp(3)
+    },
+    profileImage: {
+        width: wp(30),
+        height: wp(30),
+        borderRadius: wp(15),
+        marginBottom: hp(1),
+    },
+    changePhotoText: {
+        textAlign: 'center',
+        marginBottom: hp(2),
+    },
+    inputContainer: {
+        width: '100%',
+        marginTop: hp(5),
+    },
+    label: {
+        marginBottom: hp(0.5),
+        fontWeight: '600',
+    },
+    input: {
+        borderWidth: 1,
+        borderRadius: wp(3),
+        padding: wp(3),
+    },
+    fixedButtonWrapper: {
+        padding: wp(3),
+        borderColor: '#ccc',
+    },
+    submitButton: {
+        padding: wp(2.5),
+        borderRadius: wp(2),
+        alignItems: 'center',
+        width: '100%',
+    },
+    coverContainer: {
+        height: hp(24),
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+    coverImage: {
+        ...StyleSheet.absoluteFillObject,
+        width: '100%',
+        height: '80%',
+        alignSelf: "center",
+        justifyContent: "flex-end",
+    },
+    profileImageContainer: {
+        zIndex: 2,
+        alignSelf: "center",
+        position: "relative",
+        top: hp(4)
+    },
+    profileImage: {
+        width: wp(35),
+        height: wp(35),
+        borderRadius: wp(18),
+        borderWidth: 3,
+        borderColor: '#fff'
+    },
+});
+
+export default MyProfileUpdate;

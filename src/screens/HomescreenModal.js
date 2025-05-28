@@ -178,7 +178,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                         <View style={{ marginVertical: hp(2), flex: 1, paddingHorizontal: wp(2) }}>
                             {
                                 isLoading ?
-                                    <ActivityIndicator size={wp(10)} style={{ marginVertical: wp(10) }} color={THEMECOLORS[themeMode].primaryApp} />
+                                    <ActivityIndicator size={wp(10)} style={{ marginVertical: wp(10) }} color={THEMECOLORS[themeMode].textPrimary} />
                                     :
                                     <FlatList
                                         data={sideMenusList}

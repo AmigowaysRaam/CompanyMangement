@@ -137,14 +137,13 @@ const SubCategoryListScreen = () => {
             </TouchableOpacity>
         );
     };
-    
     const handleContinue = () => {
         const selectedSubCat = subCategories.find(item =>
             (item.subCategory || item)._id === selectedId
         );
-        if (selectedSubCat) {
-            navigation.replace('HomeScreen', { selectedSubCategory: selectedSubCat });
-        }
+        // if (selectedSubCat) {
+        navigation.replace('HomeScreen', { selectedSubCategory: selectedSubCat });
+        // }
     };
 
     return (

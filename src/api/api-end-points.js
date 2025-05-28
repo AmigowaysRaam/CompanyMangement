@@ -61,10 +61,44 @@ const GET_PROFILE_MENU_API = {
   method: "POST",
   responseDataKey: "data",
 };
+// API_HOME_SCREEN_CONTENT_URL
+const API_HOME_SCREEN_CONTENT_URL = {
+  url: `${API_BASE_URL}mob-dashboard`,
+  method: "POST",
+  responseDataKey: "data",
+};
 
+// GET_EMPLOYEE_DETAILS_API
+const GET_EMPLOYEE_DETAILS_API = {
+  url: `${API_BASE_URL}mob-getemployee-details`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+
+// API_GET_USER_DETAILS_URL
+const API_GET_USER_DETAILS_URL = {
+  url: `${API_BASE_URL}mob-getuser-details`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// API_UPDATE_USER_DETAILS_URL
+const API_UPDATE_USER_DETAILS_URL = {
+  url: `${API_BASE_URL}mob-update-employee`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// API_EMPLOYEE_CONTENT_URL
+const API_EMPLOYEE_CONTENT_URL = {
+  url: `${API_BASE_URL}mob-getallemployees`,
+  method: "POST",
+  responseDataKey: "data",
+};
 export const API_REQUESTS = {
   APP_GENERATE_TOKEN,
   API_SITE_URL, API_LANGUAGE_URL, API_LOGIN_URL, API_LANGUAGE_CONTENT_URL,
-  API_GET_CATEGORY_LIST,API_GET_SUB_CATEGORY_LIST,GET_SIDE_MENU_API,
-  GET_PROFILE_MENU_API
+  API_GET_CATEGORY_LIST, API_GET_SUB_CATEGORY_LIST, GET_SIDE_MENU_API,
+  GET_PROFILE_MENU_API,
+  API_HOME_SCREEN_CONTENT_URL, GET_EMPLOYEE_DETAILS_API,API_GET_USER_DETAILS_URL,API_UPDATE_USER_DETAILS_URL,
+  API_EMPLOYEE_CONTENT_URL
 };

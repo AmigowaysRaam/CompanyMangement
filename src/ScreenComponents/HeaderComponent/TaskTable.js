@@ -11,6 +11,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { wp, hp } from "../../resources/dimensions";
 import { COLORS } from "../../resources/Colors";
 import { Louis_George_Cafe } from "../../resources/fonts";
+import { useTranslation } from "react-i18next";
 
 const initialData = [
     { id: "1", title: "Meeting with Developers", checked: false, deadline: "1 hour" },
@@ -21,6 +22,9 @@ const initialData = [
 const TaskTable = () => {
 
     const [data, setData] = useState(initialData);
+    const { t, i18n } = useTranslation();
+    const isTamil = i18n.language === 'ta';
+
 
     useEffect(() => {
         setData(initialData)
@@ -51,8 +55,15 @@ const TaskTable = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={[Louis_George_Cafe.bold.h6, { marginVertical: wp(1) }]}>{"Tasks"}</Text>
-            <Text style={[Louis_George_Cafe.regular.h9]}>{"Today: 19-05-25"}</Text>
+            <Text style={[Louis_George_Cafe.bold.h6, { marginVertical: wp(1) }]}>{t('tasks')}</Text>
+            <Text style={[Louis_George_Cafe.bold.h9]}>
+                {`${new Date().toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                })}`}
+            </Text>
             <FlatList
                 data={data}
                 keyExtractor={(item) => item.id}
