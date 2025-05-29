@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getemployeeDetails } from '../../redux/authActions';
+import HomeScreenLoader from '../HomeScreenLoader';
 
 export default function Employee() {
   const { themeMode } = useTheme();
@@ -59,9 +60,7 @@ export default function Employee() {
       <HeaderComponent title={t('employee')} showBackArray={false} />
 
       {loading ? (
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#8B5CF6" />
-        </View>
+        <HomeScreenLoader />
       ) : (
         <>
           {/* Top Cards */}
@@ -152,14 +151,11 @@ export default function Employee() {
                 marginBottom: wp(4),
               }}
             >
-              <View style={[styles.tableRow, styles.tableHeader]}>
-                <Text numberOfLines={1} style={[styles.tableCell, { flex: 1 }]}>
-                  {t('image')}
+              <View style={[styles.tableHeader]}>
+                <Text numberOfLines={1} style={[styles.tableCell, {}]}>
+                  {t('employee')}
                 </Text>
-                <Text numberOfLines={1} style={[styles.tableCell, { flex: 2 }]}>
-                  {t('name')}
-                </Text>
-                <Text numberOfLines={1} style={[styles.tableCell, { flex: 1.2 }]}>
+                <Text numberOfLines={1} style={[styles.tableCell, {}]}>
                   {t('performance')}
                 </Text>
               </View>
@@ -198,7 +194,7 @@ export default function Employee() {
                     }}
                     style={styles.tableRow}
                   >
-                    <View style={{ flex: 0.8, alignItems: 'center' }}>
+                    <View style={{ marginHorizontal: wp(2) }}>
                       <View style={styles.avatar}>
                         <Text style={[Louis_George_Cafe.regular.h7, { fontSize: wp(4), color: '#000' }]}>
                           {emp.name.charAt(0)}
@@ -219,7 +215,7 @@ export default function Employee() {
                         adjustFont(Louis_George_Cafe.regular.h9, 1),
                         {
                           backgroundColor: '#1484CD',
-                          paddingHorizontal: wp(1.8),
+                          paddingHorizontal: wp(2),
                           marginHorizontal: wp(6),
                           borderRadius: wp(4),
                           paddingVertical: wp(0.5),
@@ -291,9 +287,10 @@ const styles = StyleSheet.create({
     paddingVertical: wp(2),
     borderBottomWidth: 1,
     borderBottomColor: '#DADADA',
+    justifyContent: "space-between"
   },
   tableHeader: {
-    backgroundColor: '#E8DAF8',
+    backgroundColor: '#E8DAF8', flexDirection: "row", justifyContent: "space-between", paddingHorizontal: wp(4), paddingVertical: wp(2)
   },
   tableCell: {
     fontSize: wp(3),

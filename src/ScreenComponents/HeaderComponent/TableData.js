@@ -131,7 +131,7 @@ export default function EmployeeTable() {
                 <View style={styles.line} />
                 <View style={styles.headerContainer}>
                     <Text style={[isTamil ?
-                        Louis_George_Cafe.bold.h7 : 
+                        Louis_George_Cafe.bold.h7 :
                         Louis_George_Cafe.bold.h8, styles.headerText, styles.nameColumn]}>
                         {t('employee')}
                     </Text>

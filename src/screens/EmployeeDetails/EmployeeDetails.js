@@ -56,13 +56,13 @@ const EmplyeeDetails = () => {
     return status === '1' ? t('active') : t('inactive');
   };
 
-  if (!employeeDetails) {
-    return (
-      <View style={styles.centered}>
-        <Text style={{ color: theme.textPrimary }}>{t('nodatafound')}</Text>
-      </View>
-    );
-  }
+  // if (!employeeDetails) {
+  //   return (
+  //     <View style={styles.centered}>
+  //       <Text style={{ color: theme.textPrimary }}>{t('nodatafound')}</Text>
+  //     </View>
+  //   );
+  // }
 
   return (
     <View style={{ backgroundColor: theme.background, flex: 1 }}>
@@ -76,10 +76,10 @@ const EmplyeeDetails = () => {
           <View style={{ alignSelf: "center", marginVertical: hp(4) }}>
             <Image source={renderImageSource()} style={styles.profileImage} />
             <Text style={[Louis_George_Cafe.bold.h5, styles.name, { color: theme.textPrimary }]}>
-              {employeeDetails.full_name}
+              {employeeDetails?.full_name}
             </Text>
             <Text style={[Louis_George_Cafe.regular.h5, { alignSelf: "center", color: theme.textPrimary }]}>
-              {employeeDetails.designation}
+              {employeeDetails?.designation}
             </Text>
           </View>
           <ScrollView contentContainerStyle={styles.container}>
@@ -88,7 +88,7 @@ const EmplyeeDetails = () => {
                 {t('position')}
               </Text>
               <Text style={[Louis_George_Cafe.bold.h7, styles.value, { color: theme.textPrimary }]}>
-                {employeeDetails.designation}
+                {employeeDetails?.designation}
               </Text>
             </View>
             <View style={styles.infoContainer}>
@@ -96,8 +96,8 @@ const EmplyeeDetails = () => {
                 {t('status')}
               </Text>
               <View style={{ backgroundColor: "#C2FFC8", paddingHorizontal: wp(2), borderRadius: wp(5) }}>
-                <Text style={[Louis_George_Cafe.bold.h7, { color: '#369F23' }]}>
-                  {getStatusLabel(employeeDetails.status)}
+                <Text style={[Louis_George_Cafe.bold.h7, { color: '#369F23', textTransform: "capitalize" }]}>
+                  {getStatusLabel(employeeDetails?.status)}
                 </Text>
               </View>
             </View>
@@ -116,7 +116,7 @@ const EmplyeeDetails = () => {
                 {t('startdate')}
               </Text>
               <Text style={[Louis_George_Cafe.bold.h7, styles.value, { color: theme.textPrimary }]}>
-                {employeeDetails.start_date}
+                {employeeDetails?.start_date}
               </Text>
             </View>
             <View style={{ marginVertical: wp(2) }}>

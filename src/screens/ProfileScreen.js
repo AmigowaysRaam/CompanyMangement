@@ -22,6 +22,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import _ from 'lodash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ProfileScreenLoader from './ProfileLoader';
 
 const ProfileScreen = () => {
 
@@ -39,6 +40,7 @@ const ProfileScreen = () => {
     useFocusEffect(
         React.useCallback(() => {
             dispatch(getProfileMenuList(userdata?.id))
+            // alert(JSON.stringify(tabMenuList?.data))
             if (_.isEmpty(tabMenuList?.data)) {
                 setisLoading(true);
                 dispatch(getProfileMenuList(userdata?.id, (response) => {
@@ -50,7 +52,7 @@ const ProfileScreen = () => {
             }
         }, [userdata])
     );
- 
+
     const handleFnNavigate = (slug) => {
         if (slug == 'my_profile') {
             navigation.navigate('MyProfileUpdate');
@@ -105,62 +107,66 @@ const ProfileScreen = () => {
                 size={hp(2.5)}
                 color={THEMECOLORS[themeMode].textPrimary}
             />
-            {/* )} */}
         </TouchableOpacity>
     );
 
     return (
         <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background, paddingVertical: wp(1) }}>
             <HeaderComponent title={t('profile')} showBackArray={false} />
-            <View style={styles.coverContainer}>
-                <LinearGradient
-                    colors={['#C4A5EC', '#FFF7E3']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.coverImage}
-                >
-                    <View style={styles.profileImageContainer}>
-                        <Image
-                            source={require('../../src/assets/animations/user_1.png')}
-                            style={styles.profileImage}
+            <>
+                {isLoading ?
+                    <ProfileScreenLoader />
+                    :
+                    <>
+                        <View style={styles.coverContainer}>
+                            <LinearGradient
+                                colors={['#C4A5EC', '#FFF7E3']}
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 1 }}
+                                style={styles.coverImage}
+                            >
+                                <View style={styles.profileImageContainer}>
+                                    <Image
+                                        source={require('../../src/assets/animations/user_1.png')}
+                                        style={styles.profileImage}
+                                    />
+                                </View>
+                            </LinearGradient>
+                        </View>
+                        <View style={styles.infoContainer}>
+                            <Text numberOfLines={1} style={[
+                                isTamil ? Louis_George_Cafe.bold.h5 : Louis_George_Cafe.bold.h4,
+                                {
+                                    color: THEMECOLORS[themeMode].textPrimary,
+                                    textTransform: "capitalize",
+                                    maxWidth: wp(70)
+                                }
+                            ]}>
+                                {userdata?.full_name}
+                            </Text>
+                            <Text numberOfLines={1} style={[
+                                isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
+                                {
+                                    color: THEMECOLORS[themeMode].textPrimary,
+                                    textTransform: "capitalize",
+                                    maxWidth: wp(70)
+                                }
+                            ]}>
+                                {userdata?.designation}
+                            </Text>
+                        </View>
+                        <FlatList
+                            data={menuItem}
+                            renderItem={renderItem}
+                            keyExtractor={item => item.id}
+                            contentContainerStyle={{ paddingHorizontal: wp(5), paddingTop: hp(2) }}
                         />
-                    </View>
-                </LinearGradient>
-            </View>
 
-            <View style={styles.infoContainer}>
-                <Text numberOfLines={1} style={[
-                    isTamil ? Louis_George_Cafe.bold.h5 : Louis_George_Cafe.bold.h4,
-                    {
-                        color: THEMECOLORS[themeMode].textPrimary,
-                        textTransform: "capitalize",
-                        maxWidth: wp(70)
-                    }
-                ]}>
-                    {userdata?.full_name}
-                </Text>
-                <Text numberOfLines={1} style={[
-                    isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
-                    {
-                        color: THEMECOLORS[themeMode].textPrimary,
-                        textTransform: "capitalize",
-                        maxWidth: wp(70)
-                    }
-                ]}>
-                    {userdata?.designation}
-                </Text>
-            </View>
+                    </>
 
-            {isLoading ? (
-                <ActivityIndicator style={{ marginVertical: wp(10) }} color={THEMECOLORS[themeMode].textPrimary} />
-            ) : (
-                <FlatList
-                    data={menuItem}
-                    renderItem={renderItem}
-                    keyExtractor={item => item.id}
-                    contentContainerStyle={{ paddingHorizontal: wp(5), paddingTop: hp(2) }}
-                />
-            )}
+                }
+            </>
+
         </View>
     );
 };

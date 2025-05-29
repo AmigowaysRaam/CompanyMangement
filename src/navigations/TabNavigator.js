@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
-import Community from "../screens/Community/Community";
+import Attendance from "../screens/Attendance/Attendance";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
@@ -63,7 +63,7 @@ const TabNavigator = () => {
                   : require('../assets/animations/employee_outline.png'); // ✅ fixed typo "emplyee"
                 break;
           
-              case 'Community':
+              case 'Attendance':
                 imageSource = focused
                   ? require('../assets/animations/attendance_fill.png')
                   : require('../assets/animations/attendance_outline.png');
@@ -110,7 +110,7 @@ const TabNavigator = () => {
               case 'Employee':
                 label = 'Employees';
                 break;
-              case 'Community':
+              case 'Attendance':
                 label = 'Attendance';
                 break;
               case 'chat':
@@ -144,7 +144,7 @@ const TabNavigator = () => {
     >
       <Tab.Screen name="HomeScreen" component={HomeScreen} />
       <Tab.Screen name="Employee" component={Employee} />
-      <Tab.Screen name="Community" component={HomeScreen} />
+      <Tab.Screen name="Attendance" component={Attendance} />
       <Tab.Screen name="chat" component={ProfileScreen} />
     </Tab.Navigator>
   );

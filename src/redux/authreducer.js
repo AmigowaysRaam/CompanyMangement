@@ -11,7 +11,6 @@ import {
   APP_USER_LOGIN_SUCCESS,
   APP_USER_LOGIN_FAILURE,
 
-
   APP_USER_SIDE_MENUS_REQUEST,
   APP_USER_SIDE_MENUS_SUCCESS,
   APP_USER_SIDE_MENUS_FAILURE,
@@ -19,8 +18,6 @@ import {
   APP_TAB_MENU_REQUEST,
   APP_TAB_MENU_SUCCESS,
   APP_TAB_MENU_FAILURE,
-
-
 
 } from "./actionsTypes";
 
@@ -33,7 +30,8 @@ const initialState = {
   getFrontSite: null,
   error: null, // make sure error is part of state
   user: null,
-  sidemenu: null, tabMenuList: null
+  sidemenu: null, 
+  tabMenuList: null
 };
 
 const authReducer = (state = initialState, action) => {
@@ -167,12 +165,6 @@ const authReducer = (state = initialState, action) => {
         tabMenuList: null,
         error: action.payload, // typically an error message or object
       };
-
-
-
-
-
-
 
     default:
       return state;

@@ -14,6 +14,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useDispatch, useSelector } from "react-redux";
 import { getSideMenus } from "../redux/authActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import _ from 'lodash';
 
 const HomeScreenModal = ({ visible, onClose, children, title, }) => {
 
@@ -24,9 +25,8 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     const userdata = useSelector((state) => state.auth.user);
     const sideMenusArray = useSelector((state) => state.auth.sidemenu);
     const dispatch = useDispatch();
-    const [sideMenusList, setsideMenusList] = useState(sideMenusArray ? sideMenusArray : []);
+    const [sideMenusList, setsideMenusList] = useState(sideMenusArray ? sideMenusArray?.data : []);
     const [isLoading, setisLoading] = useState(false);
-
     // Toggle expand/collapse submenu for a menu index
     const toggleExpand = (index) => {
         setExpandedMenus((prev) => ({
@@ -36,17 +36,20 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     };
 
     useEffect(() => {
-        setisLoading(true)
-        // alert(JSON.stringify(userdata))
-        dispatch(getSideMenus(userdata?.data?.id, (response) => {
-            if (response.success) {
-                setisLoading(false)
-                setsideMenusList(response.data)
-            } else {
-                setsideMenusList(sideMenusArray ? sideMenusArray : [])
-                setisLoading(true)
-            }
-        }));
+        dispatch(getSideMenus(userdata?.data?.id))
+        setsideMenusList(sideMenusArray?.data)
+        if (_.isEmpty(sideMenusArray?.data)) {
+            setisLoading(true)
+            dispatch(getSideMenus(userdata?.data?.id, (response) => {
+                if (response.success) {
+                    setisLoading(false)
+                    setsideMenusList(response.data)
+                } else {
+                    setsideMenusList(sideMenusArray ? sideMenusArray : [])
+                    setisLoading(true)
+                }
+            }));
+        }
 
     }, [userdata?.data?.id])
 
@@ -140,7 +143,9 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
 
                             <ThemeToggle />
                             <View style={{ width: "100%", height: hp(32), alignItems: "center" }}>
-                                <View style={{ marginVertical: hp(4) }}>
+                                <TouchableOpacity style={{ marginVertical: hp(4) }} onPress={() =>
+                                    navigation.navigate('MyProfileUpdate')
+                                } >
                                     <Image
                                         source={require("../assets/animations/user_1.png")}
                                         style={{ width: wp(35), height: wp(35), borderRadius: wp(25) }}
@@ -151,7 +156,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                         color={COLORS.button_bg_color}
                                         style={{ alignSelf: "flex-end", position: "relative", bottom: hp(3), right: hp(2), backgroundColor: THEMECOLORS[themeMode].white, borderRadius: wp(5), padding: wp(0.5) }}
                                     />
-                                </View>
+                                </TouchableOpacity>
                                 <View style={{ position: "relative", bottom: wp(10) }} >
                                     <Text
                                         numberOfLines={1}

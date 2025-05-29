@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { getProfileDetailsById, updateFormSubmit } from '../redux/authActions';
 import { ActivityIndicator } from 'react-native-paper';
+import ProfileScreenLoader from './ProfileLoader';
 
 const MyProfileUpdate = () => {
 
@@ -105,110 +106,116 @@ const MyProfileUpdate = () => {
         <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background }}>
             <HeaderComponent title={t('My Profile')} showBackArray={true} />
 
-            {/* Profile Image Section */}
-            <View style={styles.coverContainer}>
-                <LinearGradient
-                    colors={['#C4A5EC', '#FFF7E3']}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={styles.coverImage}
-                >
-                    <View style={styles.profileImageContainer}>
-                        <TouchableOpacity onPress={handleImagePick}>
-                            <Image
-                                source={profileImage ? { uri: profileImage } : require('../assets/animations/propic.jpg')}
-                                style={styles.profileImage}
-                            />
+            {isLoading ?
+                    <ProfileScreenLoader  />
+                :
+                <>
+                    {/* Profile Image Section */}
+                    <View style={styles.coverContainer}>
+                        <LinearGradient
+                            colors={['#C4A5EC', '#FFF7E3']}
+                            start={{ x: 0, y: 0 }}
+                            end={{ x: 1, y: 1 }}
+                            style={styles.coverImage}
+                        >
+                            <View style={styles.profileImageContainer}>
+                                <TouchableOpacity onPress={handleImagePick}>
+                                    <Image
+                                        source={profileImage ? { uri: profileImage } : require('../assets/animations/propic.jpg')}
+                                        style={styles.profileImage}
+                                    />
+                                </TouchableOpacity>
+                            </View>
+                        </LinearGradient>
+                    </View>
+                    {/* Scrollable Form Section */}
+                    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+                        <ScrollView
+                            contentContainerStyle={[
+                                styles.container,
+                                { backgroundColor: THEMECOLORS[themeMode].background }
+                            ]}
+                            keyboardShouldPersistTaps="handled"
+                        >
+                            {
+                                isLoading ?
+                                    <ActivityIndicator style={{ marginVertical: wp(5) }} />
+                                    :
+                                    <View style={styles.inputContainer}>
+                                        {
+                                            [
+                                                { key: 'fullname', label: t('fullname'), placeholder: t('enteryourfullname'), editable: true },
+
+                                                { key: 'username', label: t('username'), placeholder: t('enteryourusername'), editable: false },
+                                                { key: 'designation', label: t('designation'), placeholder: t('enteryourdesignation'), editable: false },
+                                                { key: 'dob', label: t('dob'), placeholder: t('yyyy-mm-dd'), editable: false },
+                                                { key: 'email', label: t('email'), placeholder: t('enteryouremail'), editable: false },
+                                                { key: 'phone', label: t('phone'), placeholder: t('enteryourphonenumber'), editable: false }
+                                            ].map(field => (
+                                                <View key={field.key} style={{ marginBottom: hp(2) }}>
+                                                    <Text style={[
+                                                        isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
+                                                        styles.label,
+                                                        { color: THEMECOLORS[themeMode].textPrimary }
+                                                    ]}>
+                                                        {field.label}
+                                                    </Text>
+                                                    <TextInput
+                                                        editable={field.editable}
+                                                        value={fields[field.key]}
+                                                        onChangeText={(value) => handleChange(field.key, value)}
+                                                        placeholder={field.placeholder}
+                                                        placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
+                                                        style={[
+                                                            styles.input,
+                                                            {
+                                                                backgroundColor: THEMECOLORS[themeMode].viewBackground,
+                                                                color: THEMECOLORS[themeMode].textPrimary,
+                                                                borderColor: field.editable ? THEMECOLORS[themeMode].textPrimary :
+                                                                    "#444"
+                                                            },
+                                                            isTamil && { fontSize: wp(3.5) }
+                                                        ]}
+                                                        keyboardType={
+                                                            field.key === 'email'
+                                                                ? 'email-address'
+                                                                : field.key === 'phone'
+                                                                    ? 'phone-pad'
+                                                                    : 'default'
+                                                        }
+                                                    />
+                                                    {errors[field.key] && (
+                                                        <Text style={[Louis_George_Cafe.regular.h8, { color: 'red', margin: wp(2) }]}>{errors[field.key]}</Text>
+                                                    )}
+                                                </View>
+                                            ))}
+                                    </View>
+                            }
+                            {/* <ThemeToggle /> */}
+                        </ScrollView>
+                    </KeyboardAvoidingView>
+                    <View style={styles.fixedButtonWrapper}>
+                        <TouchableOpacity
+                            style={[
+                                styles.submitButton,
+                                { backgroundColor: THEMECOLORS[themeMode].buttonBg }
+                            ]}
+                            onPress={handleSubmit}
+                        >
+                            <Text style={[
+                                Louis_George_Cafe.bold.h5,
+                                {
+                                    color: THEMECOLORS[themeMode].viewBackground,
+                                    lineHeight: wp(7)
+                                }
+                            ]}>
+                                {t('updateprofile')}
+                            </Text>
                         </TouchableOpacity>
                     </View>
-                </LinearGradient>
-            </View>
-            {/* Scrollable Form Section */}
-            <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-                <ScrollView
-                    contentContainerStyle={[
-                        styles.container,
-                        { backgroundColor: THEMECOLORS[themeMode].background }
-                    ]}
-                    keyboardShouldPersistTaps="handled"
-                >
-                    {
-                        isLoading ?
-                            <ActivityIndicator style={{ marginVertical: wp(5) }} />
-                            :
-                            <View style={styles.inputContainer}>
-                                {
-                                    [
-                                        { key: 'fullname', label: t('fullname'), placeholder: t('enteryourfullname'), editable: true },
+                </>
+            }
 
-                                        { key: 'username', label: t('username'), placeholder: t('enteryourusername'), editable: false },
-                                        { key: 'designation', label: t('designation'), placeholder: t('enteryourdesignation'), editable: false },
-                                        { key: 'dob', label: t('dob'), placeholder: t('yyyy-mm-dd'), editable: false },
-                                        { key: 'email', label: t('email'), placeholder: t('enteryouremail'), editable: false },
-                                        { key: 'phone', label: t('phone'), placeholder: t('enteryourphonenumber'), editable: false }
-                                    ].map(field => (
-                                        <View key={field.key} style={{ marginBottom: hp(2) }}>
-                                            <Text style={[
-                                                isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
-                                                styles.label,
-                                                { color: THEMECOLORS[themeMode].textPrimary }
-                                            ]}>
-                                                {field.label}
-                                            </Text>
-                                            <TextInput
-                                                editable={field.editable}
-                                                value={fields[field.key]}
-                                                onChangeText={(value) => handleChange(field.key, value)}
-                                                placeholder={field.placeholder}
-                                                placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
-                                                style={[
-                                                    styles.input,
-                                                    {
-                                                        backgroundColor: THEMECOLORS[themeMode].viewBackground,
-                                                        color: THEMECOLORS[themeMode].textPrimary,
-                                                        borderColor: field.editable ? THEMECOLORS[themeMode].textPrimary :
-                                                           "#444"
-                                                    },
-                                                    isTamil && { fontSize: wp(3.5) }
-                                                ]}
-                                                keyboardType={
-                                                    field.key === 'email'
-                                                        ? 'email-address'
-                                                        : field.key === 'phone'
-                                                            ? 'phone-pad'
-                                                            : 'default'
-                                                }
-                                            />
-                                            {errors[field.key] && (
-                                                <Text style={[Louis_George_Cafe.regular.h8, { color: 'red', margin: wp(2) }]}>{errors[field.key]}</Text>
-                                            )}
-                                        </View>
-                                    ))}
-                            </View>
-                    }
-                    {/* <ThemeToggle /> */}
-                </ScrollView>
-            </KeyboardAvoidingView>
-            {!isLoading &&
-                <View style={styles.fixedButtonWrapper}>
-                    <TouchableOpacity
-                        style={[
-                            styles.submitButton,
-                            { backgroundColor: THEMECOLORS[themeMode].buttonBg }
-                        ]}
-                        onPress={handleSubmit}
-                    >
-                        <Text style={[
-                            Louis_George_Cafe.bold.h5,
-                            {
-                                color: THEMECOLORS[themeMode].viewBackground,
-                                lineHeight: wp(7)
-                            }
-                        ]}>
-                            {t('updateprofile')}
-                        </Text>
-                    </TouchableOpacity>
-                </View>}
 
         </View>
     );

@@ -38,7 +38,6 @@ function HeaderComponent({
   const closeMenu = () => setMenuVisible(false);
 
   const fnchangeLanguage = (langCode, flag) => {
-
     setLanguage(langCode); // Update context (if using Context API)
     dispatch(setLanguageSelected(langCode, (response) => {
       if (response.success && response.data) {
@@ -63,8 +62,6 @@ function HeaderComponent({
     }));
     i18n.changeLanguage(langCode);
     closeMenu();
-
-
   };
 
   useEffect(() => {

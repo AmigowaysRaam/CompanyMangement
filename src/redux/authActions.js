@@ -239,6 +239,23 @@ export const getemployeeDetails = (payLoad, callback) => async (dispatch) => {
 };
 
 
+// getAttendaceData
+export const getAttendaceData = (payLoad, callback) => async (dispatch) => {
+  // dispatch({ type: APP_EMPLOYEE_TAB_MENU_REQUEST });
+  // alert(payLoad)
+  try {
+    const endpoint = API_REQUESTS.API_ATTENDANCE_CONTENT_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    // dispatch({ type: APP_EMPLOYEE_TAB_MENU_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("APP_USER_HOMEPAGE_FAILURE:", error.message);
+    // dispatch({ type: APP_EMPLOYEE_TAB_MENU_FAILURE, error: error.message });
+  }
+};
+
+
 
 
 // getProfileDetailsById

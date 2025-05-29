@@ -23,6 +23,7 @@ import { useTheme } from "../../context/ThemeContext";
 import { getHomePageData } from "../../redux/authActions";
 import EmployeePaylist from "../../ScreenComponents/HeaderComponent/EmployeePaylist";
 import { useTranslation } from "react-i18next";
+import HomeScreenLoader from "../HomeScreenLoader";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -33,7 +34,7 @@ const HomeScreen = () => {
   const [homeData, setHomeData] = useState(null);
   const [loading, setLoading] = useState(true); // ✅ Loader state
   const { t, i18n } = useTranslation();
-    const isTamil = i18n.language === 'ta';
+  const isTamil = i18n.language === 'ta';
 
   useFocusEffect(
     React.useCallback(() => {
@@ -82,11 +83,13 @@ const HomeScreen = () => {
       {...panResponder.panHandlers}
     >
       <HeaderComponent title="home" openModal={handleMenuClick} />
-
       {loading ? (
-        <View style={styles.loaderContainer}>
-          <ActivityIndicator size="large" color={THEMECOLORS[themeMode].primary} />
-        </View>
+        // <View style={styles.loaderContainer}>
+        //   <ActivityIndicator size="large" color={THEMECOLORS[themeMode].primary} />
+        // </View>
+        <>
+          <HomeScreenLoader />
+        </>
       ) : (
         <FlatList
           data={dummyData}
@@ -99,7 +102,7 @@ const HomeScreen = () => {
                   <WorkForceCard data={homeData.WorkForceCard} />
                   <PieChart data={homeData.PieChart} />
                   <TaskTable data={homeData.TaskTable} />
-                  <PieChartWebView data={homeData.PieChartWebView} />
+                  {/* <PieChartWebView data={homeData.PieChartWebView} /> */}
                   <EmployeeTable data={homeData.EmployeeTable} />
                   <EmployeePaylist />
                 </>
