@@ -81,10 +81,8 @@ export const getLanguageList = (callback) => async (dispatch) => {
   }
 };
 
-
 // loginUser
 export const loginUser = (credentials, callback) => async (dispatch) => {
-  // alert(JSON.stringify(credentials.email))
   dispatch({ type: APP_USER_LOGIN_REQUEST });
   try {
     const endpoint = API_REQUESTS.API_LOGIN_URL;
@@ -95,6 +93,25 @@ export const loginUser = (credentials, callback) => async (dispatch) => {
   } catch (error) {
     console.error("Error fetching Login:", error.message);
     dispatch({ type: APP_USER_LOGIN_FAILURE, error: error.message });
+  }
+};
+
+
+// loginWithMpin
+export const loginWithMpin = (credentials, callback) => async (dispatch) => {
+  // dispatch({ type: APP_USER_LOGIN_REQUEST });
+  try {
+    const endpoint = API_REQUESTS.API__MPIN_LOGIN_URL;
+    const response = await sendRequest(endpoint, credentials);
+    // alert(JSON.stringify(response.success))
+    if (response.success) {
+      dispatch({ type: APP_USER_LOGIN_SUCCESS, payload: response });
+    }
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching Login:", error.message);
+    // dispatch({ type: APP_USER_LOGIN_FAILURE, error: error.message });
   }
 };
 
@@ -255,6 +272,35 @@ export const getAttendaceData = (payLoad, callback) => async (dispatch) => {
   }
 };
 
+// getOtpByMobilenumber
+export const getOtpByMobilenumber = (payLoad, callback) => async (dispatch) => {
+  // dispatch({ type: APP_EMPLOYEE_TAB_MENU_REQUEST });
+  // alert(payLoad)
+  try {
+    const endpoint = API_REQUESTS.API_MOBILE_OTP;
+    const response = await sendRequest(endpoint, payLoad);
+    // dispatch({ type: APP_EMPLOYEE_TAB_MENU_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getOtpByMobilenumber:", error.message);
+    // dispatch({ type: APP_EMPLOYEE_TAB_MENU_FAILURE, error: error.message });
+  }
+};
+
+// setMpinCall
+export const setMpinCall = (payLoad, callback) => async (dispatch) => {
+  // alert(payLoad)
+  try {
+    const endpoint = API_REQUESTS.API_SET_MPIN;
+    const response = await sendRequest(endpoint, payLoad);
+    dispatch({ type: APP_USER_LOGIN_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getOtpByMobilenumber:", error.message);
+  }
+};
 
 
 

@@ -174,7 +174,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                             { alignSelf: "center", color: THEMECOLORS[themeMode].white, textTransform: "capitalize" },
                                         ]}
                                     >
-                                        {userdata?.data?.role}
+                                        {userdata?.data?.designation}
                                     </Text>
                                 </View>
                             </View>

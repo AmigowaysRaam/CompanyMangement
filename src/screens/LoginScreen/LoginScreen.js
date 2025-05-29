@@ -12,6 +12,7 @@ import {
   ScrollView,
   Platform,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -31,6 +32,7 @@ import { useLanguage } from "../../context/Language";
 import i18n from "../../resources/config/i18";
 
 const LoginScreen = () => {
+
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { themeMode } = useTheme();
@@ -73,24 +75,22 @@ const LoginScreen = () => {
       Toast.show({ text1: t('pls_enter_password'), type: 'error' });
       hasError = true;
     }
-
     if (hasError) return;
-
     setIsLoading(true);
     const credentials = { email: username, password };
     dispatch(loginUser(credentials, (response) => {
       setIsLoading(false);
       if (response.success) {
         // alert(JSON.stringify(response.data))
-        AsyncStorage.setItem('user_data', JSON.stringify(response));
+        // AsyncStorage.setItem('user_data', JSON.stringify(response));
+
         Toast.show({
           type: 'success',
           text1: 'Login successful!',
         });
         setTimeout(() => {
-          navigation.replace('MobileNumber')
+          navigation.replace('MobileNumber',response)
         }, 1000);
-        // navigation.replace('ServiceSelectionScreen')
       } else {
         Toast.show({
           type: 'error',
@@ -101,7 +101,7 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
-  
+
     if (lerror) {
       setIsLoading(false);
       Toast.show({
@@ -117,11 +117,11 @@ const LoginScreen = () => {
     navigation.navigate("ForgotPassword");
   };
 
-  useEffect(() => {
-    const onBackPress = () => true; // disable hardware back
-    BackHandler.addEventListener('hardwareBackPress', onBackPress);
-    return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
-  }, []);
+  // useEffect(() => {
+  //   const onBackPress = () => true; // disable hardware back
+  //   BackHandler.addEventListener('hardwareBackPress', onBackPress);
+  //   return () => BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+  // }, []);
 
   return (
     <KeyboardAvoidingView
@@ -180,6 +180,7 @@ const LoginScreen = () => {
 
             <View style={{ alignSelf: "center" }}>
               <TextInput
+                editable={!isLoading}
                 style={[styles.input, {
                   backgroundColor: THEMECOLORS[themeMode].viewBackground, borderColor: THEMECOLORS[themeMode].textPrimary,
                   color: THEMECOLORS[themeMode].textPrimary
@@ -203,6 +204,7 @@ const LoginScreen = () => {
 
               <View style={styles.passwordContainer}>
                 <TextInput
+                  editable={!isLoading}
                   style={[styles.input, {
                     backgroundColor: THEMECOLORS[themeMode].viewBackground, borderColor: THEMECOLORS[themeMode].textPrimary,
                     color: THEMECOLORS[themeMode].textPrimary
@@ -212,9 +214,7 @@ const LoginScreen = () => {
                   secureTextEntry={!isPasswordVisible}
                   onChangeText={setPassword}
                   placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
-
                 />
-
                 <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
                   <Icon name={isPasswordVisible ? "eye-off" : "eye"} size={wp(6)} color={THEMECOLORS[themeMode].textPrimary} />
                 </TouchableOpacity>
@@ -230,8 +230,7 @@ const LoginScreen = () => {
                 </Text>
               )}
             </View>
-
-            <TouchableOpacity onPress={handleForgot} style={{ alignItems: "flex-end", marginTop: hp(1), marginHorizontal: wp(4) }}>
+            {/* <TouchableOpacity onPress={handleForgot} style={{ alignItems: "flex-end", marginTop: hp(1), marginHorizontal: wp(4) }}>
               <Text
                 style={[
                   scaleFont(Louis_George_Cafe.regular.h7),
@@ -240,11 +239,11 @@ const LoginScreen = () => {
               >
                 {t('forget_password')}
               </Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.loginButton}
-              onPress={handleLogin}
+              onPress={() => { handleLogin()}}
             >
               <Text
                 style={[
@@ -252,8 +251,11 @@ const LoginScreen = () => {
                   styles.loginButtonText
                 ]}
               >
-                {t('login')}
+                {isLoading ? <><ActivityIndicator color={'#FFF'} /></> :
+                  t('login')}
               </Text>
+
+
             </TouchableOpacity>
           </View>
         </ScrollView>

@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Platform,
-  SafeAreaView,
-  Text,
-  View,
-  StyleSheet,
-  Modal,
-  ActivityIndicator,
-} from 'react-native';
+import { Platform, SafeAreaView, Text, View, StyleSheet, Modal } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
@@ -23,7 +15,7 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import VersionCheck from 'react-native-version-check';
 import NetInfo from '@react-native-community/netinfo';
 import { Louis_George_Cafe } from './src/resources/fonts';
-import { wp } from './src/resources/dimensions';
+import { hp, wp } from './src/resources/dimensions';
 
 if (Platform.OS === 'ios') {
   VersionCheck.setAppID('1234567890'); // Replace with your actual App Store ID
@@ -31,7 +23,6 @@ if (Platform.OS === 'ios') {
 
 export default function App() {
   const [isOffline, setIsOffline] = useState(false);
-  const [checkingConnection, setCheckingConnection] = useState(true);
 
   const [fontsLoaded] = useFonts({
     Louis_George_Cafe: require('./assets/fonts/Louis_George_Cafe.ttf'),
@@ -40,28 +31,16 @@ export default function App() {
     Louis_George_Cafe_Light: require('./assets/fonts/Louis_George_Cafe_Light.ttf'),
   });
 
-  // Check internet connection on mount and listen for changes
+  // Listen for internet connection
   useEffect(() => {
-    const unsubscribe = NetInfo.addEventListener((state) => {
-      const isConnected = !!state.isConnected;
-      setIsOffline(!isConnected);
-      setCheckingConnection(false); // initial check complete
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setIsOffline(!state.isConnected);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // cleanup listener on unmount
   }, []);
 
-  // Wait for both fonts and connection check
-  if (!fontsLoaded || checkingConnection) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#000" />
-        <Text>Loading App...</Text>
-      </View>
-    );
-  }
-
-  return (
+  return fontsLoaded ? (
     <PaperProvider>
       <I18nextProvider i18n={i18n}>
         <Provider store={store}>
@@ -70,13 +49,13 @@ export default function App() {
               <ThemeProvider>
                 <SafeAreaProvider>
                   <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
-                    {!isOffline ? (
-                      <>
-                        <InitialRouter />
-                        <Toast ref={(ref) => Toast.setRef(ref)} />
-                      </>
-                    ) : (
-                      <NoInternetModal />
+                    <InitialRouter />
+                    <Toast ref={(ref) => Toast.setRef(ref)} />
+                    {/* Offline Modal or Banner */}
+                    {isOffline && (
+                      <View style={styles.offlineBanner}>
+                        <Text style={[Louis_George_Cafe.regular.h6, styles.offlineText]}>No Internet Connection</Text>
+                      </View>
                     )}
                   </SafeAreaView>
                 </SafeAreaProvider>
@@ -86,52 +65,26 @@ export default function App() {
         </Provider>
       </I18nextProvider>
     </PaperProvider>
+  ) : (
+    <Text>Loading Fonts...</Text>
   );
 }
-
-// 🧱 Custom Modal Component
-const NoInternetModal = () => {
-  return (
-    <Modal transparent={true} animationType="fade" visible={true}>
-      <View style={styles.modalBackground}>
-        <View style={styles.modalBox}>
-          <Text style={[Louis_George_Cafe.bold.h5, styles.modalTitle]}>No Internet Connection</Text>
-          <Text style={[Louis_George_Cafe.bold.h7, styles.modalBody]}>
-            Please check your mobile network or Wi-Fi settings.
-          </Text>
-        </View>
-      </View>
-    </Modal>
-  );
-};
-
 const styles = StyleSheet.create({
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalBox: {
-    backgroundColor: 'white',
-    padding: wp(10),
-    borderRadius: 10,
+  offlineBanner: {
+    position: 'absolute',
+    bottom: hp(8),
     width: '80%',
+    padding: wp(2),
+    backgroundColor: 'red',
     alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 9999,
+    alignSelf: "center",
+    marginVertical: wp(5),
+    borderRadius: wp(8)
   },
-  modalTitle: {
-    // fontSize: 20,
-    color: 'red',
-    marginBottom: 10,
-  },
-  modalBody: {
-    // fontSize: 16,
-    textAlign: 'center',
-    color: '#333',
+  offlineText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });

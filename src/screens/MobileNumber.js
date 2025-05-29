@@ -2,23 +2,51 @@ import React, { useEffect, useState } from 'react';
 import {
   View, Text, StyleSheet, Image, TouchableOpacity, TextInput, KeyboardAvoidingView, ScrollView, Platform, TouchableWithoutFeedback,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 import { hp, wp } from '../resources/dimensions';
 import { Louis_George_Cafe, } from '../resources/fonts';
 import { COLORS } from '../resources/Colors';
 import { useNavigation } from '@react-navigation/native';
 import { useCurrentLocation } from '../../src/hooks/location'
+import { useRoute,  } from '@react-navigation/native';
+import { getOtpByMobilenumber } from '../redux/authActions';
+import { useDispatch } from 'react-redux';
 
 const MobileNumber = () => {
 
-  const [mobileNumber, setMobileNumber] = useState(__DEV__ ? "8110933318" : '');
+  const [mobileNumber, setMobileNumber] = useState(__DEV__ ? "9876543210" : '');
   const navigation = useNavigation();
   const { location, locationError, countryCode, dialCode } = useCurrentLocation();
   const [dialcodePin, setdialcode] = useState(dialCode);
+  const route = useRoute();
+  const loginData = route?.params?.response?.data;
+  const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setdialcode(dialCode)
   }, [dialCode])
+
+  const handleNavigateVerifyOtp = () => {
+    
+    setIsLoading(true)
+
+    let params = {
+      userid: loginData?.id,
+      phone: mobileNumber
+    }
+
+    dispatch(getOtpByMobilenumber(params, (response) => {
+      if (response.success) {
+        navigation.replace('VerifyOtp', { response })
+      }
+      setIsLoading(false);
+    }));
+
+  }
+
+
 
   return (
     <KeyboardAvoidingView
@@ -64,8 +92,8 @@ const MobileNumber = () => {
               </View>
               <View style={styles.verticalLine} />
               <TextInput
+              editable={!isLoading}
                 style={[Louis_George_Cafe.regular.h7, styles.mobileInput, {
-
                 }]}
                 placeholder="Enter mobile number"
                 keyboardType="phone-pad"
@@ -75,15 +103,22 @@ const MobileNumber = () => {
               />
             </View>
 
-            <TouchableOpacity
-              style={[styles.getOtpButton, { backgroundColor: COLORS.button_bg_color }]}
-              onPress={() => navigation.replace('VerifyOtp')}
-              disabled={mobileNumber.length < 10}
-            >
-              <Text style={[Louis_George_Cafe.bold.h5, styles.getOtpButtonText]}>
-                Get OTP
-              </Text>
-            </TouchableOpacity>
+            {
+              isLoading ?
+                <ActivityIndicator />
+                :
+                <TouchableOpacity
+                  style={[styles.getOtpButton, { backgroundColor: COLORS.button_bg_color }]}
+                  onPress={() => handleNavigateVerifyOtp()}
+                  disabled={mobileNumber.length < 10}
+                >
+                  <Text style={[Louis_George_Cafe.bold.h5, styles.getOtpButtonText]}>
+                    Get OTP
+                  </Text>
+                </TouchableOpacity>
+            }
+
+
             {location && (
               <Text style={{ textAlign: 'center', marginBottom: 10 }}>
                 Latitude: {location.coords.latitude.toFixed(6)}{"\n"}

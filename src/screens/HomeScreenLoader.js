@@ -9,8 +9,8 @@ const HomeScreenLoader = () => {
   const theme = THEMECOLORS[themeMode];
 
   // Base and highlight colors for flashing
-  const baseColor = theme.cardBackground || '#ccc';
-  const highlightColor = theme.placeholderHighlight || '#999';
+  const baseColor =  themeMode =='dark' ? '#111' :"#CCC";
+  const highlightColor = themeMode =='dark'? '#999' :"#FFF";
 
   // Animated value for flashing effect
   const flashAnim = useRef(new Animated.Value(0)).current;
@@ -20,12 +20,12 @@ const HomeScreenLoader = () => {
     Animated.loop(
       Animated.sequence([
         Animated.timing(flashAnim, {
-          toValue: 2,
-          duration: 500,
+          toValue: 1,
+          duration: 350,
           useNativeDriver: false,
         }),
         Animated.timing(flashAnim, {
-          toValue: 0,
+          toValue: 1,
           duration: 500,
           useNativeDriver: false,
         }),

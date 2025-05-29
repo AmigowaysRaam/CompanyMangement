@@ -11,17 +11,21 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TextInput,
+  ToastAndroid,
 } from 'react-native';
 import { hp, wp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { COLORS } from '../resources/Colors';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 const VerifyOtp = () => {
   const navigation = useNavigation();
-  const [otp, setOtp] = useState(__DEV__ ? ['1', '2', '3', '4'] : ['', '', '', '']);
+  const route = useRoute();
+  const optData = route?.params?.response;
+  const [otp, setOtp] = useState(
+    // __DEV__ ? ['1', '2', '3', '4'] :
+    ['', '', '', '']);
   const [timer, setTimer] = useState(30);
-
   const inputRefs = [
     useRef(null),
     useRef(null),
@@ -47,6 +51,7 @@ const VerifyOtp = () => {
 
   // Timer logic
   useEffect(() => {
+    console.log(JSON.stringify(optData.otp))
     let interval;
     if (timer > 0) {
       interval = setInterval(() => {
@@ -60,6 +65,19 @@ const VerifyOtp = () => {
 
   // Check if all OTP digits are filled
   const isOtpComplete = otp.every(digit => digit !== '');
+
+  const handleCheckOtp = () => {
+
+    const combinedNumber = otp.join('');
+    // alert(combinedNumber == optData?.otp); 
+    if (combinedNumber == optData?.otp) {
+      navigation.navigate('SetMpin', { optData })
+    }
+    else {
+      ToastAndroid.show(`OTP Invalid`, ToastAndroid.SHORT);
+    }
+
+  }
 
   return (
     <KeyboardAvoidingView
@@ -116,7 +134,7 @@ const VerifyOtp = () => {
               ))}
             </View>
             {/* Timer and Resend text */}
-            <Text style={[Louis_George_Cafe.regular.h8, {
+            {/* <Text style={[Louis_George_Cafe.regular.h8, {
               alignSelf: "center",
               marginVertical: wp(3),
             }]}>
@@ -127,12 +145,12 @@ const VerifyOtp = () => {
               }]}>
                 RESEND OTP {timer > 0 ? `in ${timer}s` : ''}
               </Text>
-            </Text>
+            </Text> */}
 
             {/* Verify Button */}
             <TouchableOpacity
               style={[styles.continueButton, { backgroundColor: isOtpComplete ? COLORS.button_bg_color : COLORS.input_background }]}
-              onPress={() => navigation.navigate('SetMpin')}
+              onPress={() => handleCheckOtp()}
               disabled={!isOtpComplete}
             >
               <Text style={[Louis_George_Cafe.bold.h5, {

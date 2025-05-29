@@ -2,11 +2,9 @@ import React, { useState, useRef } from "react";
 import {
   View,
   StyleSheet,
-  Alert,
   PanResponder,
   BackHandler,
   FlatList,
-  ActivityIndicator,
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,6 +24,7 @@ import { useTranslation } from "react-i18next";
 import HomeScreenLoader from "../HomeScreenLoader";
 
 const HomeScreen = () => {
+  
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const userdata = useSelector((state) => state.auth.user);
@@ -84,12 +83,7 @@ const HomeScreen = () => {
     >
       <HeaderComponent title="home" openModal={handleMenuClick} />
       {loading ? (
-        // <View style={styles.loaderContainer}>
-        //   <ActivityIndicator size="large" color={THEMECOLORS[themeMode].primary} />
-        // </View>
-        <>
-          <HomeScreenLoader />
-        </>
+        <HomeScreenLoader />
       ) : (
         <FlatList
           data={dummyData}
@@ -111,7 +105,6 @@ const HomeScreen = () => {
           )}
         />
       )}
-
       {isModalVisible && (
         <HomeScreenModal
           visible={isModalVisible}

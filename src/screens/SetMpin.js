@@ -11,13 +11,18 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import { hp, wp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { COLORS } from '../resources/Colors';
-import { useNavigation } from '@react-navigation/native';
 import { THEMECOLORS } from '../resources/colors/colors';
 import { useTheme } from '../context/ThemeContext';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { setMpinCall } from '../redux/authActions';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ToastAndroid } from 'react-native';
 
 const SetMpin = () => {
 
@@ -25,8 +30,13 @@ const SetMpin = () => {
   const [mpin, setMpin] = useState(['', '', '', '']);
   const [confirmMpin, setConfirmMpin] = useState(['', '', '', '']);
   const { themeMode } = useTheme();
+  const [isLoading, setisLoading] = useState(false);
 
+
+  const route = useRoute();
+  const lData = route?.params?.optData;
   useEffect(() => {
+    // alert(JSON.stringify(lData.userid))
     if (__DEV__) {
       const devMpin = ['1', '2', '3', '4']; // example dev mpin
       setMpin(devMpin);
@@ -34,8 +44,11 @@ const SetMpin = () => {
     }
   }, []);
 
+
+
   const mpinRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const confirmRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+  const dispatch = useDispatch();
 
   const handleChange = (text, index, isConfirm = false) => {
     if (text.length > 1) return;
@@ -59,8 +72,29 @@ const SetMpin = () => {
 
   const handleSetMpin = () => {
     if (isMpinComplete && isConfirmComplete && isMatch) {
+      setisLoading(true)
+      let params = {
+        userid: lData.userid,
+        mpin: mpin.join(''),
+        confirm_mpin: mpin.join(''),
+      }
+      // alert(JSON.stringify(params))
+      dispatch(setMpinCall(params, (response) => {
+        if (response.success) {
+        AsyncStorage.setItem('user_data', JSON.stringify(response));
+          setisLoading(false)
+          setTimeout(() => {
+            navigation.replace('ServiceSelection');
+          }, 1000);
+        ToastAndroid.show(response.message, ToastAndroid.SHORT);
+        }
+        else {
+          setisLoading(false)
+        ToastAndroid.show(response.message, ToastAndroid.SHORT);
+
+        }
+      }));
       // Store securely or send to backend
-      navigation.replace('ServiceSelection');
     }
   };
 
@@ -70,6 +104,7 @@ const SetMpin = () => {
       style={{ flex: 1 }}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
+
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}
@@ -155,17 +190,23 @@ const SetMpin = () => {
             )}
 
             {/* Set MPIN button */}
-            <TouchableOpacity
-              style={[styles.continueButton, { backgroundColor: !isMpinComplete || !isConfirmComplete || !isMatch ? COLORS.input_background : COLORS.button_bg_color }]}
-              onPress={handleSetMpin}
-              disabled={!isMpinComplete || !isConfirmComplete || !isMatch}
-            >
-              <Text style={[Louis_George_Cafe.bold.h5, {
-                color: !isMpinComplete || !isConfirmComplete || !isMatch ? COLORS.black : COLORS.background
-              }]}>
-                Set MPIN
-              </Text>
-            </TouchableOpacity>
+            {
+              isLoading ?
+                <ActivityIndicator size={wp(10)} />
+                :
+                <TouchableOpacity
+                  style={[styles.continueButton, { backgroundColor: !isMpinComplete || !isConfirmComplete || !isMatch ? COLORS.input_background : COLORS.button_bg_color }]}
+                  onPress={handleSetMpin}
+                  disabled={!isMpinComplete || !isConfirmComplete || !isMatch}
+                >
+                  <Text style={[Louis_George_Cafe.bold.h5, {
+                    color: !isMpinComplete || !isConfirmComplete || !isMatch ? COLORS.black : COLORS.background
+                  }]}>
+                    Set MPIN
+                  </Text>
+                </TouchableOpacity>
+            }
+
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>

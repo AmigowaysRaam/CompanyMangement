@@ -25,7 +25,7 @@ const Splash = () => {
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [storeUrl, setStoreUrl] = useState(null);
   const scaleAnim = useRef(new Animated.Value(0)).current;
-  const userData = useSelector((state) => state.auth.user?.data);
+  const userData = useSelector((state) => state.auth.user);
 
   // 1. VERSION CHECK
   const checkAppVersion = async () => {
@@ -40,7 +40,6 @@ const Splash = () => {
       }
       else {
         setShowUpgrade(false);
-
       }
     } catch (error) {
       console.log('Version check failed:', error);
@@ -51,13 +50,24 @@ const Splash = () => {
   const redirect = async () => {
     if (!showUpgrade) {
       const userData = await AsyncStorage.getItem('user_data');
+      // const obj = JSON.parse(userData);
+      // alert(JSON.stringify(obj.data))
       if (userData) {
         const obj = JSON.parse(userData);
         dispatch({ type: 'APP_USER_LOGIN_SUCCESS', payload: obj });
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'HomeScreen' }],
-        });
+        if (obj.data.mpin) {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'LoginWithMpin' }],
+          });
+        }
+        else {
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'LoginScreen' }],
+          });
+        }
+
       } else {
         navigation.reset({
           index: 0,
@@ -108,7 +118,7 @@ const Splash = () => {
 
   // 5. INIT EFFECTS
   useEffect(() => {
-    checkAppVersion();
+    // checkAppVersion();
     checkAndFetchSiteSettings();
     startSplashAnimation();
   }, []);

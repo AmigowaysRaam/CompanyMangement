@@ -17,6 +17,7 @@ import Employee from "../screens/Employee/Employee";
 import CategoryListScreen from "../screens/CategoryListScreen";
 import SubCategoryListScreen from "../screens/SubCategoryListing";
 import MyProfileUpdate from "../screens/MyProfileUpdate";
+import LoginWithMPIN from "../screens/LoginMpin";
 
 
 const Stack = createNativeStackNavigator();
@@ -45,6 +46,9 @@ function InitialRouter() {
         <Stack.Screen name="CategoryListScreen" component={CategoryListScreen} />
         <Stack.Screen name="SubCategoryListScreen" component={SubCategoryListScreen} />
         <Stack.Screen name="MyProfileUpdate" component={MyProfileUpdate} />
+        <Stack.Screen name="LoginWithMpin" component={LoginWithMPIN} />
+
+        
 
         
       </Stack.Navigator>
