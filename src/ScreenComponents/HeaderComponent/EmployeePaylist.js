@@ -62,7 +62,7 @@ export default function EmployeePaylist() {
                     onPress={() => navigation.navigate('PayrollList', { item: dummyData })}
                     style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(2), borderWidth: wp(0.3), borderRadius: wp(5) }}
                 >
-                    <Text style={[isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h6]}>{t('viewAll')}</Text>
+                    <Text style={[isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.bold.h8]}>{t('viewAll')}</Text>
                 </TouchableOpacity>
             </View>
         </View>

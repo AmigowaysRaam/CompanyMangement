@@ -13,22 +13,22 @@ import { COLORS } from "../../resources/Colors";
 import { Louis_George_Cafe } from "../../resources/fonts";
 import { useTranslation } from "react-i18next";
 
-const initialData = [
-    { id: "1", title: "Meeting with Developers", checked: false, deadline: "1 hour" },
-    { id: "2", title: "Interview for Digital Marketing", checked: false, deadline: "1 hour" },
-    { id: "3", title: "Conducting Events", checked: false, deadline: "1 hour" },
-];
+// const initialData = [
+//     { id: "1", title: "Meeting with Developers", checked: false, deadline: "1 hour" },
+//     { id: "2", title: "Interview for Digital Marketing", checked: false, deadline: "1 hour" },
+//     { id: "3", title: "Conducting Events", checked: false, deadline: "1 hour" },
+// ];
 
-const TaskTable = () => {
+const TaskTable = (tdata) => {
 
-    const [data, setData] = useState(initialData);
+    const [data, setData] = useState(null);
     const { t, i18n } = useTranslation();
     const isTamil = i18n.language === 'ta';
 
-
     useEffect(() => {
-        setData(initialData)
-    }, [])
+        // alert(JSON.stringify(tdata.tdata))
+        setData(tdata?.tdata?.Taskdata)
+    }, [tdata])
 
     const toggleCheckbox = (id) => {
         const updated = data.map((item) =>
@@ -47,8 +47,8 @@ const TaskTable = () => {
                 />
             </TouchableOpacity>
             <View>
-                <Text style={[Louis_George_Cafe.bold.h7, styles.title]}>{item.title}</Text>
-                <Text style={[Louis_George_Cafe.regular.h8, styles.title]}>{item.deadline}</Text>
+                <Text style={[isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7, styles.title]}>{item.title}</Text>
+                <Text style={[isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h8, styles.title]}>{item.deadline}</Text>
             </View>
         </View>
     );
@@ -57,12 +57,13 @@ const TaskTable = () => {
         <View style={styles.container}>
             <Text style={[Louis_George_Cafe.bold.h6, { marginVertical: wp(1) }]}>{t('tasks')}</Text>
             <Text style={[Louis_George_Cafe.bold.h9]}>
-                {`${new Date().toLocaleDateString('en-US', {
+                {/* {`${new Date().toLocaleDateString('en-US', {
                     weekday: 'long',
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric'
-                })}`}
+                })}`} */}
+                {tdata.tdata?.currentDate}
             </Text>
             <FlatList
                 data={data}

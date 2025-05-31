@@ -5,6 +5,9 @@ import { Louis_George_Cafe } from '../../resources/fonts';
 import LinearGradient from 'react-native-linear-gradient';
 import { THEMECOLORS } from '../../resources/colors/colors';
 import { useTheme } from '../../context/ThemeContext';
+import { useTranslation } from 'react-i18next';
+
+
 const PieSlice = ({ rotation, colors }) => (
 
   <View style={[styles.sliceContainer, { transform: [{ rotate: `${rotation}deg` }] }]}>
@@ -17,11 +20,14 @@ const PieSlice = ({ rotation, colors }) => (
   </View>
 );
 
-const PieChart = () => {
+const PieChart = (data) => {
+
   const [chartData, setChartData] = useState([]);
   const { themeMode } = useTheme();
-
+  const { t, i18n } = useTranslation();
+  const isTamil = i18n.language === 'ta';
   useEffect(() => {
+    // alert(JSON.stringify(data.data))
     const rawData = [
       { percentage: 30, colors: ['#004284', '#6BB0F6'], label: 'Completed Projects' },
       { percentage: 20, colors: ['#9747FF', '#D5B5FF'], label: 'Pending Projects' },
@@ -30,7 +36,7 @@ const PieChart = () => {
 
     // Compute rotation per slice
     let currentAngle = 0;
-    const dataWithRotation = rawData.map(item => {
+    const dataWithRotation = data?.data.map(item => {
       const rotation = currentAngle;
       currentAngle += (item.percentage / 100) * 360;
       return { ...item, rotation };
@@ -44,7 +50,7 @@ const PieChart = () => {
       backgroundColor: THEMECOLORS[themeMode].cardBackground,
     }]}>
       <Text style={[Louis_George_Cafe.bold.h6, { alignSelf: "flex-start", marginBottom: wp(5) }]}>
-        Project Overview
+        {t('project_overview')}
       </Text>
       <View style={styles.chartContainer}>
         <View style={styles.chart}>
@@ -53,6 +59,8 @@ const PieChart = () => {
           ))}
           <View style={[styles.centerCircle, {
             backgroundColor: THEMECOLORS[themeMode].cardBackground,
+            top: wp(6),
+            left: wp(6),
           }]} />
         </View>
 
@@ -60,7 +68,9 @@ const PieChart = () => {
           {chartData.map((item, index) => (
             <View key={index} style={styles.legendItem}>
               <View style={[styles.legendColor, { backgroundColor: item.colors[0] }]} />
-              <Text style={[Louis_George_Cafe.regular.h8, styles.legendText]}>
+              <Text style={[{
+                fontSize: wp(isTamil ? 2: 2.5)
+              }]}>
                 {item.label}
 
               </Text>
@@ -92,8 +102,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   chart: {
-    width: wp(40),
-    height: wp(40),
+    width: wp(35),
+    height: wp(35),
     borderRadius: wp(20),
     overflow: 'hidden',
     position: 'relative',
@@ -106,18 +116,17 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   slice: {
-    width: wp(20),
-    height: wp(45),
+    width: wp(18),
+    height: wp(42),
     borderTopLeftRadius: wp(50),
     borderBottomLeftRadius: wp(50),
   },
   centerCircle: {
-    width: wp(24),
-    height: wp(24),
+    width: wp(23),
+    height: wp(23),
     borderRadius: wp(12),
     position: 'absolute',
-    top: wp(8),
-    left: wp(8),
+
   },
   legend: {
     marginLeft: wp(5),

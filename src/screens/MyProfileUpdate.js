@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity,
-    StyleSheet, Image, Alert, ScrollView, KeyboardAvoidingView, Platform,
-    ToastAndroid
+    StyleSheet, Image, ScrollView, KeyboardAvoidingView, Platform,
+    ToastAndroid,
+    BackHandler
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -18,6 +19,8 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { getProfileDetailsById, updateFormSubmit } from '../redux/authActions';
 import { ActivityIndicator } from 'react-native-paper';
 import ProfileScreenLoader from './ProfileLoader';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 
 const MyProfileUpdate = () => {
 
@@ -37,6 +40,12 @@ const MyProfileUpdate = () => {
         dob: "",
         email: '',
         phone: '',
+    });
+
+    useAndroidBackHandler(() => {
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+        }
     });
 
     useFocusEffect(
@@ -93,8 +102,6 @@ const MyProfileUpdate = () => {
                 ToastAndroid.show(response.message, ToastAndroid.SHORT);
             }
         }));
-        // Alert.alert("Success", t("profileupdatedsuccessfully"));
-        // API submission logic can go here
     };
 
     const handleChange = (key, value) => {
@@ -107,7 +114,7 @@ const MyProfileUpdate = () => {
             <HeaderComponent title={t('My Profile')} showBackArray={true} />
 
             {isLoading ?
-                    <ProfileScreenLoader  />
+                <ProfileScreenLoader />
                 :
                 <>
                     {/* Profile Image Section */}
@@ -123,6 +130,12 @@ const MyProfileUpdate = () => {
                                     <Image
                                         source={profileImage ? { uri: profileImage } : require('../assets/animations/propic.jpg')}
                                         style={styles.profileImage}
+                                    />
+                                    <MaterialCommunityIcons
+                                        name={'camera'}
+                                        size={hp(2.5)}
+                                        color={"#000"}
+                                        style={{ position: "absolute", left: hp(13), padding: wp(1.5), backgroundColor: "#fff", borderRadius: wp(4) }}
                                     />
                                 </TouchableOpacity>
                             </View>
@@ -145,7 +158,6 @@ const MyProfileUpdate = () => {
                                         {
                                             [
                                                 { key: 'fullname', label: t('fullname'), placeholder: t('enteryourfullname'), editable: true },
-
                                                 { key: 'username', label: t('username'), placeholder: t('enteryourusername'), editable: false },
                                                 { key: 'designation', label: t('designation'), placeholder: t('enteryourdesignation'), editable: false },
                                                 { key: 'dob', label: t('dob'), placeholder: t('yyyy-mm-dd'), editable: false },
@@ -215,7 +227,6 @@ const MyProfileUpdate = () => {
                     </View>
                 </>
             }
-
 
         </View>
     );

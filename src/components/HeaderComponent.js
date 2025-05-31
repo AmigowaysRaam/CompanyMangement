@@ -4,9 +4,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  ToastAndroid
+  ToastAndroid,
+  BackHandler
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { wp, hp } from "../resources/dimensions";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Text, Menu } from "react-native-paper";
@@ -71,8 +72,17 @@ function HeaderComponent({
         fnchangeLanguage(language, false)
       }
     }));
-
   }, [language])
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => true; // Prevent back action
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () =>
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [])
+  );
+
 
   return (
     <View style={[styles.container, {

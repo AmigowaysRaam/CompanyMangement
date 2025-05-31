@@ -7,6 +7,7 @@ import HeaderComponent from '../../components/HeaderComponent';
 import { THEMECOLORS } from '../../resources/colors/colors';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useAndroidBackHandler } from '../../hooks/useAndroidBackHandler';
 
 export default function PayrollList() {
   const route = useRoute();
@@ -14,6 +15,12 @@ export default function PayrollList() {
   const navigation = useNavigation();
   const { themeMode } = useTheme();
   const { t } = useTranslation();
+
+  useAndroidBackHandler(() => {
+    if (navigation.canGoBack()) {
+        navigation.goBack();
+    }
+});
 
   const renderItem = ({ item }) => (
     <TouchableOpacity

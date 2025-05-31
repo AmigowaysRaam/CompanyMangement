@@ -3,10 +3,9 @@ import {
     View,
     Text,
     StyleSheet,
-    Image,
     FlatList,
     TouchableOpacity,
-    Alert,
+    Image,
 } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
@@ -16,157 +15,217 @@ import HeaderComponent from '../components/HeaderComponent';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { getSideMenus } from '../redux/authActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProfileMenuList } from '../redux/authActions';
-import { ActivityIndicator } from 'react-native-paper';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import _ from 'lodash';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ProfileScreenLoader from './ProfileLoader';
+import { useNavigation } from '@react-navigation/native';
+
+const sidebarMenu = [
+    {
+        label: "My Profile",
+    },
+    {
+        label: "Notifications",
+        submenus: [
+            { label: "Messages" },
+            { label: "Alerts" },
+        ]
+    },
+    {
+        label: "Job Details",
+    },
+    {
+        label: "Compensation & Benefits",
+    },
+    {
+        label: "Attendance & Leave",
+    },
+    {
+        label: "Settings",
+        submenus: [
+            { label: "Account Settings" },
+            { label: "Privacy" },
+            { label: "Notifications" },
+        ]
+    },
+];
 
 const ProfileScreen = () => {
+
 
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
     const isTamil = i18n.language === 'ta';
+    const [expandedIndex, setExpandedIndex] = useState(null);
+    const userdata = useSelector((state) => state.auth.user);
+    const sideMenusArray = useSelector((state) => state.auth.sidemenu);
     const dispatch = useDispatch();
-    const [isLoading, setisLoading] = useState(false);
-    const userdata = useSelector((state) => state.auth.user?.data);
-    const tabMenuList = useSelector((state) => state.auth?.tabMenuList);
-    const [menuItem, setMeniItems] = useState(tabMenuList?.data);
-
     const navigation = useNavigation();
 
-    useFocusEffect(
-        React.useCallback(() => {
-            dispatch(getProfileMenuList(userdata?.id))
-            // alert(JSON.stringify(tabMenuList?.data))
-            if (_.isEmpty(tabMenuList?.data)) {
-                setisLoading(true);
-                dispatch(getProfileMenuList(userdata?.id, (response) => {
-                    if (response.success) {
-                        setMeniItems(response?.data);
-                    }
-                    setisLoading(false);
-                }));
-            }
-        }, [userdata])
-    );
-
-    const handleFnNavigate = (slug) => {
-        if (slug == 'my_profile') {
-            navigation.navigate('MyProfileUpdate');
-        };
+    const [sideMenusList, setsideMenusList] = useState(sideMenusArray ? sideMenusArray?.data : []);
+    const [isLoading, setisLoading] = useState(false);
+    const toggleSubmenu = (index) => {
+        setExpandedIndex(expandedIndex === index ? null : index);
     };
-    const handleLogout = async (slug) => {
+
+    const handleFnNavigate = (label) => {
+        if (label == 'My Profile') {
+            navigation.navigate('MyProfileUpdate')
+        }
+
+    };
+    useEffect(() => {
+        const userId = userdata?.data?.id;
+
+        if (!userId) return;
+
+        // Only fetch if the list is empty
+        if (_.isEmpty(sideMenusArray?.data)) {
+            setisLoading(true);
+
+            dispatch(getSideMenus(userId, (response) => {
+                if (response?.success) {
+                    setsideMenusList(response.data);
+                } else {
+                    setsideMenusList([]);
+                }
+                setisLoading(false);
+            }));
+        } else {
+            // Already available in store
+            setsideMenusList(sideMenusArray.data);
+        }
+    }, [userdata?.data?.id, sideMenusArray]);
+
+    const handleLogout = async () => {
+        // navigation.replace('LoginScreen')
         try {
             await AsyncStorage.clear();
-            // console.log('AsyncStorage cleared. Logging out...');
             navigation.replace('LoginScreen');
             dispatch({ type: 'APP_USER_LOGIN_SUCCESS', payload: null });
-
         } catch (error) {
             console.error('Logout error:', error);
         }
     }
+    const renderItem = ({ item, index }) => {
+        const isExpanded = expandedIndex === index;
 
-    const renderItem = ({ item }) => (
-        <TouchableOpacity
-            style={[styles.menuItem, { flexDirection: "row", justifyContent: "space-between" }]}
-            onPress={() => {
-                if (item.slug === 'log_out') {
-                    handleLogout(item.slug)
-                } else {
-                    handleFnNavigate(item.slug)
-                }
-            }}
-        >
-            <View style={styles.menuContent}>
-                {item.showArrow ?
-                    <MaterialCommunityIcons
-                        name={item.icon}
-                        size={hp(2.5)}
-                        color={THEMECOLORS[themeMode].textPrimary}
-                        style={{ marginRight: wp(3) }}
-                    />
-                    :
-                    <View
-                        style={{ marginRight: hp(4.5) }}
-                    />
-                }
-                <Text style={[
-                    isTamil ? Louis_George_Cafe.regular.h8 : Louis_George_Cafe.regular.h6,
-                    { color: THEMECOLORS[themeMode].textPrimary, textTransform: "capitalize", lineHeight: wp(5) }
-                ]}>
-                    {t(item.slug)}
-                </Text>
+        return (
+            <View>
+                <TouchableOpacity
+                    style={[styles.menuItem, { flexDirection: "row", justifyContent: "space-between" }]}
+                    onPress={() => {
+                        if (item.submenus) {
+                            toggleSubmenu(index);
+                        } else {
+                            handleFnNavigate(item.label);
+                        }
+                    }}
+                >
+                    <Text style={[
+                        isTamil ? Louis_George_Cafe.regular.h8 : Louis_George_Cafe.regular.h6,
+                        { color: THEMECOLORS[themeMode].textPrimary }
+                    ]}>
+                        {t(item.label)}
+                    </Text>
+
+                    {item.submenus ? (
+                        <MaterialCommunityIcons
+                            name={isExpanded ? "chevron-up" : "chevron-down"}
+                            size={hp(2.5)}
+                            color={THEMECOLORS[themeMode].textPrimary}
+                        />
+                    ) : (
+                        <MaterialCommunityIcons
+                            name="chevron-right"
+                            size={hp(2.5)}
+                            color={THEMECOLORS[themeMode].textPrimary}
+                        />
+                    )}
+                </TouchableOpacity>
+
+                {isExpanded && item.submenus?.length > 0 && (
+                    <View style={{ paddingLeft: wp(8), marginTop: hp(1) }}>
+                        {item.submenus.map((submenu, idx) => (
+                            <TouchableOpacity
+                                key={idx}
+                                style={styles.submenuItem}
+                                onPress={() => handleFnNavigate(submenu.label)}
+                            >
+                                <Text style={[
+                                    isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h7,
+                                    { color: THEMECOLORS[themeMode].textPrimary }
+                                ]}>
+                                    {t(submenu.label)}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                )}
             </View>
-            {/* {item.showArrow && ( */}
-            <MaterialCommunityIcons
-                name={item.showArrow ? "chevron-right" : "logout"}
-                size={hp(2.5)}
-                color={THEMECOLORS[themeMode].textPrimary}
-            />
-        </TouchableOpacity>
-    );
+        );
+    };
 
     return (
         <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background, paddingVertical: wp(1) }}>
             <HeaderComponent title={t('profile')} showBackArray={false} />
-            <>
-                {isLoading ?
-                    <ProfileScreenLoader />
-                    :
-                    <>
-                        <View style={styles.coverContainer}>
-                            <LinearGradient
-                                colors={['#C4A5EC', '#FFF7E3']}
-                                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                                style={styles.coverImage}
-                            >
-                                <View style={styles.profileImageContainer}>
-                                    <Image
-                                        source={require('../../src/assets/animations/user_1.png')}
-                                        style={styles.profileImage}
-                                    />
-                                </View>
-                            </LinearGradient>
-                        </View>
-                        <View style={styles.infoContainer}>
-                            <Text numberOfLines={1} style={[
-                                isTamil ? Louis_George_Cafe.bold.h5 : Louis_George_Cafe.bold.h4,
-                                {
-                                    color: THEMECOLORS[themeMode].textPrimary,
-                                    textTransform: "capitalize",
-                                    maxWidth: wp(70)
-                                }
-                            ]}>
-                                {userdata?.full_name}
-                            </Text>
-                            <Text numberOfLines={1} style={[
-                                isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
-                                {
-                                    color: THEMECOLORS[themeMode].textPrimary,
-                                    textTransform: "capitalize",
-                                    maxWidth: wp(70)
-                                }
-                            ]}>
-                                {userdata?.designation}
-                            </Text>
-                        </View>
-                        <FlatList
-                            data={menuItem}
-                            renderItem={renderItem}
-                            keyExtractor={item => item.id}
-                            contentContainerStyle={{ paddingHorizontal: wp(5), paddingTop: hp(2) }}
+
+            <View style={styles.coverContainer}>
+                <LinearGradient
+                    colors={['#C4A5EC', '#FFF7E3']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.coverImage}
+                >
+                    <View style={styles.profileImageContainer}>
+                        <Image
+                            source={require('../../src/assets/animations/user_1.png')}
+                            style={styles.profileImage}
                         />
+                    </View>
+                </LinearGradient>
+            </View>
 
-                    </>
+            <View style={styles.infoContainer}>
+                <Text style={[
+                    isTamil ? Louis_George_Cafe.bold.h5 : Louis_George_Cafe.bold.h4,
+                    { color: THEMECOLORS[themeMode].textPrimary }
+                ]}>
+                    {userdata?.data?.full_name}
+                </Text>
+                <Text style={[
+                    isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
+                    { color: THEMECOLORS[themeMode].textPrimary }
+                ]}>
+                    {userdata?.data?.designation}
+                </Text>
+            </View>
 
-                }
-            </>
+            <FlatList
+                data={sidebarMenu}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => index.toString()}
+                ListFooterComponent={() => {
+                    return (
+                        <TouchableOpacity onPress={() => handleLogout()} style={{ flexDirection: "row", justifyContent: "space-between", paddingHorizontal: wp(2), alignItems: "center", marginVertical: wp(3) }}>
+                            <Text style={[
+                                isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
+                                { color: THEMECOLORS[themeMode].textPrimary }
+                            ]}>
+                                {t('log_out')}
+                            </Text>
+                            <MaterialCommunityIcons
+                                name={'logout'}
+                                size={hp(2.5)}
+                                color={THEMECOLORS[themeMode].textPrimary}
+                            />
+                        </TouchableOpacity>
+                    );
+                }}
 
+                contentContainerStyle={{ paddingHorizontal: wp(5), paddingTop: hp(2), paddingBottom: hp(5) }}
+            />
         </View>
     );
 };
@@ -183,8 +242,6 @@ const styles = StyleSheet.create({
         height: '80%',
         alignSelf: "center",
         justifyContent: "flex-end",
-        // borderTopRightRadius: hp(3),
-        // borderTopLeftRadius: hp(3),
     },
     profileImageContainer: {
         zIndex: 2,
@@ -208,9 +265,11 @@ const styles = StyleSheet.create({
         borderRadius: wp(2),
         marginBottom: hp(1),
     },
-    menuContent: {
-        flexDirection: 'row',
-        alignItems: 'center',
+    submenuItem: {
+        paddingVertical: hp(1),
+        paddingHorizontal: wp(2),
+        borderRadius: wp(1),
+        marginBottom: hp(0.5),
     },
 });
 

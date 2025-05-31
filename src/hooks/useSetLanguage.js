@@ -7,7 +7,6 @@ import { setLanguageSelected } from '../redux/authActions'; // adjust path
 const useSetLanguage = (language) => {
   const dispatch = useDispatch();
   useEffect(() => {
-    // if (language ) return;
     dispatch(setLanguageSelected(language, (response) => {
       if (response.success && response.data) {
         const translations = response.data;
@@ -18,7 +17,6 @@ const useSetLanguage = (language) => {
           true,
           true
         );
-
         i18n.changeLanguage(language);
         console.log(`Language switched to ${language}`);
       } else {

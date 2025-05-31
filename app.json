@@ -2,7 +2,7 @@
   "expo": {
     "name": "sana",
     "slug": "sana",
-    "version": "1.0.1",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/ic_launcher.png",
     "userInterfaceStyle": "light",
@@ -21,7 +21,10 @@
         "backgroundColor": "#058604"
       },
       "package": "com.hrms",
-      "versionCode": 2 
+      "versionCode": 2 ,
+        "jsEngine": "hermes"
+
+
     },
     "web": {
       "favicon": "./assets/favicon.png"

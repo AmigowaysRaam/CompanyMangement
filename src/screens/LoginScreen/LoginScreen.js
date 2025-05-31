@@ -37,9 +37,9 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const { themeMode } = useTheme();
   const { language } = useLanguage();
-  const [username, setUsername] = useState(__DEV__ ? "ram@gmail.com" : "");
   const userdata = useSelector((state) => state.auth.user);
-  // const getFrontSiteData = useSelector((state) => state.auth.getFrontSite);
+
+  const [username, setUsername] = useState(__DEV__ ? "ram@gmail.com" : "");
   const [password, setPassword] = useState(__DEV__ ? "1234" : "");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -81,16 +81,23 @@ const LoginScreen = () => {
     dispatch(loginUser(credentials, (response) => {
       setIsLoading(false);
       if (response.success) {
-        // alert(JSON.stringify(response.data))
-        // AsyncStorage.setItem('user_data', JSON.stringify(response));
-
+        AsyncStorage.setItem('user_data', JSON.stringify(response));
         Toast.show({
           type: 'success',
           text1: 'Login successful!',
         });
-        setTimeout(() => {
-          navigation.replace('MobileNumber',response)
-        }, 1000);
+        // alert(JSON.stringify(response.data.mpin))
+        if (response.data.mpin) {
+          setTimeout(() => {
+            navigation.replace('ServiceSelection', response)
+          }, 1000);
+        }
+        else {
+          setTimeout(() => {
+            navigation.replace('SetMpin', response)
+          }, 1000);
+        }
+
       } else {
         Toast.show({
           type: 'error',
@@ -114,7 +121,7 @@ const LoginScreen = () => {
   }, [lerror]);
 
   const handleForgot = () => {
-    navigation.navigate("ForgotPassword");
+    navigation.navigate("MobileNumber");
   };
 
   // useEffect(() => {
@@ -230,20 +237,20 @@ const LoginScreen = () => {
                 </Text>
               )}
             </View>
-            {/* <TouchableOpacity onPress={handleForgot} style={{ alignItems: "flex-end", marginTop: hp(1), marginHorizontal: wp(4) }}>
+            <TouchableOpacity onPress={() => handleForgot()} style={{ alignItems: "flex-end", marginTop: hp(1), marginHorizontal: wp(4) }}>
               <Text
                 style={[
                   scaleFont(Louis_George_Cafe.regular.h7),
                   { color: THEMECOLORS[themeMode].primary, lineHeight: wp(5), marginTop: wp(1) }
                 ]}
               >
-                {t('forget_password')}
+                {t('login_withmobileno')}
               </Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.loginButton}
-              onPress={() => { handleLogin()}}
+              onPress={() => { handleLogin() }}
             >
               <Text
                 style={[

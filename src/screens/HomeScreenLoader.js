@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet,  Animated } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { THEMECOLORS } from '../resources/colors/colors';
 import { wp, hp } from '../resources/dimensions';
@@ -9,8 +9,8 @@ const HomeScreenLoader = () => {
   const theme = THEMECOLORS[themeMode];
 
   // Base and highlight colors for flashing
-  const baseColor =  themeMode =='dark' ? '#111' :"#CCC";
-  const highlightColor = themeMode =='dark'? '#999' :"#FFF";
+  const baseColor = themeMode == 'dark' ? '#111' : "#CCC";
+  const highlightColor = themeMode == 'dark' ? '#999' : "#FFF";
 
   // Animated value for flashing effect
   const flashAnim = useRef(new Animated.Value(0)).current;
@@ -75,11 +75,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   rectCard: {
-    height: hp(15),
+    height: hp(20),
     borderRadius: 12,
   },
   halfWidth: {
     width: wp(45),
+    height: hp(14),
   },
   fullWidth: {
     width: wp(92), // full width with padding considered

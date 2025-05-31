@@ -3,24 +3,29 @@ import {
   View, Text, StyleSheet, Image, TouchableOpacity, TextInput, KeyboardAvoidingView, ScrollView, Platform, TouchableWithoutFeedback,
   Keyboard,
   ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
 import { hp, wp } from '../resources/dimensions';
 import { Louis_George_Cafe, } from '../resources/fonts';
 import { COLORS } from '../resources/Colors';
 import { useNavigation } from '@react-navigation/native';
 import { useCurrentLocation } from '../../src/hooks/location'
-import { useRoute,  } from '@react-navigation/native';
-import { getOtpByMobilenumber } from '../redux/authActions';
+import { useRoute, } from '@react-navigation/native';
+import { checkValidMobileNumber, } from '../redux/authActions';
 import { useDispatch } from 'react-redux';
+import { useTheme } from '../context/ThemeContext';
+import { THEMECOLORS } from '../resources/colors/colors';
 
 const MobileNumber = () => {
 
   const [mobileNumber, setMobileNumber] = useState(__DEV__ ? "9876543210" : '');
   const navigation = useNavigation();
-  const { location, locationError, countryCode, dialCode } = useCurrentLocation();
+  const { dialCode } = useCurrentLocation();
   const [dialcodePin, setdialcode] = useState(dialCode);
   const route = useRoute();
-  const loginData = route?.params?.response?.data;
+  const { themeMode } = useTheme();
+
+  // const loginData = route?.params?.response?.data;
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,23 +34,25 @@ const MobileNumber = () => {
   }, [dialCode])
 
   const handleNavigateVerifyOtp = () => {
-    
-    setIsLoading(true)
-
-    let params = {
-      userid: loginData?.id,
-      phone: mobileNumber
+    if (mobileNumber.length < 10) {
+      ToastAndroid.show("Mobile number Invalid", ToastAndroid.SHORT);
+    } else {
+      setIsLoading(true);
+      dispatch(checkValidMobileNumber(mobileNumber, (response) => {
+        if (response.success) {
+          const params = {
+            phone: mobileNumber,
+          };
+          navigation.replace('VerifyOtp', params);
+          // ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
+        }
+        else {
+          setIsLoading(false);
+          ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
+        }
+      }));
     }
-
-    dispatch(getOtpByMobilenumber(params, (response) => {
-      if (response.success) {
-        navigation.replace('VerifyOtp', { response })
-      }
-      setIsLoading(false);
-    }));
-
-  }
-
+  };
 
 
   return (
@@ -59,7 +66,9 @@ const MobileNumber = () => {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
-          <View style={styles.container}>
+          <View style={[styles.container, {
+            backgroundColor: THEMECOLORS[themeMode].background
+          }]}>
             <View style={styles.imageContainer}>
               <Image
                 resizeMode="contain"
@@ -71,12 +80,17 @@ const MobileNumber = () => {
                 }}
               />
             </View>
-            <Text style={[Louis_George_Cafe.bold.h5, { alignSelf: "center" }]}>
+            <Text style={[Louis_George_Cafe.bold.h5, {
+              alignSelf: "center",
+              color: THEMECOLORS[themeMode].textPrimary
+            }]}>
               Enter Your Mobile Number
             </Text>
             <Text style={[Louis_George_Cafe.regular.h8, {
               alignSelf: "center",
               margin: wp(2),
+              color: THEMECOLORS[themeMode].textPrimary
+
             }]}>
               We’ll send you a confirmation code
             </Text>
@@ -88,49 +102,40 @@ const MobileNumber = () => {
                   source={require('../../src/assets/animations/india_flag.png')}
                   style={styles.flag}
                 />
-                <Text style={[Louis_George_Cafe.regular.h9, styles.countryCode]}>{dialcodePin}</Text>
+                <Text style={[Louis_George_Cafe.regular.h9, styles.countryCode, {
+                  color: THEMECOLORS[themeMode].textPrimary
+                }]}>{dialcodePin}</Text>
               </View>
               <View style={styles.verticalLine} />
               <TextInput
-              editable={!isLoading}
+                editable={!isLoading}
                 style={[Louis_George_Cafe.regular.h7, styles.mobileInput, {
+                  color: THEMECOLORS[themeMode].textPrimary
                 }]}
                 placeholder="Enter mobile number"
                 keyboardType="phone-pad"
                 maxLength={10}
                 value={mobileNumber}
                 onChangeText={setMobileNumber}
+                placeholderTextColor={
+                  THEMECOLORS[themeMode].textPrimary
+                }
               />
             </View>
-
             {
               isLoading ?
                 <ActivityIndicator />
                 :
                 <TouchableOpacity
-                  style={[styles.getOtpButton, { backgroundColor: COLORS.button_bg_color }]}
+                  style={[styles.getOtpButton, { backgroundColor: mobileNumber.length < 10 ? "#888" : COLORS.button_bg_color }]}
                   onPress={() => handleNavigateVerifyOtp()}
-                  disabled={mobileNumber.length < 10}
+                // disabled={mobileNumber.length < 10}
                 >
                   <Text style={[Louis_George_Cafe.bold.h5, styles.getOtpButtonText]}>
                     Get OTP
                   </Text>
                 </TouchableOpacity>
             }
-
-
-            {location && (
-              <Text style={{ textAlign: 'center', marginBottom: 10 }}>
-                Latitude: {location.coords.latitude.toFixed(6)}{"\n"}
-                Longitude: {location.coords.longitude.toFixed(6)}{"\n"}
-                county:{countryCode}
-              </Text>
-            )}
-            {locationError && (
-              <Text style={{ textAlign: 'center', marginBottom: 10, color: 'red' }}>
-                {locationError}
-              </Text>
-            )}
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -141,7 +146,7 @@ const MobileNumber = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    // backgroundColor: COLORS.background,
     paddingTop: hp(2),
     paddingBottom: hp(10),
     paddingHorizontal: wp(5),
@@ -173,7 +178,6 @@ const styles = StyleSheet.create({
   },
   countryCode: {
     fontSize: 16,
-    color: '#000',
   },
   verticalLine: {
 

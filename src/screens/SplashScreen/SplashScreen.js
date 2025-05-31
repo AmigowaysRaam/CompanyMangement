@@ -10,7 +10,6 @@ import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import VersionCheck from 'react-native-version-check';
-
 import { wp } from "../../resources/dimensions";
 import { COLORS } from "../../resources/Colors";
 import { getSiteSettingsFrom } from "../../redux/authActions";
@@ -50,16 +49,20 @@ const Splash = () => {
   const redirect = async () => {
     if (!showUpgrade) {
       const userData = await AsyncStorage.getItem('user_data');
-      // const obj = JSON.parse(userData);
-      // alert(JSON.stringify(obj.data))
       if (userData) {
         const obj = JSON.parse(userData);
         dispatch({ type: 'APP_USER_LOGIN_SUCCESS', payload: obj });
         if (obj.data.mpin) {
           navigation.reset({
             index: 0,
-            routes: [{ name: 'LoginWithMpin' }],
+            routes: [
+              {
+                name: 'LoginWithMpin',
+                params: { response: obj },
+              },
+            ],
           });
+
         }
         else {
           navigation.reset({
@@ -67,8 +70,8 @@ const Splash = () => {
             routes: [{ name: 'LoginScreen' }],
           });
         }
-
-      } else {
+      }
+      else {
         navigation.reset({
           index: 0,
           routes: [{ name: 'ChooseLanguage' }],

@@ -21,7 +21,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     // Track which menus are expanded for submenu
     const [expandedMenus, setExpandedMenus] = useState({});
     const navigation = useNavigation();
-    const { theme, themeMode, toggleTheme } = useTheme();
+    const { themeMode, toggleTheme } = useTheme();
     const userdata = useSelector((state) => state.auth.user);
     const sideMenusArray = useSelector((state) => state.auth.sidemenu);
     const dispatch = useDispatch();
@@ -34,7 +34,6 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             [index]: !prev[index],
         }));
     };
-
     useEffect(() => {
         dispatch(getSideMenus(userdata?.data?.id))
         setsideMenusList(sideMenusArray?.data)
@@ -44,6 +43,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                 if (response.success) {
                     setisLoading(false)
                     setsideMenusList(response.data)
+                    console.log('test', response.data)
                 } else {
                     setsideMenusList(sideMenusArray ? sideMenusArray : [])
                     setisLoading(true)
@@ -67,11 +67,27 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
         }
     }
 
+    const handleNavigateScreen = (item) => {
+
+        if (item == 'My Profile') {
+            navigation.navigate('Profile')
+        }
+        if (item == 'Notifications') {
+            navigation.navigate('Notifications')
+        }
+    }
+
+
+
+
+
+
     // Render submenu item
     const renderSubmenuItem = ({ item }) => (
         <TouchableOpacity
             onPress={() => {
                 // item.onPress();
+                handleNavigateScreen(item.label)
                 onClose();
             }}
             style={styles.submenuItem}
@@ -100,7 +116,8 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                             toggleExpand(index);
                         } else {
                             // item.onPress();
-                            onClose();
+                            onClose(),
+                                handleNavigateScreen(item.label)
                         }
                     }}
                     style={styles.menuItem}
@@ -114,7 +131,6 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                         color={THEMECOLORS[themeMode].textPrimary}
                     />
                 </TouchableOpacity>
-
                 {/* Render submenu if expanded */}
                 {hasSubmenu && isExpanded && (
                     <FlatList
@@ -143,8 +159,10 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
 
                             <ThemeToggle />
                             <View style={{ width: "100%", height: hp(32), alignItems: "center" }}>
-                                <TouchableOpacity style={{ marginVertical: hp(4) }} onPress={() =>
+                                <TouchableOpacity style={{ marginVertical: hp(4) }} onPress={() => {
+                                    onClose()
                                     navigation.navigate('MyProfileUpdate')
+                                }
                                 } >
                                     <Image
                                         source={require("../assets/animations/user_1.png")}

@@ -59,15 +59,13 @@ manage  everything in one place
   const handleSnapToItem = (index) => {
     setcurrrentIndexz(index);
     setCurrentImageName(data[index]?.imageName);
-
-    if (index === data.length - 1) {
-      // Automatically navigate when last item is reached via swipe
-      setTimeout(() => {
-        // navigation.navigate('LoginScreen');
-        navigation.replace('LoginScreen')
-
-      }, 800)
-    }
+    // if (index === data.length - 1) {
+    //   // Automatically navigate when last item is reached via swipe
+    //   setTimeout(() => {
+    //     // navigation.navigate('LoginScreen');
+    //     navigation.replace('LoginScreen')
+    //   }, 800)
+    // }
   };
 
   return (
@@ -88,6 +86,7 @@ manage  everything in one place
       <Carousel
         ref={carouselRef}
         pagingEnabled={true}
+        
         style={{ zIndex: 0 }}
         width={wp(90)}
         height={hp(80)}

@@ -116,7 +116,7 @@ const SubCategoryListScreen = () => {
                     <MaterialCommunityIcons
                         name={isSelected ? 'radiobox-marked' : 'radiobox-blank'}
                         size={hp(2.8)}
-                        color={THEMECOLORS[themeMode].primaryApp}
+                        color={THEMECOLORS[themeMode].textPrimary}
                     />
                     <Text style={[
                         Louis_George_Cafe.bold.h5,

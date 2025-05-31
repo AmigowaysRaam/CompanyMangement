@@ -32,11 +32,10 @@ const SetMpin = () => {
   const { themeMode } = useTheme();
   const [isLoading, setisLoading] = useState(false);
 
-
   const route = useRoute();
-  const lData = route?.params?.optData;
+  const lData = route?.params.response;
   useEffect(() => {
-    // alert(JSON.stringify(lData.userid))
+    // alert(JSON.stringify(lData))
     if (__DEV__) {
       const devMpin = ['1', '2', '3', '4']; // example dev mpin
       setMpin(devMpin);
@@ -74,7 +73,7 @@ const SetMpin = () => {
     if (isMpinComplete && isConfirmComplete && isMatch) {
       setisLoading(true)
       let params = {
-        userid: lData.userid,
+        userid: lData?.userid,
         mpin: mpin.join(''),
         confirm_mpin: mpin.join(''),
       }

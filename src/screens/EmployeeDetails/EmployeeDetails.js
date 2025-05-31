@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   ActivityIndicator
 } from 'react-native';
-import { useFocusEffect, useRoute } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { hp, wp } from '../../resources/dimensions';
 import HeaderComponent from '../../components/HeaderComponent';
 import { THEMECOLORS } from '../../resources/colors/colors';
@@ -19,6 +19,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { getEmplyeeDetails } from '../../redux/authActions';
 import ThemeToggle from '../../ScreenComponents/HeaderComponent/ThemeToggle';
+import { useAndroidBackHandler } from '../../hooks/useAndroidBackHandler';
 
 const EmplyeeDetails = () => {
   const route = useRoute();
@@ -28,9 +29,18 @@ const EmplyeeDetails = () => {
   const { t } = useTranslation();
   const userdata = useSelector((state) => state.auth.user?.data);
   const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const [employeeDetails, setEmployeeDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+
+  useAndroidBackHandler(() => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
+  });
+
 
   const renderImageSource = () => {
     if (!user || !user.profilePic) return null;

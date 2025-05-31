@@ -288,6 +288,20 @@ export const getOtpByMobilenumber = (payLoad, callback) => async (dispatch) => {
   }
 };
 
+
+// checkValidMobileNumber
+export const checkValidMobileNumber = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_MOBILE_CHECK;
+    const response = await sendRequest(endpoint, {phone:payLoad});
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("checkValidMobileNumber:", error.message);
+  }
+};
+
+
 // setMpinCall
 export const setMpinCall = (payLoad, callback) => async (dispatch) => {
   // alert(payLoad)

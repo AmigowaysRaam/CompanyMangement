@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator,
   KeyboardAvoidingView, ScrollView, Platform, TouchableWithoutFeedback, Keyboard,
@@ -13,19 +13,23 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loginWithMpin } from '../redux/authActions';
 import { useCurrentLocation } from '../../src/hooks/location';
 import { useTranslation } from 'react-i18next';
+import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
+import { useTheme } from '../context/ThemeContext';
+import { THEMECOLORS } from '../resources/colors/colors';
 
 const LoginWithMPIN = () => {
 
   const [mpinDigits, setMpinDigits] = useState(__DEV__ ? ['1', '2', '3', '4'] : ['', '', '', '']);
+  const { themeMode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const userdata = useSelector((state) => state.auth.user);
   const inputRefs = useRef([]);
   const navigation = useNavigation();
   const route = useRoute();
   const dispatch = useDispatch();
-  const { location, locationError, countryCode } = useCurrentLocation();
   const { t, i18n } = useTranslation();
   const isTamil = i18n.language === 'ta';
+  const item = route.params;
 
   const handleChange = (text, index) => {
     if (!/^\d?$/.test(text)) return;
@@ -45,36 +49,47 @@ const LoginWithMPIN = () => {
     }
   };
 
+  useEffect(() => {
+    // alert(JSON.stringify(item?.response?.userid))
+  }, [])
+
   const handleMovetoLogin = () => {
-    // navigation.reset({
-    //   index: 0,
-    //   routes: [{ name: 'LoginScreen' }],
-    // });
-    navigation.navigate('LoginScreen')
+    navigation.navigate('MobileNumber')
   }
 
+  const handleloginwithusername = () => {
+    navigation.navigate('LoginScreen')
+  }
 
   const handleMpinLogin = () => {
     const mpin = mpinDigits.join('');
     if (mpin.length !== 4) return;
     setIsLoading(true);
     const params = {
-      userid: userdata?.data?.id || userdata?.data?._id,
+      userid: userdata?.data?.id || item?.response?.userid,
       mpin: mpinDigits.join('')
     };
     // alert(JSON.stringify(params))
     dispatch(loginWithMpin(params, (response) => {
       setIsLoading(false);
-      if (response.success) {
-        navigation.replace('HomeScreen');
-        ToastAndroid.show(response.message, ToastAndroid.SHORT);
-
-      } else {
-        ToastAndroid.show(response.message, ToastAndroid.SHORT);
+      if (response) {
+        if (response.success) {
+          // navigation.replace('HomeScreen');
+          navigation.reset({
+            index: 0,
+            routes: [
+              {
+                name: 'HomeScreen',
+              },
+            ],
+          });
+          ToastAndroid.show(response.message, ToastAndroid.SHORT);
+        } else {
+          ToastAndroid.show(response.message, ToastAndroid.SHORT);
+        }
       }
     }));
   };
-
 
   return (
     <KeyboardAvoidingView
@@ -84,7 +99,10 @@ const LoginWithMPIN = () => {
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
-          <View style={styles.container}>
+          <View style={[styles.container, {
+            backgroundColor: THEMECOLORS[themeMode].background,
+          }]}>
+            {/* <ThemeToggle /> */}
             <View style={styles.imageContainer}>
               <Image
                 resizeMode="contain"
@@ -95,13 +113,13 @@ const LoginWithMPIN = () => {
             <Text style={[Louis_George_Cafe.regular.h8, {
               alignSelf: "center",
               margin: wp(2),
-              textAlign: 'center',
+              textAlign: 'center', color: THEMECOLORS[themeMode].textPrimary
             }]}>
               {t(`Your MPIN keeps your account safe 
                 Never share it with anyone`)}
             </Text>
 
-            <Text style={[Louis_George_Cafe.bold.h5, { alignSelf: "center" }]}>
+            <Text style={[Louis_George_Cafe.bold.h5, { alignSelf: "center", color: THEMECOLORS[themeMode].textPrimary }]}>
               {t('enterMpin')}
             </Text>
 
@@ -122,10 +140,9 @@ const LoginWithMPIN = () => {
                 />
               ))}
             </View>
-
             {
               isLoading ?
-                <ActivityIndicator style={{ marginTop: hp(3) }} />
+                <ActivityIndicator size={hp(4)} style={{ marginTop: hp(3) }} color={THEMECOLORS[themeMode].textPrimary} />
                 :
                 <TouchableOpacity
                   style={[styles.loginButton, { backgroundColor: mpinDigits.join('').length == 4 ? COLORS.button_bg_color : COLORS.timestamp }]}
@@ -137,15 +154,25 @@ const LoginWithMPIN = () => {
                   </Text>
                 </TouchableOpacity>
             }
-            <TouchableOpacity
-              // style={[styles.loginButton, { backgroundColor: COLORS.button_bg_color }]}
-              onPress={() => handleMovetoLogin()}
-            // disabled={mpinDigits.join('').length !== 4}
-            >
-              <Text style={[Louis_George_Cafe.bold.h8, { alignSelf: "center", marginVertical: hp(4), color: COLORS.button_bg_color, textDecorationLine: "underline" }]}>
-                {t('forget_mpin') + '?'}
-              </Text>
-            </TouchableOpacity>
+            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+              <TouchableOpacity
+                onPress={() => handleloginwithusername()}
+              >
+                <Text style={[Louis_George_Cafe.regular.h7, { alignSelf: "center", marginVertical: hp(4), color: THEMECOLORS[themeMode].textPrimary, textDecorationLine: "underline" }]}>
+                  {t('loginwithusername')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => handleMovetoLogin()}
+              >
+                <Text style={[Louis_George_Cafe.regular.h7, { alignSelf: "center", marginVertical: hp(4), color: THEMECOLORS[themeMode].textPrimary, textDecorationLine: "underline" }]}>
+                  {t('forget_mpin') + '?'}
+                </Text>
+              </TouchableOpacity>
+            </View>
+
+
+
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>
@@ -156,7 +183,7 @@ const LoginWithMPIN = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    // backgroundColor: COLORS.background,
     paddingTop: hp(5),
     paddingBottom: hp(10),
     paddingHorizontal: wp(5),

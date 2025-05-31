@@ -25,13 +25,12 @@ const ServiceSelectionScreen = () => {
   const { currency, langCode } = useCurrentLocation();
   const { themeMode } = useTheme();
   const { t, i18n } = useTranslation();
-
   const isTamil = i18n.language === 'ta'; // Check if the current language is Tamil
-
   const handleSelect = (value) => {
     setSelected(value);
+    
     setTimeout(() => {
-      navigation.replace('CategoryListScreen', {
+      navigation.navigate('CategoryListScreen', {
         value
       });
     }, 500);
