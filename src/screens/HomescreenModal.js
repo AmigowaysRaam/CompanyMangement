@@ -15,16 +15,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { getSideMenus } from "../redux/authActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import _ from 'lodash';
-
+import LogoutModal from "../components/LogoutPop";
+import { useTranslation } from "react-i18next";
 const HomeScreenModal = ({ visible, onClose, children, title, }) => {
-
     // Track which menus are expanded for submenu
     const [expandedMenus, setExpandedMenus] = useState({});
     const navigation = useNavigation();
     const { themeMode, toggleTheme } = useTheme();
+    const { t, i18n } = useTranslation();
+    const isTamil = i18n.language === 'ta';
     const userdata = useSelector((state) => state.auth.user);
     const sideMenusArray = useSelector((state) => state.auth.sidemenu);
     const dispatch = useDispatch();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [sideMenusList, setsideMenusList] = useState(sideMenusArray ? sideMenusArray?.data : []);
     const [isLoading, setisLoading] = useState(false);
     // Toggle expand/collapse submenu for a menu index
@@ -50,12 +53,10 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                 }
             }));
         }
-
     }, [userdata?.data?.id])
 
 
     const handleLogout = async () => {
-        // navigation.replace('LoginScreen')
         try {
             await AsyncStorage.clear();
             console.log('AsyncStorage cleared. Logging out...');
@@ -75,12 +76,10 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
         if (item == 'Notifications') {
             navigation.navigate('Notifications')
         }
+        if (item == 'Attendance & Leave') {
+            navigation.navigate('Attendance')
+        }
     }
-
-
-
-
-
 
     // Render submenu item
     const renderSubmenuItem = ({ item }) => (
@@ -115,7 +114,6 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                         if (hasSubmenu) {
                             toggleExpand(index);
                         } else {
-                            // item.onPress();
                             onClose(),
                                 handleNavigateScreen(item.label)
                         }
@@ -123,8 +121,9 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                     style={styles.menuItem}
                 >
                     <Text style={[Louis_George_Cafe.regular.h7, {
+                        lineHeight: wp(5),
                         color: THEMECOLORS[themeMode].textPrimary
-                    }]}>{item.label}</Text>
+                    }]}>{t(item.label)}</Text>
                     <MaterialCommunityIcons
                         name={hasSubmenu ? (isExpanded ? "chevron-up" : "chevron-down") : "chevron-right"}
                         size={hp(3)}
@@ -221,15 +220,19 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                         >
                             <TouchableOpacity style={[styles.logoutBtn, {
                                 backgroundColor: THEMECOLORS[themeMode].buttonBg
-                            }]} onPress={() => handleLogout()}>
+                            }]}
+                                // onPress={() => handleLogout()}
+                                onPress={() => setShowLogoutModal(true)}
+
+                            >
                                 <Text
                                     numberOfLines={1}
                                     style={[
-                                        Louis_George_Cafe.bold.h7,
+                                        isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.bold.h7,
                                         { alignSelf: "center", color: THEMECOLORS[themeMode].buttonText, lineHeight: wp(5) },
                                     ]}
                                 >
-                                    {"Logout"}
+                                    {t('log_out')}
                                 </Text>
                                 <MaterialCommunityIcons
                                     name="logout"
@@ -248,6 +251,12 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                             </Text>
                         </View>
                     </View>
+                    {showLogoutModal &&
+                        <LogoutModal
+                            isVisible={showLogoutModal}
+                            onCancel={() => setShowLogoutModal(false)}
+                        />
+                    }
                 </View>
             </TouchableWithoutFeedback>
         </Modal>
@@ -277,7 +286,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 4,
         elevation: 5,
-        height: hp(100),
+        height: "100%",
         overflow: "hidden",
         borderTopEndRadius: wp(10),
     },

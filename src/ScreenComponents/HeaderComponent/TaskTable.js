@@ -13,11 +13,6 @@ import { COLORS } from "../../resources/Colors";
 import { Louis_George_Cafe } from "../../resources/fonts";
 import { useTranslation } from "react-i18next";
 
-// const initialData = [
-//     { id: "1", title: "Meeting with Developers", checked: false, deadline: "1 hour" },
-//     { id: "2", title: "Interview for Digital Marketing", checked: false, deadline: "1 hour" },
-//     { id: "3", title: "Conducting Events", checked: false, deadline: "1 hour" },
-// ];
 
 const TaskTable = (tdata) => {
 
@@ -38,31 +33,27 @@ const TaskTable = (tdata) => {
     };
 
     const renderItem = ({ item }) => (
-        <View style={styles.row}>
-            <TouchableOpacity onPress={() => toggleCheckbox(item.id)}>
+        <View >
+            <TouchableOpacity onPress={() => toggleCheckbox(item.id)} style={styles.row}>
                 <MaterialCommunityIcons
                     name={item.checked ? "checkbox-marked" : "square-outline"}
                     size={hp(3.5)}
                     color={"#555"}
                 />
+                <View>
+                    <Text style={[isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7, styles.title]}>{item.title}</Text>
+                    <Text style={[isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h8, styles.title]}>{item.deadline}</Text>
+                </View>
             </TouchableOpacity>
-            <View>
-                <Text style={[isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7, styles.title]}>{item.title}</Text>
-                <Text style={[isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h8, styles.title]}>{item.deadline}</Text>
-            </View>
+
         </View>
+
     );
 
     return (
         <View style={styles.container}>
             <Text style={[Louis_George_Cafe.bold.h6, { marginVertical: wp(1) }]}>{t('tasks')}</Text>
             <Text style={[Louis_George_Cafe.bold.h9]}>
-                {/* {`${new Date().toLocaleDateString('en-US', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                })}`} */}
                 {tdata.tdata?.currentDate}
             </Text>
             <FlatList

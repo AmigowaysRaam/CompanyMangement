@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Image,
   ToastAndroid,
-  BackHandler
+  BackHandler,
+  ActivityIndicator
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { wp, hp } from "../resources/dimensions";
@@ -17,7 +18,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from "../context/Language";
 import { getLanguageList, setLanguageSelected } from "../redux/authActions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 function HeaderComponent({
   title,
@@ -32,9 +33,12 @@ function HeaderComponent({
   const { themeMode } = useTheme();
   const { t, i18n } = useTranslation();
   const [menuVisible, setMenuVisible] = React.useState(false);
+  const [isLoading, setLoading] = React.useState(false);
+  const langugelist = useSelector((state) => state.auth?.langugelistArray?.data);
+
   const { language, setLanguage } = useLanguage();
   const dispatch = useDispatch();
-  const [languagesList, setSelectedLanguageList] = useState([]);
+  const [languagesList, setSelectedLanguageList] = useState(langugelist ? langugelist : []);
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
 
@@ -55,8 +59,6 @@ function HeaderComponent({
         if (flag) {
           ToastAndroid.show(`Language switched to ${langCode}`, ToastAndroid.SHORT);
         }
-
-
       } else {
         // console.warn('Translation response is invalid or missing data.');
       }
@@ -66,12 +68,19 @@ function HeaderComponent({
   };
 
   useEffect(() => {
-    dispatch(getLanguageList((response) => {
-      if (response.success) {
-        setSelectedLanguageList(response.data)
-        fnchangeLanguage(language, false)
-      }
-    }));
+    dispatch(getLanguageList)
+    if (languagesList?.length == 0) {
+      setLoading(true)
+      dispatch(getLanguageList((response) => {
+        if (response.success) {
+          setLoading(false)
+          setSelectedLanguageList(response.data)
+        }
+        else {
+          setLoading(false)
+        }
+      }));
+    }
   }, [language])
 
   useFocusEffect(
@@ -106,44 +115,50 @@ function HeaderComponent({
               <View style={{ flexDirection: "row", marginTop: wp(1) }}>
                 <TouchableOpacity style={styles.iconButton}
                 //  onPress={() => navigation.navigate('LoginWithMpin')}
-                 >
+                >
                   <MaterialCommunityIcons name="calendar" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton}>
                   <MaterialCommunityIcons name="magnify" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton} onPress={() =>
+                  navigation.navigate('Notifications')
+                }>
                   <MaterialCommunityIcons name="bell-outline" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
-                <Menu
-                  visible={menuVisible}
-                  onDismiss={closeMenu}
-                  anchor={
-                    <TouchableOpacity onPress={openMenu} style={styles.iconButton}>
-                      {/* <Text style={[Louis_George_Cafe.bold.h5, {
-                        color: THEMECOLORS[themeMode].primary,
-                      }]}>
-                        {language}
-                      </Text> */}
-                      <MaterialCommunityIcons
-                        name="translate"
-                        size={hp(3)}
-                        color={THEMECOLORS[themeMode].primary}
+                {languagesList.length != 0 &&
+                  <Menu
+                    visible={menuVisible}
+                    onDismiss={closeMenu}
+                    anchor={
+                      <TouchableOpacity onPress={openMenu} style={styles.iconButton}>
+                        {isLoading ?
+                          <ActivityIndicator
+                            size={hp(3)}
+                            color={THEMECOLORS[themeMode].primary}
+                          />
+                          :
+                          <MaterialCommunityIcons
+                            name={"translate"}
+                            size={hp(3)}
+                            color={THEMECOLORS[themeMode].primary}
+                          />
+                        }
+                      </TouchableOpacity>
+                    }
+                    contentStyle={{ backgroundColor:"#e9e9e9", marginTop: hp(4) }}
+                  >
+                    {languagesList.map((lang) => (
+                      <Menu.Item
+                        key={lang.code}
+                        onPress={() => fnchangeLanguage(lang.code, true)}
+                        title={lang.nativeName}
+                        titleStyle={{ color: language == lang.code ? THEMECOLORS[themeMode].primaryApp : "#000", fontWeight: language == lang.code ? "900" : null, fontSize: wp(language == lang.code ? 4 : 3) }}
                       />
+                    ))}
+                  </Menu>
+                }
 
-                    </TouchableOpacity>
-                  }
-                  contentStyle={{ backgroundColor: THEMECOLORS[themeMode].viewBackground, marginTop: hp(4) }}
-                >
-                  {languagesList.map((lang) => (
-                    <Menu.Item
-                      key={lang.code}
-                      onPress={() => fnchangeLanguage(lang.code, true)}
-                      title={lang.nativeName}
-                      titleStyle={{ color: language == lang.code ? THEMECOLORS[themeMode].accent : THEMECOLORS[themeMode].textPrimary, fontWeight: language == lang.code ? "900" : null, fontSize: wp(language == lang.code ? 4 : 3) }}
-                    />
-                  ))}
-                </Menu>
 
 
               </View>

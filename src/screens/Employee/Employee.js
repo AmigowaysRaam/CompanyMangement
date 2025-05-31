@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  ActivityIndicator,
   TouchableOpacity,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -20,6 +19,7 @@ import { getemployeeDetails } from '../../redux/authActions';
 import HomeScreenLoader from '../HomeScreenLoader';
 
 export default function Employee() {
+  
   const { themeMode } = useTheme();
   const { t, i18n } = useTranslation();
   const isTamil = i18n.language === 'ta';
@@ -72,7 +72,7 @@ export default function Employee() {
               end={{ x: 1, y: 0 }}
             >
               <View style={{ flexDirection: 'column', alignItems: 'center', gap: wp(2) }}>
-                <Text style={adjustFont(Louis_George_Cafe.regular.h6, 2)}>{t('totalEmployee')}</Text>
+                <Text style={adjustFont(Louis_George_Cafe.regular.h6, 3)}>{t('totalEmployee')}</Text>
                 <Text style={adjustFont(Louis_George_Cafe.bold.h1, 4)}>
                   {employeeData?.totalEmployee ?? '--'}
                 </Text>
@@ -86,14 +86,13 @@ export default function Employee() {
               end={{ x: 1, y: 1 }}
             >
               <View style={{ flexDirection: 'column', alignItems: 'center', gap: wp(2) }}>
-                <Text style={adjustFont(Louis_George_Cafe.regular.h6, 5)}>{t('totalApplicants')}</Text>
+                <Text style={adjustFont(Louis_George_Cafe.regular.h6, 6)}>{t('totalApplicants')}</Text>
                 <Text style={adjustFont(Louis_George_Cafe.bold.h1, 6)}>
                   {employeeData?.totalApplicants ?? '--'}
                 </Text>
               </View>
             </LinearGradient>
           </View>
-
           {/* Gender Chart */}
           <View style={styles.gendercard}>
             <Text style={[adjustFont(Louis_George_Cafe.regular.h6, 2), { margin: hp(2) }]}>
@@ -159,7 +158,6 @@ export default function Employee() {
                   {t('performance')}
                 </Text>
               </View>
-
               <FlatList
                 data={employeeData.employeeList}
                 keyExtractor={(item) => item.id.toString()}
@@ -177,7 +175,7 @@ export default function Employee() {
                     }}
                   >
                     <Text
-                      style={adjustFont(Louis_George_Cafe.bold.h8, 1)}
+                      style={adjustFont(Louis_George_Cafe.regular.h8, 1)}
                     >
                       {t('viewAll')}
                     </Text>

@@ -96,7 +96,6 @@ const SetMpin = () => {
       // Store securely or send to backend
     }
   };
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}

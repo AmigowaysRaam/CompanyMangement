@@ -6,12 +6,7 @@ import { wp } from '../resources/dimensions';
 
 const NoInternetBanner = () => {
     return (
-        <View style={{
-            alignItems: "center", justifyContent: "center", alignSelf: "center", flex: 1,
-        }}>
-            <Image
-                source={require("../../src/assets/animations/no_internet.png")}
-            />
+     
             <LinearGradient
                 colors={['#c00', '#ed0000', '#ff0e0e']}
                 start={{ x: 1, y: 1 }}
@@ -24,7 +19,6 @@ const NoInternetBanner = () => {
                     </Text>
                 </View>
             </LinearGradient>
-        </View>
     );
 };
 
@@ -32,7 +26,8 @@ const styles = StyleSheet.create({
     coverImage: {
         padding: 16,
         alignItems: 'center',
-        justifyContent: 'center', width: wp(70),
+        justifyContent: 'center', 
+        width: wp(70),
         borderBottomRightRadius: wp(8),
         borderTopLeftRadius: wp(8),
 

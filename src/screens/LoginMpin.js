@@ -11,9 +11,7 @@ import { COLORS } from '../resources/Colors';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginWithMpin } from '../redux/authActions';
-import { useCurrentLocation } from '../../src/hooks/location';
 import { useTranslation } from 'react-i18next';
-import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
 import { useTheme } from '../context/ThemeContext';
 import { THEMECOLORS } from '../resources/colors/colors';
 
@@ -74,7 +72,6 @@ const LoginWithMPIN = () => {
       setIsLoading(false);
       if (response) {
         if (response.success) {
-          // navigation.replace('HomeScreen');
           navigation.reset({
             index: 0,
             routes: [
@@ -118,11 +115,9 @@ const LoginWithMPIN = () => {
               {t(`Your MPIN keeps your account safe 
                 Never share it with anyone`)}
             </Text>
-
             <Text style={[Louis_George_Cafe.bold.h5, { alignSelf: "center", color: THEMECOLORS[themeMode].textPrimary }]}>
               {t('enterMpin')}
             </Text>
-
             {/* 4 Digit Square Boxes */}
             <View style={styles.mpinBoxContainer}>
               {mpinDigits.map((digit, index) => (
@@ -154,22 +149,36 @@ const LoginWithMPIN = () => {
                   </Text>
                 </TouchableOpacity>
             }
-            <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-              <TouchableOpacity
-                onPress={() => handleloginwithusername()}
-              >
-                <Text style={[Louis_George_Cafe.regular.h7, { alignSelf: "center", marginVertical: hp(4), color: THEMECOLORS[themeMode].textPrimary, textDecorationLine: "underline" }]}>
+            <View style={{ flexDirection: !isTamil ? "row" : "column", justifyContent: "space-around" ,marginTop:hp(2)}}>
+              <TouchableOpacity onPress={() => handleloginwithusername()}>
+                <Text style={[
+                  isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h7,
+                  {
+                    alignSelf: "center",
+                    marginVertical: hp(1),
+                    color: THEMECOLORS[themeMode].textPrimary,
+                    textDecorationLine: "underline"
+                  }
+                ]}>
                   {t('loginwithusername')}
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => handleMovetoLogin()}
-              >
-                <Text style={[Louis_George_Cafe.regular.h7, { alignSelf: "center", marginVertical: hp(4), color: THEMECOLORS[themeMode].textPrimary, textDecorationLine: "underline" }]}>
-                  {t('forget_mpin') + '?'}
+
+              <TouchableOpacity onPress={() => handleMovetoLogin()}>
+                <Text style={[
+                  isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h7,
+                  {
+                    alignSelf: "center",
+                    marginVertical: hp(1),
+                    color: THEMECOLORS[themeMode].textPrimary,
+                    textDecorationLine: "underline"
+                  }
+                ]}>
+                  {t('forget_mpin') + "?"}
                 </Text>
               </TouchableOpacity>
             </View>
+
 
 
 

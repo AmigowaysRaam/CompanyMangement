@@ -117,8 +117,20 @@ export default function Attendance() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ paddingBottom: hp(10) }}
                 ListFooterComponent={
-                  <TouchableOpacity style={styles.viewAllButton}>
-                    <Text style={[adjustFont(Louis_George_Cafe.bold.h9, 1), { textTransform: "capitalize" }]}>
+                 <TouchableOpacity
+                    style={{
+                      alignSelf: 'center',
+                      margin: wp(3),
+                      paddingHorizontal: wp(2),
+                      borderWidth: wp(0.4),
+                      borderRadius: wp(5),
+                      marginVertical: hp(2),
+                      borderColor: '#555',
+                    }}
+                  >
+                    <Text
+                      style={adjustFont(Louis_George_Cafe.regular.h8, 1)}
+                    >
                       {t('viewAll')}
                     </Text>
                   </TouchableOpacity>
@@ -225,14 +237,5 @@ const styles = StyleSheet.create({
     marginHorizontal: wp(6),
     borderRadius: wp(4),
     color: '#fff',
-  },
-  viewAllButton: {
-    alignSelf: 'center',
-    margin: wp(3),
-    paddingHorizontal: wp(2),
-    paddingVertical: wp(1),
-    borderWidth: wp(0.4),
-    borderRadius: wp(5),
-    borderColor: '#555',
   },
 });

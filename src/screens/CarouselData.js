@@ -51,21 +51,17 @@ manage  everything in one place
       setCurrentImageName(data[nextIndex].imageName);
       carouselRef.current?.scrollTo({ index: nextIndex, animated: true });
     } else {
-      // 👇 Navigate to another screen when on the last item
-              navigation.replace('LoginScreen')
+      navigation.replace('LoginScreen')
     }
   };
 
   const handleSnapToItem = (index) => {
     setcurrrentIndexz(index);
     setCurrentImageName(data[index]?.imageName);
-    // if (index === data.length - 1) {
-    //   // Automatically navigate when last item is reached via swipe
-    //   setTimeout(() => {
-    //     // navigation.navigate('LoginScreen');
-    //     navigation.replace('LoginScreen')
-    //   }, 800)
-    // }
+    if (index === data.length - 1) {
+      // Automatically navigate when last item is reached via swipe
+      navigation.replace('LoginScreen')
+    }
   };
 
   return (
@@ -75,18 +71,18 @@ manage  everything in one place
       {/* Skip button at top right */}
       <TouchableOpacity
         style={styles.skipButton}
-        onPress={handleSkip}
+        onPress={() => handleSkip()}
       >
         <Text style={[styles.skipButtonText, {
           color: THEMECOLORS[themeMode].primary
         }]}>
-          {currrentIndexz < data.length - 1 ? t('skip') :  t('get_started') }
+          {currrentIndexz < data.length - 1 ? t('skip') : t('get_started')}
         </Text>
       </TouchableOpacity>
       <Carousel
         ref={carouselRef}
         pagingEnabled={true}
-        
+
         style={{ zIndex: 0 }}
         width={wp(90)}
         height={hp(80)}

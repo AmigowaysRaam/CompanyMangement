@@ -109,7 +109,7 @@ const HomeScreen = () => {
             <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={[THEMECOLORS[themeMode].primary || "#000000"]} // ✅ fallback to black if undefined
+            colors={["#013CA3"]} // ✅ fallback to black if undefined
             tintColor={THEMECOLORS[themeMode].primaryApp || "#000000"} // ✅ fallback to black
           />
           }

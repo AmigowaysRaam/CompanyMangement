@@ -112,7 +112,6 @@ const MyProfileUpdate = () => {
     return (
         <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background }}>
             <HeaderComponent title={t('My Profile')} showBackArray={true} />
-
             {isLoading ?
                 <ProfileScreenLoader />
                 :
@@ -135,7 +134,7 @@ const MyProfileUpdate = () => {
                                         name={'camera'}
                                         size={hp(2.5)}
                                         color={"#000"}
-                                        style={{ position: "absolute", left: hp(13), padding: wp(1.5), backgroundColor: "#fff", borderRadius: wp(4) }}
+                                        style={{ position: "absolute", left: hp(11), padding: wp(1.5), backgroundColor: "#fff", borderRadius: wp(4) }}
                                     />
                                 </TouchableOpacity>
                             </View>

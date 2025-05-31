@@ -19,6 +19,11 @@ import {
   APP_TAB_MENU_SUCCESS,
   APP_TAB_MENU_FAILURE,
 
+
+
+  APP_GET_LANGUAGES_REQUEST,
+  APP_GET_LANGUAGE_SUCCESS,
+  APP_GET_LANGUAGE_FAILURE,
 } from "./actionsTypes";
 
 const initialState = {
@@ -30,8 +35,9 @@ const initialState = {
   getFrontSite: null,
   error: null, // make sure error is part of state
   user: null,
-  sidemenu: null, 
-  tabMenuList: null
+  sidemenu: null,
+  tabMenuList: null,
+  langugelistArray: null
 };
 
 const authReducer = (state = initialState, action) => {
@@ -39,7 +45,7 @@ const authReducer = (state = initialState, action) => {
 
     // Generate Token
     case APP_GENERATE_TOKEN_REQUEST:
-      console.log("APP_GENERATE_TOKEN_REQUEST", state);
+      // console.log("APP_GENERATE_TOKEN_REQUEST", state);
       return {
         ...state,
         isLoading: true,
@@ -47,7 +53,7 @@ const authReducer = (state = initialState, action) => {
       };
 
     case APP_GENERATE_TOKEN_SUCCESS:
-      console.log("generateTokenSuccess", action.payload);
+      // console.log("generateTokenSuccess", action.payload);
       return {
         ...state,
         token: action.payload,
@@ -56,7 +62,7 @@ const authReducer = (state = initialState, action) => {
       };
 
     case APP_GENERATE_TOKEN_FAILURE:
-      console.log("generateTokenFailure");
+      // console.log("generateTokenFailure");
       return {
         ...state,
         isLoading: false,
@@ -150,7 +156,7 @@ const authReducer = (state = initialState, action) => {
       };
 
     case APP_TAB_MENU_SUCCESS:
-      console.log("APP_USER_SIDE_MENUS_SUCCESS:", action.payload);
+      // console.log("APP_USER_SIDE_MENUS_SUCCESS:", action.payload);
       return {
         ...state,
         loading: false,
@@ -166,6 +172,29 @@ const authReducer = (state = initialState, action) => {
         error: action.payload, // typically an error message or object
       };
 
+    case APP_GET_LANGUAGES_REQUEST:
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+
+    case APP_GET_LANGUAGE_SUCCESS:
+      // console.log("APP_LANGUAGE_LIST_SUCCESS:", action.payload);
+      return {
+        ...state,
+        loading: false,
+        langugelistArray: action.payload,
+        error: null,
+      };
+
+    case APP_GET_LANGUAGE_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        langugelistArray: null,
+        error: action.payload, // typically an error message or object
+      };
     default:
       return state;
   }

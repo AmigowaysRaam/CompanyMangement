@@ -18,6 +18,10 @@ import CategoryListScreen from "../screens/CategoryListScreen";
 import SubCategoryListScreen from "../screens/SubCategoryListing";
 import MyProfileUpdate from "../screens/MyProfileUpdate";
 import LoginWithMPIN from "../screens/LoginMpin";
+import NotificationList from "../screens/Notification";
+import AccountSetting from "../screens/AccountSetting";
+import { Settings } from "react-native";
+import SettingsScreen from "../screens/SettingsScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -32,7 +36,7 @@ function InitialRouter() {
         <Stack.Screen name="HomeScreen" component={TabNavigator} />
         <Stack.Screen name="LoginScreen" component={LoginScreen} />
         <Stack.Screen name="Splash" component={Splash} />
-        <Stack.Screen name="ChooseLanguage" component={ChooseLanguage} 
+        <Stack.Screen name="ChooseLanguage" component={ChooseLanguage}
           options={{ animationEnabled: false }}
         />
         <Stack.Screen name="CarouselData" component={CarouselData} />
@@ -47,8 +51,9 @@ function InitialRouter() {
         <Stack.Screen name="SubCategoryListScreen" component={SubCategoryListScreen} />
         <Stack.Screen name="MyProfileUpdate" component={MyProfileUpdate} />
         <Stack.Screen name="LoginWithMpin" component={LoginWithMPIN} />
-
-        
+        <Stack.Screen name="Notifications" component={NotificationList} />
+        <Stack.Screen name="AccountSetting" component={AccountSetting} />
+        <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
 
         
       </Stack.Navigator>

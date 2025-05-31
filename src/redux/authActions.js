@@ -32,6 +32,16 @@ import {
   APP_EMPLOYEE_TAB_MENU_FAILURE,
 
 
+  APP_LANGUAGE_LIST_REQUEST,
+  APP_LANGUAGE_LIST_SUCCESS,
+  APP_LANGUAGE_LIST_FAILURE,
+
+
+  APP_GET_SETTINGS_MENU_REQUEST,
+  APP_GET_SETTINGS_MENU_SUCCESS,
+  APP_GET_SETTINGS_MENU_FAILURE,
+
+
 
 } from "./actionsTypes";
 import { API_REQUESTS } from "../api/api-end-points";
@@ -81,6 +91,22 @@ export const getLanguageList = (callback) => async (dispatch) => {
   }
 };
 
+// getSettingMenus
+export const getSettingMenus = (userdata, callback) => async (dispatch) => {
+  dispatch({ type: APP_GET_SETTINGS_MENU_REQUEST });
+  try {
+    const endpoint = API_REQUESTS.API_GET_SETTINGS_MENU_URL;
+    const response = await sendRequest(endpoint, userid = userdata);
+    dispatch({ type: APP_GET_SETTINGS_MENU_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching APP_GET_SETTINGS_MENU_FAILUREs:", error.message);
+    dispatch({ type: APP_GET_SETTINGS_MENU_FAILURE, error: error.message });
+  }
+};
+
+
 // loginUser
 export const loginUser = (credentials, callback) => async (dispatch) => {
   dispatch({ type: APP_USER_LOGIN_REQUEST });
@@ -116,18 +142,22 @@ export const loginWithMpin = (credentials, callback) => async (dispatch) => {
 };
 
 
+// APP_LANGUAGE_LIST_REQUEST,
+// APP_LANGUAGE_LIST_SUCCESS,
+// APP_LANGUAGE_LIST_FAILURE,
 // setLanguageSelected
 export const setLanguageSelected = (payLoad, callback) => async (dispatch) => {
-  // dispatch({ type: APP_USER_LOGIN_REQUEST });
+  // dispatch({ type: APP_LANGUAGE_LIST_REQUEST });
   try {
     const endpoint = API_REQUESTS.API_LANGUAGE_CONTENT_URL;
     const response = await sendRequest(endpoint, { lang: payLoad });
     // alert(JSON.stringify(response, 2, null))
+    // dispatch({ type: APP_LANGUAGE_LIST_SUCCESS, payload: response });
     if (callback) callback(response);
     return response;
   } catch (error) {
     console.error("Error fetching LANGUAGE Selected:", error.message);
-    // dispatch({ type: APP_USER_LOGIN_FAILURE, error: error.message });
+    // dispatch({ type: APP_LANGUAGE_LIST_FAILURE, error: error.message });
   }
 };
 
@@ -293,7 +323,7 @@ export const getOtpByMobilenumber = (payLoad, callback) => async (dispatch) => {
 export const checkValidMobileNumber = (payLoad, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_MOBILE_CHECK;
-    const response = await sendRequest(endpoint, {phone:payLoad});
+    const response = await sendRequest(endpoint, { phone: payLoad });
     if (callback) callback(response);
     return response;
   } catch (error) {

@@ -58,11 +58,10 @@ export default function EmployeePaylist() {
                 </View>
                 <View style={styles.line} />
                 <FlatList data={dummyData} keyExtractor={(item) => item.id} renderItem={renderItem} />
-                <TouchableOpacity
-                    onPress={() => navigation.navigate('PayrollList', { item: dummyData })}
-                    style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(2), borderWidth: wp(0.3), borderRadius: wp(5) }}
-                >
-                    <Text style={[isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.bold.h8]}>{t('viewAll')}</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('PayrollList', { item: dummyData })} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
+                    <Text style={[Louis_George_Cafe.regular.h9, {
+                        lineHeight: wp(5)
+                    }]}>{t('viewAll')}</Text>
                 </TouchableOpacity>
             </View>
         </View>

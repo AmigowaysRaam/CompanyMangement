@@ -148,7 +148,7 @@ export default function EmployeeTable() {
                     renderItem={renderItem}
                 />
                 <TouchableOpacity onPress={() => navigation.navigate('PayrollList', { item: dummyData })} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
-                    <Text style={[Louis_George_Cafe.bold.h9, {
+                    <Text style={[Louis_George_Cafe.regular.h9, {
                         lineHeight: wp(5)
                     }]}>{t('viewAll')}</Text>
                 </TouchableOpacity>

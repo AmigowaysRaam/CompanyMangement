@@ -25,7 +25,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import Toast from "react-native-toast-message";
 import { THEMECOLORS } from "../../resources/colors/colors";
 import { useTheme } from "../../context/ThemeContext";
-import ThemeToggle from "../../ScreenComponents/HeaderComponent/ThemeToggle";
 import { loginUser } from "../../redux/authActions";
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from "../../context/Language";
@@ -37,8 +36,6 @@ const LoginScreen = () => {
   const dispatch = useDispatch();
   const { themeMode } = useTheme();
   const { language } = useLanguage();
-  const userdata = useSelector((state) => state.auth.user);
-
   const [username, setUsername] = useState(__DEV__ ? "ram@gmail.com" : "");
   const [password, setPassword] = useState(__DEV__ ? "1234" : "");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);

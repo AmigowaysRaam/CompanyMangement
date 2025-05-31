@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, BackHandler, ToastAndroid } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomeScreen from "../screens/HomeScreen/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import Attendance from "../screens/Attendance/Attendance";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { getSiteSettings } from "../redux/authActions";
 import { COLORS } from "../resources/Colors";
 import { hp, wp } from "../resources/dimensions";
-import { fontSizes, Louis_George_Cafe } from "../resources/fonts";
+import {  Louis_George_Cafe } from "../resources/fonts";
 import { Image } from "react-native"; // add this at the top
 import Employee from "../screens/Employee/Employee";
 import { THEMECOLORS } from "../resources/colors/colors";
@@ -19,33 +17,10 @@ import { useTranslation } from "react-i18next";
 
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
-  // const [exitApp, setExitApp] = useState(false);
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const onBackPress = () => {
-  //       if (exitApp) {
-  //         BackHandler.exitApp();
-  //       } else {
-  //         ToastAndroid.show('Press back again to exit', ToastAndroid.SHORT);
-  //         setExitApp(true);
-  //         setTimeout(() => setExitApp(false), 2000);
-  //       }
-  //       return true; // prevent default behavior
-  //     };
-
-  //     const backHandler = BackHandler.addEventListener('hardwareBackPress', onBackPress);
-  //     return () => backHandler.remove();
-  //   }, [exitApp])
-  // );
-
-
-
   const { themeMode } = useTheme();
-
   const userId = useSelector((state) => state.auth.user?._id);
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-
   const CustomTabBarButton = (props) => (
     <TouchableOpacity
       {...props}
