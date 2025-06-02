@@ -37,7 +37,7 @@ const LoginScreen = () => {
   const { themeMode } = useTheme();
   const { language } = useLanguage();
   const [username, setUsername] = useState(__DEV__ ? "ram@gmail.com" : "");
-  const [password, setPassword] = useState(__DEV__ ? "1234" : "");
+  const [password, setPassword] = useState(__DEV__ ? "123456" : "");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, lerror } = useSelector((state) => state.auth);

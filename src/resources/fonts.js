@@ -35,7 +35,6 @@ export const fontSizes = {
 };
 
 export const colors = { commonText: "#000000" };
-
 export const Louis_George_Cafe = {
   regular: {
     large: {

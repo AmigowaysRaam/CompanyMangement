@@ -20,8 +20,11 @@ import MyProfileUpdate from "../screens/MyProfileUpdate";
 import LoginWithMPIN from "../screens/LoginMpin";
 import NotificationList from "../screens/Notification";
 import AccountSetting from "../screens/AccountSetting";
-import { Settings } from "react-native";
 import SettingsScreen from "../screens/SettingsScreen";
+import ChangeMpin from "../screens/changeMpin";
+import CompenSationBenifts from "../screens/CompenstaionBeniftsMenu";
+import BankDetails from "../screens/BankDetails";
+import ChangePassword from "../screens/ChangePassword";
 
 
 const Stack = createNativeStackNavigator();
@@ -54,8 +57,11 @@ function InitialRouter() {
         <Stack.Screen name="Notifications" component={NotificationList} />
         <Stack.Screen name="AccountSetting" component={AccountSetting} />
         <Stack.Screen name="SettingsScreen" component={SettingsScreen} />
+        <Stack.Screen name="ChangeMpin" component={ChangeMpin} />
+        <Stack.Screen name="CompenSationBenifts" component={CompenSationBenifts} />
+        <Stack.Screen name="BankDetails" component={BankDetails} />
+        <Stack.Screen name="ChangePassword" component={ChangePassword} />
 
-        
       </Stack.Navigator>
     </NavigationContainer>
   );

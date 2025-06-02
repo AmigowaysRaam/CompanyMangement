@@ -18,8 +18,9 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getSideMenus } from '../redux/authActions';
 import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import LogoutModal from '../components/LogoutPop';
+import { ActivityIndicator } from 'react-native-paper';
 
 const ProfileScreen = () => {
     const { themeMode } = useTheme();
@@ -51,36 +52,51 @@ const ProfileScreen = () => {
     };
 
     const handleFnNavigate = (label) => {
-        if (label == 'My Profile') {
-            navigation.navigate('MyProfileUpdate');
-        }
-        if (label == 'Attendance & Leave') {
-            navigation.navigate('Attendance');
-        }
-        if (label == 'Account Settings') {
-            navigation.navigate('SettingsScreen');
+        console.log(label);
+
+        const routeMap = {
+            'My Profile': 'MyProfileUpdate',
+            'Attendance & Leave': 'Attendance',
+            'Settings': 'SettingsScreen',
+            'Notifications': 'Notifications',
+            'Compensation & Benefits': 'CompenSationBenifts',
+        };
+
+        const route = routeMap[label];
+        if (route) {
+            navigation.navigate(route);
         }
     };
 
-    useEffect(() => {
-        const userId = userdata?.data?.id;
-        dispatch(getSideMenus(userId));
-        if (!userId) return;
 
-        if (_.isEmpty(sideMenusArray?.data)) {
-            setisLoading(true);
+    useFocusEffect(
+        React.useCallback(() => {
+            const userId = userdata?.data?.id;
             dispatch(getSideMenus(userId, (response) => {
                 if (response?.success) {
                     setsideMenusList(response.data);
+                    setisLoading(false);
                 } else {
                     setsideMenusList([]);
+                    setisLoading(false);
                 }
-                setisLoading(false);
             }));
-        } else {
-            setsideMenusList(sideMenusArray.data);
-        }
-    }, [userdata?.data?.id, sideMenusArray]);
+        }, [userdata?.data?.id])
+    );
+
+    useEffect(() => {
+        const userId = userdata?.data?.id;
+        setisLoading(true);
+        dispatch(getSideMenus(userId, (response) => {
+            if (response?.success) {
+                setsideMenusList(response.data);
+                setisLoading(false);
+            } else {
+                setsideMenusList([]);
+                setisLoading(false);
+            }
+        }));
+    }, [userdata?.data?.id]);
 
     const renderItem = ({ item, index }) => {
         const isExpanded = expandedIndex === index;
@@ -102,7 +118,6 @@ const ProfileScreen = () => {
                     ]}>
                         {t(item.label)}
                     </Text>
-
                     {item.submenus ? (
                         <MaterialCommunityIcons
                             name={isExpanded ? "chevron-up" : "chevron-down"}
@@ -139,6 +154,25 @@ const ProfileScreen = () => {
         );
     };
 
+    const staticMapItems = [1, 2, 3, 4, 5];
+    const renderStaticMapItem = () => {
+        return (
+            staticMapItems.map((item, index) => (
+                <View
+                    key={index}
+                    style={{
+                        backgroundColor: themeMode == 'dark' ? "#111" : "#f1f1f1",
+                        width: wp(90),
+                        height: hp(6),
+                        borderRadius: wp(4),
+                        alignSelf: "center",
+                        marginVertical: wp(2),
+                    }}
+                />
+            ))
+        );
+    };
+
     return (
         <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background, paddingVertical: wp(1) }}>
             <HeaderComponent title={t('profile')} showBackArray={false} />
@@ -171,53 +205,66 @@ const ProfileScreen = () => {
                     {userdata?.data?.designation}
                 </Text>
             </View>
-            <>
-                <FlatList
-                    ref={flatListRef}
-                    data={sideMenusList}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => index.toString()}
-                    contentContainerStyle={{
-                        paddingHorizontal: wp(5),
-                        paddingTop: hp(2),
-                        paddingBottom: hp(4)
-                    }}
-                    getItemLayout={(data, index) => ({
-                        length: hp(8), // approx row height
-                        offset: hp(8) * index,
-                        index,
-                    })}
+
+            {isLoading ?
+                renderStaticMapItem()
+                :
+                <>
+
+                    <FlatList
+                        ref={flatListRef}
+                        data={sideMenusList}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => index.toString()}
+                        contentContainerStyle={{
+                            paddingHorizontal: wp(5),
+                            paddingTop: hp(2),
+                            paddingBottom: hp(4)
+                        }}
+                        getItemLayout={(data, index) => ({
+                            length: hp(8), // approx row height
+                            offset: hp(8) * index,
+                            index,
+                        })}
+                    />
+
+                    <TouchableOpacity
+                        onPress={() => setShowLogoutModal(true)}
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            marginVertical: hp(6),
+                            paddingHorizontal: hp(4),
+                            position: "relative"
+                        }}
+                    >
+                        <Text style={[
+                            isTamil ? Louis_George_Cafe.bold.h7 : Louis_George_Cafe.bold.h6,
+                            { color: THEMECOLORS[themeMode].textPrimary, lineHeight: wp(6) }
+                        ]}>
+                            {t('log_out')}
+                        </Text>
+                        <MaterialCommunityIcons
+                            name={'logout'}
+                            size={hp(2.5)}
+                            color={THEMECOLORS[themeMode].textPrimary}
+                        />
+                    </TouchableOpacity>
+                </>
+
+            }
+
+
+
+
+            {showLogoutModal &&
+                <LogoutModal
+                    isVisible={showLogoutModal}
+                    onCancel={() => setShowLogoutModal(false)}
                 />
-                <TouchableOpacity
-                    onPress={() => setShowLogoutModal(true)}
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginVertical: hp(6),
-                        paddingHorizontal: hp(4)
-                    }}
-                >
-                    <Text style={[
-                        isTamil ? Louis_George_Cafe.bold.h7 : Louis_George_Cafe.bold.h6,
-                        { color: THEMECOLORS[themeMode].textPrimary, lineHeight: wp(6) }
-                    ]}>
-                        {t('log_out')}
-                    </Text>
-                    <MaterialCommunityIcons
-                        name={'logout'}
-                        size={hp(2.5)}
-                        color={THEMECOLORS[themeMode].textPrimary}
-                    />
-                </TouchableOpacity>
-                {showLogoutModal &&
-                    <LogoutModal
-                        isVisible={showLogoutModal}
-                        onCancel={() => setShowLogoutModal(false)}
-                    />
-                }
-            </>
-        </View>
+            }
+        </View >
     );
 };
 
@@ -234,7 +281,7 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         justifyContent: "flex-end",
     },
-    
+
     profileImageContainer: {
         zIndex: 2,
         alignSelf: "center",
@@ -254,6 +301,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: wp(2)
     },
+
     menuItem: {
         padding: wp(2),
         borderRadius: wp(2),

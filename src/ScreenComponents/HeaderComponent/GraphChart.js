@@ -116,73 +116,83 @@ const initialHtml = `
 
 export default function AttendanceChart() {
 
-    const webviewRef = useRef(null);
-    const chartData = {
-        labels: ["January", "February", "March", "April", "May"],
-        data: [60, 75, 80, 65, 90],
-    };
+  const webviewRef = useRef(null);
+  const chartData = {
+    labels: ["January", "February", "March", "April", "May"],
+    data: [60, 75, 50, 65, 90],
+  };
 
-    useEffect(() => {
-        if (webviewRef.current) {
-            const jsToInject = `
+  useEffect(() => {
+    if (webviewRef.current) {
+      const jsToInject = `
         window.postMessage('${JSON.stringify(chartData)}', '*');
         true;
       `;
-            // Small delay to ensure WebView is ready
-            setTimeout(() => {
-                webviewRef.current.injectJavaScript(jsToInject);
-            }, 1000);
-        }
-    }, [chartData]);
+      // Small delay to ensure WebView is ready
+      setTimeout(() => {
+        webviewRef?.current?.injectJavaScript(jsToInject);
+      }, 1000);
+    }
+  }, [chartData]);
 
-    return (
-        <View
-            style={{
-                height: hp(34),
-                width: screenWidth - 40,
-                margin: wp(2),
-                backgroundColor: "#F2E8FF",
-                borderRadius: wp(2),
-                alignSelf: "center",
-                width: wp(95),
-            }}
-        >
-            <Text
-                style={[
-                    Louis_George_Cafe.bold.h6,
-                    {
-                        alignSelf: "flex-start",
-                        marginHorizontal: wp(4),
-                        marginVertical: wp(2),
-                    },
-                ]}
-            >
-                Attendance Overview
-            </Text>
-            <Text
-                style={[
-                    Louis_George_Cafe.regular.h8,
-                    {
-                        alignSelf: "flex-start",
-                        marginHorizontal: wp(4),
-                    },
-                ]}
-            >
-                Last 5 months
-            </Text>
-            <WebView
-                originWhitelist={["*"]}
-                source={{ html: initialHtml }}
-                style={{
-                    flex: 1,
-                    margin: wp(2),
-                    marginVertical: wp(2),
-                }}
-                javaScriptEnabled
-                domStorageEnabled
-                scalesPageToFit
-                ref={webviewRef}
-            />
-        </View>
-    );
+  return (
+    <View
+      style={{
+        height: hp(34),
+        width: screenWidth - 40,
+        margin: wp(2),
+        backgroundColor: "#F2E8FF",
+        borderRadius: wp(2),
+        alignSelf: "center",
+        width: wp(95),
+      }}
+    >
+      <Text
+        style={[
+          Louis_George_Cafe.bold.h6,
+          {
+            alignSelf: "flex-start",
+            marginHorizontal: wp(4),
+            marginVertical: wp(2),
+          },
+        ]}
+      >
+        Attendance Overview
+      </Text>
+      <Text
+        style={[
+          Louis_George_Cafe.regular.h8,
+          {
+            alignSelf: "flex-start",
+            marginHorizontal: wp(4),
+          },
+        ]}
+      >
+        Last 5 months
+      </Text>
+      <WebView
+        originWhitelist={["*"]}
+        source={{ html: initialHtml }}
+        style={{
+          flex: 1,
+          margin: wp(2),
+          marginVertical: wp(2),
+        }}
+        javaScriptEnabled
+        domStorageEnabled
+        scalesPageToFit
+        ref={webviewRef}
+        onLoadEnd={() => {
+          if (webviewRef.current) {
+            const jsToInject = `
+                window.postMessage('${JSON.stringify(chartData)}', '*');
+                true;
+            `;
+            webviewRef.current.injectJavaScript(jsToInject);
+          }
+        }}
+      />
+
+    </View>
+  );
 }

@@ -77,14 +77,14 @@ const EmplyeeDetails = () => {
   return (
     <View style={{ backgroundColor: theme.background, flex: 1 }}>
       <HeaderComponent title={t('employeedetails')} showBackArray={true} />
-
       {isLoading ?
-
         <ActivityIndicator style={{ marginTop: wp(20) }} size={wp(10)} />
         :
         <>
           <View style={{ alignSelf: "center", marginVertical: hp(4) }}>
-            <Image source={renderImageSource()} style={styles.profileImage} />
+            <Image source={renderImageSource()} style={[styles.profileImage, {
+              borderColor: theme.textPrimary, backgroundColor: theme.inputBackground
+            }]} />
             <Text style={[Louis_George_Cafe.bold.h5, styles.name, { color: theme.textPrimary }]}>
               {employeeDetails?.full_name}
             </Text>
@@ -130,7 +130,7 @@ const EmplyeeDetails = () => {
               </Text>
             </View>
             <View style={{ marginVertical: wp(2) }}>
-              <TouchableOpacity style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
+              <TouchableOpacity onPress={()=>navigation.navigate('BankDetails',employeeDetails)} style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
                 <Text style={[Louis_George_Cafe.regular.h7, { color: theme.textPrimary }]}>
                   {t('bankdetails')}
                 </Text>
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     height: wp(40),
     borderRadius: wp(20),
     marginBottom: hp(3),
-    borderWidth: wp(0.5),
+    borderWidth: wp(0.9),
   },
   name: {
     marginBottom: wp(1),

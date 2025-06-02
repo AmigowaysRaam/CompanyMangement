@@ -18,12 +18,14 @@ import HeaderComponent from '../components/HeaderComponent';
 import { useTranslation } from 'react-i18next';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import { useNavigation } from '@react-navigation/native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const NotificationList = () => {
+const CompenSationBenifts = () => {
 
     const { themeMode } = useTheme();
     const { t } = useTranslation();
     const navigation = useNavigation();
+
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
             navigation.goBack();
@@ -33,21 +35,20 @@ const NotificationList = () => {
     const [notifications, setNotifications] = useState([
         {
             id: 1,
-            title: t('notifications.welcomeTitle'),
-            description: t('notifications.welcomeDescription'),
-            image: require('../assets/animations/Isolation_shield.png'),
+            title: t('compensation_management'),
+            slug: ''
         },
         {
             id: 2,
-            title: t('notifications.updateTitle'),
-            description: t('notifications.updateDescription'),
-            image: require('../assets/animations/Isolation_shield.png'),
+            title: t('benifts_administrtion'),
+            slug: ''
+
         },
         {
             id: 3,
-            title: t('notifications.offerTitle'),
-            description: t('notifications.offerDescription'),
-            image: require('../assets/animations/Isolation_shield.png'),
+            title: t('analytics_and_reposrting'),
+            slug: ''
+
         },
     ]);
 
@@ -67,25 +68,25 @@ const NotificationList = () => {
     };
 
     const renderItem = ({ item }) => (
-        <View style={[styles.notificationCard, { backgroundColor: THEMECOLORS[themeMode].cardBackground }]}>
-            <Image source={item.image} style={styles.notificationImage} />
+        <View style={[styles.notificationCard, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <View style={styles.notificationTextContainer}>
-                <Text style={[Louis_George_Cafe.bold.h7, { color: THEMECOLORS[themeMode].primaryText }]}>
+                <Text style={[Louis_George_Cafe.bold.h7, { color: THEMECOLORS[themeMode].textPrimary }]}>
                     {item.title}
-                </Text>
-                <Text style={[Louis_George_Cafe.regular.h8, { color: THEMECOLORS[themeMode].primaryText }]}>
-                    {item.description}
                 </Text>
             </View>
             <TouchableOpacity style={styles.closeIconContainer} onPress={() => dismissNotification(item.id)}>
-                <Icon name="close-circle" size={wp(5)} color={COLORS.black} />
+                <MaterialCommunityIcons
+                    name={'chevron-right'}
+                    size={hp(2.5)}
+                    color={THEMECOLORS[themeMode].textPrimary}
+                />
             </TouchableOpacity>
         </View>
     );
 
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
-            <HeaderComponent showBackArray={true} title={t('notifications')} />
+            <HeaderComponent showBackArray={true} title={t('compensaandBenift')} />
             <FlatList
                 data={notifications}
                 keyExtractor={item => item.id.toString()}
@@ -131,6 +132,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 4,
         elevation: 3,
+        height: hp(6), alignSelf: "center", alignItems: "center"
     },
     notificationImage: {
         width: wp(14),
@@ -143,12 +145,8 @@ const styles = StyleSheet.create({
         paddingRight: wp(5),
     },
     closeIconContainer: {
-        position: 'absolute',
-        top: wp(1),
-        right: wp(2),
         zIndex: 1,
     },
-    
     noNotificationText: {
         textAlign: 'center',
         marginTop: hp(10),
@@ -159,4 +157,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default NotificationList;
+export default CompenSationBenifts;

@@ -83,6 +83,10 @@ function HeaderComponent({
     }
   }, [language])
 
+  useEffect(() => {
+    fnchangeLanguage(language, false)
+  }, [])
+
   useFocusEffect(
     React.useCallback(() => {
       const onBackPress = () => true; // Prevent back action
@@ -92,7 +96,6 @@ function HeaderComponent({
     }, [])
   );
 
-
   return (
     <View style={[styles.container, {
       backgroundColor: THEMECOLORS[themeMode].background,
@@ -101,7 +104,7 @@ function HeaderComponent({
         {
           title == 'home' ?
             <>
-              <View style={{ flexDirection: "row", marginTop: wp(1) }}>
+              <View style={{ flexDirection: "row"  }}>
                 <TouchableOpacity onPress={openModal} style={styles.iconButton}>
                   <MaterialCommunityIcons name="menu" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
@@ -112,9 +115,8 @@ function HeaderComponent({
                   />
                 </TouchableOpacity>
               </View>
-              <View style={{ flexDirection: "row", marginTop: wp(1) }}>
+              <View style={{ flexDirection: "row", alignSelf:"center",justifyContent:"center",alignItems:"center" }}>
                 <TouchableOpacity style={styles.iconButton}
-                //  onPress={() => navigation.navigate('LoginWithMpin')}
                 >
                   <MaterialCommunityIcons name="calendar" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
@@ -146,7 +148,7 @@ function HeaderComponent({
                         }
                       </TouchableOpacity>
                     }
-                    contentStyle={{ backgroundColor:"#e9e9e9", marginTop: hp(4) }}
+                    contentStyle={{ backgroundColor: "#e9e9e9", marginTop: hp(4) }}
                   >
                     {languagesList.map((lang) => (
                       <Menu.Item
@@ -158,9 +160,6 @@ function HeaderComponent({
                     ))}
                   </Menu>
                 }
-
-
-
               </View>
             </>
             :
@@ -169,10 +168,9 @@ function HeaderComponent({
                 {
                   showBackArray &&
                   <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
-                    <Text style={{ lineHeight: hp(5.1) }}>
+                    <Text style={{ lineHeight: hp(5) }}>
                       <MaterialCommunityIcons name="chevron-left" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                     </Text>
-
                   </TouchableOpacity>
                 }
                 <Text style={[Louis_George_Cafe.bold.h6, {

@@ -127,14 +127,17 @@ const MyProfileUpdate = () => {
                             <View style={styles.profileImageContainer}>
                                 <TouchableOpacity onPress={handleImagePick}>
                                     <Image
-                                        source={profileImage ? { uri: profileImage } : require('../assets/animations/propic.jpg')}
+                                        source={profileImage ? { uri: profileImage } : require('../assets/animations/user_1.png')}
                                         style={styles.profileImage}
                                     />
                                     <MaterialCommunityIcons
                                         name={'camera'}
                                         size={hp(2.5)}
                                         color={"#000"}
-                                        style={{ position: "absolute", left: hp(11), padding: wp(1.5), backgroundColor: "#fff", borderRadius: wp(4) }}
+                                        style={{
+                                            position: "absolute", left: hp(11), padding: wp(1.5), backgroundColor: "#fff", borderRadius: wp(4)
+                                            // , borderWidth: wp(0.3)
+                                        }}
                                     />
                                 </TouchableOpacity>
                             </View>

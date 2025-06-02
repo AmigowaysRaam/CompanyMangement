@@ -13,10 +13,12 @@ import { THEMECOLORS } from "../resources/colors/colors";
 import { useTheme } from "../context/ThemeContext";
 import { useDispatch, useSelector } from "react-redux";
 import { getSideMenus } from "../redux/authActions";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import _ from 'lodash';
 import LogoutModal from "../components/LogoutPop";
 import { useTranslation } from "react-i18next";
+import VersionCheck from 'react-native-version-check';
+
+
 const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     // Track which menus are expanded for submenu
     const [expandedMenus, setExpandedMenus] = useState({});
@@ -31,6 +33,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     const [sideMenusList, setsideMenusList] = useState(sideMenusArray ? sideMenusArray?.data : []);
     const [isLoading, setisLoading] = useState(false);
     // Toggle expand/collapse submenu for a menu index
+
     const toggleExpand = (index) => {
         setExpandedMenus((prev) => ({
             ...prev,
@@ -53,33 +56,23 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                 }
             }));
         }
+
     }, [userdata?.data?.id])
 
-
-    const handleLogout = async () => {
-        try {
-            await AsyncStorage.clear();
-            console.log('AsyncStorage cleared. Logging out...');
-            navigation.replace('LoginScreen');
-            dispatch({ type: 'APP_USER_LOGIN_SUCCESS', payload: null });
-
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    }
-
     const handleNavigateScreen = (item) => {
+        const routes = {
+            'My Profile': 'Profile',
+            'Notifications': 'Notifications',
+            'Attendance & Leave': 'Attendance',
+            'Compensation & Benefits': 'CompenSationBenifts',
+            'Settings': 'SettingsScreen',
+        };
 
-        if (item == 'My Profile') {
-            navigation.navigate('Profile')
+        const route = routes[item];
+        if (route) {
+            navigation.navigate(route);
         }
-        if (item == 'Notifications') {
-            navigation.navigate('Notifications')
-        }
-        if (item == 'Attendance & Leave') {
-            navigation.navigate('Attendance')
-        }
-    }
+    };
 
     // Render submenu item
     const renderSubmenuItem = ({ item }) => (
@@ -222,7 +215,11 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                 backgroundColor: THEMECOLORS[themeMode].buttonBg
                             }]}
                                 // onPress={() => handleLogout()}
-                                onPress={() => setShowLogoutModal(true)}
+                                onPress={() => {
+                                    setShowLogoutModal(true)
+                                    // onClose()
+                                }
+                                }
 
                             >
                                 <Text
@@ -247,7 +244,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                     { alignSelf: "center", color: THEMECOLORS[themeMode].primary },
                                 ]}
                             >
-                                {"V 1.0.0"}
+                                {`V.${VersionCheck?.getCurrentVersion()}` || ''}
                             </Text>
                         </View>
                     </View>

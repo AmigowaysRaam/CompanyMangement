@@ -96,7 +96,7 @@ export const getSettingMenus = (userdata, callback) => async (dispatch) => {
   dispatch({ type: APP_GET_SETTINGS_MENU_REQUEST });
   try {
     const endpoint = API_REQUESTS.API_GET_SETTINGS_MENU_URL;
-    const response = await sendRequest(endpoint, userid = userdata);
+    const response = await sendRequest(endpoint, { userid: userdata });
     dispatch({ type: APP_GET_SETTINGS_MENU_SUCCESS, payload: response });
     if (callback) callback(response);
     return response;
@@ -106,6 +106,17 @@ export const getSettingMenus = (userdata, callback) => async (dispatch) => {
   }
 };
 
+// changeNoftificationStatus
+export const changeNoftificationStatus = (userdata, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_CHANGE_NOTIFICATION_URL;
+    const response = await sendRequest(endpoint, userdata);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching ChangeNoftificationStatus:", error.message);
+  }
+};
 
 // loginUser
 export const loginUser = (credentials, callback) => async (dispatch) => {
@@ -363,6 +374,36 @@ export const getProfileDetailsById = (payLoad, callback) => async (dispatch) => 
     // dispatch({ type: APP_USER_HOMEPAGE_FAILURE, error: error.message });
   }
 };
+
+// changeMpinCall
+export const changeMpinCall = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_RESETMPIN_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    // alert(JSON.stringify(response))
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("changeMpinCall:", error.message);
+  }
+};
+
+// ChangePasswordApiCall
+export const changePasswordApiCall = (payLoad, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_CHANGE_PASSCODE_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    // alert(JSON.stringify(response))
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("changeMpinCall:", error.message);
+  }
+};
+
+
+
 export const updateFormSubmit = (userId, payLoad, callback) => async (dispatch) => {
 
   try {

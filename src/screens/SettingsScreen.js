@@ -4,9 +4,7 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    Switch,
     ScrollView,
-    ActivityIndicator,
     ToastAndroid,
 } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
@@ -20,9 +18,8 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import SwitchToggle from "react-native-switch-toggle";
 import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
-import { getLanguageList, getSettingMenus } from '../redux/authActions';
+import { changeNoftificationStatus, getSettingMenus } from '../redux/authActions';
 import { useDispatch, useSelector } from 'react-redux';
-import { isLoaded } from 'expo-font';
 
 const SettingsScreen = () => {
     const { themeMode } = useTheme();
@@ -32,7 +29,7 @@ const SettingsScreen = () => {
     const [settingsData, setSettingsData] = useState([]);
     const [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
-    const userdata = useSelector((state) => state.auth.user?.id);
+    const userdata = useSelector((state) => state.auth.user?.data?.id);
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
@@ -40,28 +37,30 @@ const SettingsScreen = () => {
         }
     });
 
-    const dummyData = [
-        {
-            section: "Account Settings",
-            items: [
-                { title: "My Profile", slug: "MyProfile" },
-                { title: "Reset MPIN", slug: "ResetMPIN" },
-                { title: "Change Password", slug: "ChangePassword" },
-            ]
-        },
-        {
-            section: "Notification",
-            items: [
-                { title: "Enable Notifications", slug: "EnableNotification" }
-            ]
-        }
-    ];
+    // const dummyData = [
+    //     {
+    //         section: "Account Settings",
+    //         items: [
+    //             { title: "My Profile", slug: "MyProfile" },
+    //             { title: "Reset MPIN", slug: "ChangeMpin" },
+    //             { title: "Change Password", slug: "ChangePassword" },
+    //         ]
+    //     },
+    //     {
+    //         section: "Notification",
+    //         items: [
+    //             { title: "Enable Notifications", slug: "EnableNotification" }
+    //         ]
+    //     }
+    // ];
 
     const fetchSettings = async () => {
         setLoading(true);
         dispatch(getSettingMenus(userdata, (response) => {
             if (response.success) {
                 setSettingsData(response?.data.Settings)
+                // alert(JSON.stringify(response?.data?.notificationsExist))
+                setIsNotificationEnabled(response?.data?.notificationsExist)
                 setLoading(false)
             }
             else {
@@ -69,25 +68,42 @@ const SettingsScreen = () => {
             }
         }));
     };
+
     useEffect(() => {
         // Simulate API call
-
         fetchSettings();
     }, []);
-    const staticMapItems = [1, 2, 3, 4, 5];
-
+    const staticMapItems = [1, 2, 3, 4, 5, 6, 7];
     const handleToggleSwitch = () => {
         const nextState = !isNotificationEnabled;
         setIsNotificationEnabled(nextState);
-        ToastAndroid.show(`Notification ${nextState ? 'Enabled' : 'Disabled'}`, ToastAndroid.SHORT);
+        let payLoad = {
+            userid: userdata,
+            notification: nextState ? 'on' : 'off'
+        }
+        dispatch(changeNoftificationStatus(payLoad, (response) => {
+            if (response.success) {
+                setLoading(false);
+                // fetchSettings();
+            }
+            else {
+                setLoading(false)
+            }
+            ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
+        }));
     };
+
+
+
+
+
     const renderStaticMapItem = () => {
         return (
             staticMapItems.map((item, index) => (
                 <View
                     key={index}
                     style={{
-                        backgroundColor: themeMode == 'dark' ? "#555" : "#c5c5c5",
+                        backgroundColor: themeMode == 'dark' ? "#222" : "#f1f1f1",
                         width: wp(90),
                         height: hp(6),
                         borderRadius: wp(4),
@@ -99,13 +115,12 @@ const SettingsScreen = () => {
         );
     };
 
-
     const handleItemPress = (slug) => {
         // You can customize the logic based on slug
         if (slug === 'EnableNotification') {
             handleToggleSwitch();
         } else {
-            // navigation.navigate(slug);
+            navigation.navigate(slug);
         }
     };
 
@@ -115,18 +130,15 @@ const SettingsScreen = () => {
         }]}>
             <HeaderComponent showBackArray={true} title={t('settings')} />
             <ScrollView style={styles.list}>
-
                 {loading ?
-
                     renderStaticMapItem()
                     :
                     <>
                         {settingsData?.map((section, sectionIndex) => (
                             <View key={sectionIndex}>
-                                <Text style={[Louis_George_Cafe.bold.h6, styles.sectionHeader, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                <Text style={[Louis_George_Cafe.bold.h5, styles.sectionHeader, { color: THEMECOLORS[themeMode].tabInActive }]}>
                                     {t(section.section)}
                                 </Text>
-
                                 {section.items.map((item, itemIndex) => (
                                     <TouchableOpacity
                                         key={itemIndex}
@@ -184,11 +196,11 @@ const styles = StyleSheet.create({
         paddingVertical: hp(2),
     },
     sectionHeader: {
-        marginVertical: hp(1.5),
+        marginVertical: hp(1.2),
     },
     item: {
         paddingVertical: hp(2),
-        paddingHorizontal: wp(2),
+        paddingHorizontal: wp(4),
         borderBottomWidth: wp(0.1),
         borderColor: '#ccc',
         flexDirection: 'row',

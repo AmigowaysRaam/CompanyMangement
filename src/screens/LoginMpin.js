@@ -17,7 +17,7 @@ import { THEMECOLORS } from '../resources/colors/colors';
 
 const LoginWithMPIN = () => {
 
-  const [mpinDigits, setMpinDigits] = useState(__DEV__ ? ['1', '2', '3', '4'] : ['', '', '', '']);
+  const [mpinDigits, setMpinDigits] = useState(__DEV__ ? ['1', '2', '1', '2'] : ['', '', '', '']);
   const { themeMode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const userdata = useSelector((state) => state.auth.user);
@@ -149,7 +149,7 @@ const LoginWithMPIN = () => {
                   </Text>
                 </TouchableOpacity>
             }
-            <View style={{ flexDirection: !isTamil ? "row" : "column", justifyContent: "space-around" ,marginTop:hp(2)}}>
+            <View style={{ flexDirection: !isTamil ? "row" : "column", justifyContent: "space-around", marginTop: hp(2) }}>
               <TouchableOpacity onPress={() => handleloginwithusername()}>
                 <Text style={[
                   isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h7,
@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: '#fff',
+    lineHeight: wp(6)
   },
 });
 

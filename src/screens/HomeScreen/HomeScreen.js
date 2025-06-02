@@ -28,68 +28,82 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const userdata = useSelector((state) => state.auth.user);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const { themeMode } = useTheme();
+  const { t, i18n } = useTranslation();
+  const isTamil = i18n.language === "ta";
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [homeData, setHomeData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false); // ✅ Refresh state
-  const { t, i18n } = useTranslation();
+  const [refreshing, setRefreshing] = useState(false);
 
-  const isTamil = i18n.language === 'ta';
+  // Prevent hardware back button action on this screen
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => true;
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () => BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [])
+  );
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     const onBackPress = () => true;
-  //     BackHandler.addEventListener("hardwareBackPress", onBackPress);
-  //     return () =>
-  //       BackHandler.removeEventListener("hardwareBackPress", onBackPress);
-  //   }, [])
-  // );
-
+  // Fetch home data function
   const fetchHomeData = () => {
     setLoading(true);
     dispatch(
       getHomePageData(userdata?.id, (response) => {
         if (response.success && response.data?.length > 0) {
           setHomeData(response.data[0]);
+          console.log(response.data[0], null, 2)
         }
         setLoading(false);
-        setRefreshing(false); // ✅ stop refreshing after data loads
+        setRefreshing(false);
       })
     );
   };
 
+  // Fetch data on screen focus or when userdata changes
   useFocusEffect(
     React.useCallback(() => {
       fetchHomeData();
     }, [userdata])
   );
 
+  const componentMap = {
+    WorkForceCard: (data) => <WorkForceCard data={data} />,
+    PieChart: (data) => <PieChart data={data} />,
+    TaskTable: (data) => <TaskTable tdata={data} />,
+    PieChartWebView: (data) => <PieChartWebView data={data} />,
+    EmployeeTable: (data) => <EmployeeTable data={data} />,
+    PaySlip: (data) => <EmployeePaylist data={data} />, // PaySlip key maps to EmployeePaylist
+  };
+
+
+  // Swipe gesture to open modal
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return Math.abs(gestureState.dx) > 20;
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        if (gestureState.dx > 50) {
+          setIsModalVisible(true);
+        }
+      },
+    })
+  ).current;
+
+  // Refresh handler
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchHomeData();
+  };
+
+  // Handle header menu click
   const handleMenuClick = () => {
     setIsModalVisible(true);
   };
 
-  const onRefresh = () => {
-    setRefreshing(true); // ✅ start refresh
-    fetchHomeData();     // fetch updated data
-  };
-
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (evt, gestureState) =>
-        Math.abs(gestureState.dx) > 20,
-      onPanResponderRelease: (evt, gestureState) => {
-        onPanResponderRelease: (evt, gestureState) => {
-          if (gestureState.dx > 50) {
-            setIsModalVisible(true); // Left to right swipe
-          }
-        }
-
-      }
-    })
-  ).current;
-
-
+  // Dummy data for FlatList render
   const dummyData = [{ key: "dashboard" }];
 
   return (
@@ -97,7 +111,7 @@ const HomeScreen = () => {
       style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background }}
       {...panResponder.panHandlers}
     >
-      <HeaderComponent title="home" openModal={handleMenuClick} />
+      <HeaderComponent title={t("home")} openModal={handleMenuClick} />
       {loading ? (
         <HomeScreenLoader />
       ) : (
@@ -107,39 +121,36 @@ const HomeScreen = () => {
           contentContainerStyle={styles.scrollContainer}
           refreshControl={
             <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            colors={["#013CA3"]} // ✅ fallback to black if undefined
-            tintColor={THEMECOLORS[themeMode].primaryApp || "#000000"} // ✅ fallback to black
-          />
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#013CA3"]}
+              tintColor={THEMECOLORS[themeMode].primaryApp || "#000000"}
+            />
           }
-          renderItem={() => (
-            <>
-              {homeData && (
-                <>
-                  <WorkForceCard data={homeData.WorkForceCard} />
-                  <PieChart data={homeData.PieChart} />
-                  <TaskTable tdata={homeData.TaskTable} />
-                  {/* <PieChartWebView data={homeData.PieChartWebView} /> */}
-                  <EmployeeTable data={homeData.EmployeeTable} />
-                  <EmployeePaylist />
-                </>
-              )}
-            </>
-          )}
+          renderItem={() =>
+            homeData ? (
+              <>
+                {Object.keys(homeData).map((key) => {
+                  // Check if the key exists in the map
+                  if (componentMap[key]) {
+                    return <React.Fragment key={key}>{componentMap[key](homeData[key])}</React.Fragment>;
+                  }
+                  return null; // skip unknown keys
+                })}
+              </>
+            ) : null
+          }
         />
       )}
       {isModalVisible && (
         <HomeScreenModal
           visible={isModalVisible}
-          logout={() => alert("Logging out")}
           onClose={() => setIsModalVisible(false)}
         />
       )}
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,

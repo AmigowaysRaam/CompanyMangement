@@ -215,7 +215,6 @@ const SetMpin = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#ffffff',
     paddingTop: hp(2),
     paddingBottom: hp(10),
     paddingHorizontal: wp(5),
