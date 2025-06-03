@@ -39,7 +39,7 @@ const styles = (themeMode) => StyleSheet.create({
         borderColor: THEMECOLORS[themeMode].textPrimary,
         backgroundColor: THEMECOLORS[themeMode].viewBackground,
         paddingHorizontal: wp(3),
-        height: hp(6),
+        height: hp(5),
         marginBottom: wp(2),
     },
     icon: {

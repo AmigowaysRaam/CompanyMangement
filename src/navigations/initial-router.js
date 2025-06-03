@@ -25,6 +25,9 @@ import ChangeMpin from "../screens/changeMpin";
 import CompenSationBenifts from "../screens/CompenstaionBeniftsMenu";
 import BankDetails from "../screens/BankDetails";
 import ChangePassword from "../screens/ChangePassword";
+import PayrollHistory from "../screens/PayrollHistory";
+import EmployeeList from "../screens/EmployeeList";
+import Projects from "../screens/Projects/Projects";
 
 
 const Stack = createNativeStackNavigator();
@@ -61,7 +64,12 @@ function InitialRouter() {
         <Stack.Screen name="CompenSationBenifts" component={CompenSationBenifts} />
         <Stack.Screen name="BankDetails" component={BankDetails} />
         <Stack.Screen name="ChangePassword" component={ChangePassword} />
+        <Stack.Screen name="PayrollHistory" component={PayrollHistory} />
+        <Stack.Screen name="EmployeeList" component={EmployeeList} />
+        <Stack.Screen name="Projects" component={Projects} />
 
+        
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text,TouchableOpacity } from 'react-native';
 import { hp, wp } from '../../resources/dimensions';
 import { Louis_George_Cafe } from '../../resources/fonts';
 import LinearGradient from 'react-native-linear-gradient';
 import { THEMECOLORS } from '../../resources/colors/colors';
 import { useTheme } from '../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 
 const PieSlice = ({ rotation, colors }) => (
-
   <View style={[styles.sliceContainer, { transform: [{ rotate: `${rotation}deg` }] }]}>
     <LinearGradient
       colors={colors}
       start={{ x: 1, y: 0 }}
       end={{ x: 0, y: 1 }}
-      style={styles.slice}
+      style={[styles.slice,]}
     />
   </View>
 );
@@ -26,14 +26,9 @@ const PieChart = (data) => {
   const { themeMode } = useTheme();
   const { t, i18n } = useTranslation();
   const isTamil = i18n.language === 'ta';
-  useEffect(() => {
-    // alert(JSON.stringify(data.data))
-    const rawData = [
-      { percentage: 30, colors: ['#004284', '#6BB0F6'], label: 'Completed Projects' },
-      { percentage: 20, colors: ['#9747FF', '#D5B5FF'], label: 'Pending Projects' },
-      { percentage: 50, colors: ['#FF4A36', '#CC4537'], label: 'Upcoming Projects' },
-    ];
+  const navigation = useNavigation();
 
+  useEffect(() => {
     // Compute rotation per slice
     let currentAngle = 0;
     const dataWithRotation = data?.data.map(item => {
@@ -41,12 +36,11 @@ const PieChart = (data) => {
       currentAngle += (item.percentage / 100) * 360;
       return { ...item, rotation };
     });
-
     setChartData(dataWithRotation);
   }, []);
 
   return (
-    <View style={[styles.card, {
+    <TouchableOpacity onPress={()=>navigation.navigate('Projects')} style={[styles.card, {
       backgroundColor: THEMECOLORS[themeMode].cardBackground,
     }]}>
       <Text style={[Louis_George_Cafe.bold.h6, { alignSelf: "flex-start", marginBottom: wp(5) }]}>
@@ -69,7 +63,7 @@ const PieChart = (data) => {
             <View key={index} style={styles.legendItem}>
               <View style={[styles.legendColor, { backgroundColor: item.colors[0] }]} />
               <Text style={[{
-                fontSize: wp(isTamil ? 2: 2.5)
+                fontSize: wp(isTamil ? 2 : 2.5)
               }]}>
                 {item.label}
 
@@ -78,7 +72,7 @@ const PieChart = (data) => {
           ))}
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -108,9 +102,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
   },
+
   sliceContainer: {
     position: 'absolute',
-    width: wp(40),
+    width: wp(38),
     height: wp(40),
     justifyContent: 'center',
     alignItems: 'flex-start',
@@ -126,7 +121,6 @@ const styles = StyleSheet.create({
     height: wp(23),
     borderRadius: wp(12),
     position: 'absolute',
-
   },
   legend: {
     marginLeft: wp(5),

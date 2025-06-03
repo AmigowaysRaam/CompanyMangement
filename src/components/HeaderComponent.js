@@ -12,7 +12,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { wp, hp } from "../resources/dimensions";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Text, Menu } from "react-native-paper";
-import { Louis_George_Cafe } from "../resources/fonts";
+import { Louis_George_Cafe, width } from "../resources/fonts";
 import { THEMECOLORS } from "../resources/colors/colors";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from 'react-i18next';
@@ -100,11 +100,11 @@ function HeaderComponent({
     <View style={[styles.container, {
       backgroundColor: THEMECOLORS[themeMode].background,
     }]}>
-      <View style={styles.headerRow}>
+      <View style={[title == 'home' ? styles.headerRow : {}]}>
         {
           title == 'home' ?
             <>
-              <View style={{ flexDirection: "row"  }}>
+              <View style={{ flexDirection: "row" }}>
                 <TouchableOpacity onPress={openModal} style={styles.iconButton}>
                   <MaterialCommunityIcons name="menu" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
@@ -115,7 +115,7 @@ function HeaderComponent({
                   />
                 </TouchableOpacity>
               </View>
-              <View style={{ flexDirection: "row", alignSelf:"center",justifyContent:"center",alignItems:"center" }}>
+              <View style={{ flexDirection: "row", alignSelf: "center", justifyContent: "center", alignItems: "center" }}>
                 <TouchableOpacity style={styles.iconButton}
                 >
                   <MaterialCommunityIcons name="calendar" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
@@ -168,14 +168,14 @@ function HeaderComponent({
                 {
                   showBackArray &&
                   <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
-                    <Text style={{ lineHeight: hp(5) }}>
+                    <Text style={{ lineHeight: hp(4) }}>
                       <MaterialCommunityIcons name="chevron-left" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                     </Text>
                   </TouchableOpacity>
                 }
                 <Text style={[Louis_George_Cafe.bold.h6, {
                   justifyContent: "center", alignItems: "center", textTransform: 'capitalize', lineHeight: wp(5)
-                  , margin: wp(1), marginHorizontal: wp(2), lineHeight: hp(4), color: THEMECOLORS[themeMode].primary
+                  , margin: wp(1), marginHorizontal: wp(2), lineHeight: hp(3), color: THEMECOLORS[themeMode].primary
                 }]}>
                   {title}
                 </Text>
@@ -190,12 +190,14 @@ function HeaderComponent({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: wp(4),
-    paddingVertical: hp(1),
-    borderBottomWidth: wp(0.1), borderColor: "#CCC"
+    paddingVertical: hp(1.5),
+    borderBottomWidth: wp(0.2),
+    borderColor: "#CCC",
+    marginBottom: wp(0.1), width: wp(100)
   },
   headerRow: {
     flexDirection: "row",
-    alignItems: "center", marginBottom: hp(1), justifyContent: "space-between", height: wp(9)
+    alignItems: "center", justifyContent: "space-between", height: wp(9),
   },
   iconButton: {
     marginHorizontal: hp(0.5),

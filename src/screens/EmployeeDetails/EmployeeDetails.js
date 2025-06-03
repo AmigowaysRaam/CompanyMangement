@@ -49,11 +49,12 @@ const EmplyeeDetails = () => {
     }
     return user.profilePic;
   };
+
   useFocusEffect(
     React.useCallback(() => {
       // alert(JSON.stringify(user.id, null, 2))
       setIsLoading(true);
-      dispatch(getEmplyeeDetails(user.id, (response) => {
+      dispatch(getEmplyeeDetails(user?.id, (response) => {
         if (response.success) {
           setEmployeeDetails(response.data[0]);
         }
@@ -66,19 +67,11 @@ const EmplyeeDetails = () => {
     return status === '1' ? t('active') : t('inactive');
   };
 
-  // if (!employeeDetails) {
-  //   return (
-  //     <View style={styles.centered}>
-  //       <Text style={{ color: theme.textPrimary }}>{t('nodatafound')}</Text>
-  //     </View>
-  //   );
-  // }
-
   return (
     <View style={{ backgroundColor: theme.background, flex: 1 }}>
       <HeaderComponent title={t('employeedetails')} showBackArray={true} />
       {isLoading ?
-        <ActivityIndicator style={{ marginTop: wp(20) }} size={wp(10)} />
+        <ActivityIndicator style={{ marginTop: wp(20) }} size={wp(10)} color={theme.textPrimary} />
         :
         <>
           <View style={{ alignSelf: "center", marginVertical: hp(4) }}>
@@ -130,8 +123,8 @@ const EmplyeeDetails = () => {
               </Text>
             </View>
             <View style={{ marginVertical: wp(2) }}>
-              <TouchableOpacity onPress={()=>navigation.navigate('BankDetails',employeeDetails)} style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
-                <Text style={[Louis_George_Cafe.regular.h7, { color: theme.textPrimary }]}>
+              <TouchableOpacity onPress={() => navigation.navigate('BankDetails', employeeDetails)} style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
+                <Text style={[Louis_George_Cafe.regular.h7, { color: theme.textPrimary,lineHeight:wp(5) }]}>
                   {t('bankdetails')}
                 </Text>
                 <MaterialCommunityIcons
@@ -141,10 +134,8 @@ const EmplyeeDetails = () => {
                   color={theme.textPrimary}
                 />
               </TouchableOpacity>
-
-
-              <TouchableOpacity style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
-                <Text style={[Louis_George_Cafe.regular.h7, { color: theme.textPrimary }]}>
+              <TouchableOpacity onPress={() => navigation.navigate('PayrollHistory',employeeDetails)} style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
+                <Text style={[Louis_George_Cafe.regular.h7, { color: theme.textPrimary,lineHeight:wp(5) }]}>
                   {t('payrollhistory')}
                 </Text>
                 <MaterialCommunityIcons

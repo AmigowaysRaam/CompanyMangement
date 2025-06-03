@@ -19,7 +19,7 @@ import { getemployeeDetails } from '../../redux/authActions';
 import HomeScreenLoader from '../HomeScreenLoader';
 
 export default function Employee() {
-  
+
   const { themeMode } = useTheme();
   const { t, i18n } = useTranslation();
   const isTamil = i18n.language === 'ta';
@@ -163,23 +163,11 @@ export default function Employee() {
                 keyExtractor={(item) => item.id.toString()}
                 showsVerticalScrollIndicator={false}
                 ListFooterComponent={
-                  <TouchableOpacity
-                    style={{
-                      alignSelf: 'center',
-                      margin: wp(3),
-                      paddingHorizontal: wp(2),
-                      borderWidth: wp(0.4),
-                      borderRadius: wp(5),
-                      marginVertical: hp(2),
-                      borderColor: '#555',
-                    }}
-                  >
-                    <Text
-                      style={adjustFont(Louis_George_Cafe.regular.h8, 1)}
-                    >
-                      {t('viewAll')}
-                    </Text>
-                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => navigation.navigate('EmployeeList')} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
+                  <Text style={[Louis_George_Cafe.regular.h9, {
+                      lineHeight: wp(5)
+                  }]}>{t('viewAll')}</Text>
+              </TouchableOpacity>
                 }
                 contentContainerStyle={{
                   paddingBottom: hp(10),
@@ -267,6 +255,7 @@ const styles = StyleSheet.create({
     marginHorizontal: wp(4),
     marginVertical: hp(1),
   },
+
   progressBarBackground: {
     flex: 5,
     height: hp(1.5),

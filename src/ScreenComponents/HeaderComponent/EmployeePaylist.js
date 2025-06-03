@@ -41,7 +41,10 @@ export default function EmployeePaylist() {
     return (
         <View style={styles.shadowWrapper}>
             <View style={styles.tableContainer}>
-                <Text style={[isTamil ? Louis_George_Cafe.bold.h8 : Louis_George_Cafe.bold.h5, { marginHorizontal: wp(3), marginTop: wp(3) }]}>
+                <Text style={[isTamil ? Louis_George_Cafe.bold.h8 : Louis_George_Cafe.bold.h5, {
+                    marginHorizontal: wp(3), marginTop: wp(3),
+                    lineHeight: wp(6)
+                }]}>
                     {t('employeePayslipList')}
                 </Text>
                 <View style={styles.line} />

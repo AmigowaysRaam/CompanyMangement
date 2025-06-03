@@ -191,6 +191,67 @@ export const getCategoryList = (type, page, limit, searchText, callback) => asyn
   }
 };
 
+// getPayRollHistory
+export const getPayRollHistory = (uId,employId, page, limit, searchText, callback) => async (dispatch) => {
+  const payLoadParams = {
+    page: searchText ? null : page,
+    limit: searchText ? null : limit,
+    search: searchText,
+    userid: uId,
+    employId:employId
+  };
+  try {
+    const endpoint = API_REQUESTS.API_GET_PAYROLL_LIST;
+    const response = await sendRequest(endpoint, payLoadParams);
+    console.log("dataFetch Success", response)
+    if (callback) callback(response); // ✅ Check if callback exists before calling
+    return response;
+  } catch (error) {
+    console.error("Error fetching CATEGORIES:", error.message);
+  }
+};
+
+// getEmployeeList
+export const getEmployeeList = (uId, page, limit, searchText, callback) => async (dispatch) => {
+  const payLoadParams = {
+    page: searchText ? null : page,
+    limit: searchText ? null : limit,
+    search: searchText,
+    userid: uId,
+  };
+  try {
+    const endpoint = API_REQUESTS.API_GET_EMPLOYEE_LIST;
+    const response = await sendRequest(endpoint, payLoadParams);
+    console.log("dataFetch Success", response)
+    if (callback) callback(response); // ✅ Check if callback exists before calling
+    return response;
+  } catch (error) {
+    console.error("Error fetching CATEGORIES:", error.message);
+  }
+};
+
+// getPayrollActivitites
+export const getPayrollActivitites = (uId, page, limit, searchText, callback) => async (dispatch) => {
+  const payLoadParams = {
+    page: searchText ? null : page,
+    limit: searchText ? null : limit,
+    search: searchText,
+    userid: uId,
+  };
+  try {
+    const endpoint = API_REQUESTS.API_GET_EMPLOYEE_PAYROLL_LIST;
+    const response = await sendRequest(endpoint, payLoadParams);
+    console.log("dataFetch Success", response)
+    if (callback) callback(response); // ✅ Check if callback exists before calling
+    return response;
+  } catch (error) {
+    console.error("Error fetching CATEGORIES:", error.message);
+  }
+};
+
+
+
+
 // getSubCategoryList
 export const getSubCategoryList = (categoryId, type, page, limit, searchText, callback) => async (dispatch) => {
   const payLoadParams = {

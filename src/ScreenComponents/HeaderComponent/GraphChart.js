@@ -119,7 +119,7 @@ export default function AttendanceChart() {
   const webviewRef = useRef(null);
   const chartData = {
     labels: ["January", "February", "March", "April", "May"],
-    data: [60, 75, 50, 65, 90],
+    data: [60, 75, 50, 65, 55],
   };
 
   useEffect(() => {

@@ -115,24 +115,12 @@ export default function Attendance() {
                 keyExtractor={item => item.id.toString()}
                 renderItem={renderEmployee}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: hp(10) }}
+                contentContainerStyle={{ paddingBottom: hp(5) }}
                 ListFooterComponent={
-                 <TouchableOpacity
-                    style={{
-                      alignSelf: 'center',
-                      margin: wp(3),
-                      paddingHorizontal: wp(2),
-                      borderWidth: wp(0.4),
-                      borderRadius: wp(5),
-                      marginVertical: hp(2),
-                      borderColor: '#555',
-                    }}
-                  >
-                    <Text
-                      style={adjustFont(Louis_George_Cafe.regular.h8, 1)}
-                    >
-                      {t('viewAll')}
-                    </Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('EmployeeList')} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
+                    <Text style={[Louis_George_Cafe.regular.h9, {
+                      lineHeight: wp(5)
+                    }]}>{t('viewAll')}</Text>
                   </TouchableOpacity>
                 }
               />

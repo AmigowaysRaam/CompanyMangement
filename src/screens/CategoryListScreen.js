@@ -6,7 +6,7 @@ import {
     FlatList,
     TouchableOpacity,
     ActivityIndicator,
-    RefreshControl, TextInput
+    RefreshControl,
 } from 'react-native';
 
 import { wp, hp } from '../resources/dimensions';
@@ -44,7 +44,6 @@ const CategoryListScreen = () => {
     const loadingRef = useRef(false);
     const endReachedRef = useRef(false);
 
-    // ✅ Include searchText in dependencies
     const fetchCategories = useCallback((currentPage = 1, isRefresh = false) => {
         if (loadingRef.current || (endReachedRef.current && !isRefresh)) return;
 
@@ -60,8 +59,10 @@ const CategoryListScreen = () => {
         loadingRef.current = true;
 
         dispatch(getCategoryList(sType, currentPage, PAGE_SIZE, searchText, (response) => {
+            console.log('Fetching page:', currentPage);
             if (response?.success) {
                 const newData = response.data || [];
+
                 if (newData.length < PAGE_SIZE) {
                     setIsEndReached(true);
                     endReachedRef.current = true;
@@ -71,12 +72,13 @@ const CategoryListScreen = () => {
                     setCategories(newData);
                     setPage(2);
                 } else {
-                    setCategories(prev => {
-                        const ids = new Set(prev.map(item => item.category?._id));
-                        const filteredNew = newData.filter(item => !ids.has(item.category?._id));
-                        return [...prev, ...filteredNew];
-                    });
-                    setPage(prev => prev + 1);
+                    setCategories(prev => [
+                        ...prev,
+                        ...newData,
+                        // Or use filter to avoid duplicates if IDs are reliable:
+                        // ...newData.filter(item => !prev.some(p => p.category?._id === item.category?._id)),
+                    ]);
+                    setPage(currentPage + 1);
                 }
             }
 
@@ -84,7 +86,7 @@ const CategoryListScreen = () => {
             loadingRef.current = false;
             setRefreshing(false);
         }));
-    }, [dispatch, sType, searchText]); // ✅ searchText added here
+    }, [dispatch, sType, searchText]);
 
     useEffect(() => {
         fetchCategories(1, true);
@@ -100,12 +102,10 @@ const CategoryListScreen = () => {
         }
     };
 
-    // ✅ Debounced search effect
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             fetchCategories(1, true);
         }, 500);
-
         return () => clearTimeout(debounceTimer);
     }, [searchText, fetchCategories]);
 
@@ -161,7 +161,7 @@ const CategoryListScreen = () => {
                     keyExtractor={(item, index) => item.category?._id || index.toString()}
                     contentContainerStyle={{ paddingBottom: hp(10), flexGrow: 1 }}
                     onEndReached={loadMore}
-                    onEndReachedThreshold={0.5}
+                    onEndReachedThreshold={0.1} // ✅ Lower threshold for better triggering
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}

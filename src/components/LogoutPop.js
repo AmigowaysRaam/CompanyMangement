@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         borderStartWidth: wp(0.1),
         transform: [{ translateY: 0 }],
         opacity: 1,
-      },
+    },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',

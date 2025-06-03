@@ -7,7 +7,6 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     RefreshControl,
-    Pressable
 } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
@@ -19,7 +18,6 @@ import { useDispatch } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import HeaderComponent from '../components/HeaderComponent';
-import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
 import SearchInput from './SearchInput';
 
 const PAGE_SIZE = 10;
@@ -31,6 +29,7 @@ const SubCategoryListScreen = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const dispatch = useDispatch();
+
     const item = route.params;
     const [subCategories, setSubCategories] = useState([]);
     const [page, setPage] = useState(1);
@@ -53,26 +52,28 @@ const SubCategoryListScreen = () => {
             setPage(1);
         } else {
             setLoading(true);
-            loadingRef.current = true;
         }
+
+        loadingRef.current = true;
 
         dispatch(getSubCategoryList(item.category_id, "product", currentPage, PAGE_SIZE, searchText, (response) => {
             if (response?.success) {
                 const newData = response.data || [];
+
                 if (newData.length < PAGE_SIZE) {
                     setIsEndReached(true);
                     endReachedRef.current = true;
                 }
+
                 if (isRefresh) {
                     setSubCategories(newData);
                     setPage(2);
                 } else {
-                    setSubCategories(prev => {
-                        const ids = new Set(prev.map(item => item.subCategory?._id));
-                        const filteredNew = newData.filter(item => !ids.has(item.subCategory?._id));
-                        return [...prev, ...filteredNew];
-                    });
-                    setPage(prev => prev + 1);
+                    setSubCategories(prev => [
+                        ...prev,
+                        ...newData.filter(n => !prev.some(p => (p.subCategory || p)._id === (n.subCategory || n)._id))
+                    ]);
+                    setPage(currentPage + 1);
                 }
             }
 
@@ -101,7 +102,7 @@ const SubCategoryListScreen = () => {
             fetchSubCategories(1, true);
         }, 500);
         return () => clearTimeout(debounceTimer);
-    }, [searchText]);
+    }, [searchText, fetchSubCategories]);
 
     const renderItem = ({ item }) => {
         const subCategory = item.subCategory || item;
@@ -110,7 +111,7 @@ const SubCategoryListScreen = () => {
         return (
             <TouchableOpacity
                 onPress={() => setSelectedId(subCategory._id)}
-                style={[styles.subCategoryBox, { backgroundColor: THEMECOLORS[themeMode].viewBackground }]}
+                style={[styles.subCategoryBox,]}
             >
                 <View style={styles.radioRow}>
                     <MaterialCommunityIcons
@@ -129,21 +130,22 @@ const SubCategoryListScreen = () => {
                         {subCategory.sub_category_name}
                     </Text>
                 </View>
-                <MaterialCommunityIcons
+                {/* <MaterialCommunityIcons
                     name="chevron-right"
                     size={hp(3)}
                     color={THEMECOLORS[themeMode].textPrimary}
-                />
+                /> */}
             </TouchableOpacity>
         );
     };
+
     const handleContinue = () => {
         const selectedSubCat = subCategories.find(item =>
             (item.subCategory || item)._id === selectedId
         );
-        // if (selectedSubCat) {
-        navigation.replace('HomeScreen', { selectedSubCategory: selectedSubCat });
-        // }
+        if (selectedSubCat) {
+            navigation.replace('HomeScreen', { selectedSubCategory: selectedSubCat });
+        }
     };
 
     return (
@@ -159,10 +161,10 @@ const SubCategoryListScreen = () => {
                 <FlatList
                     data={subCategories}
                     renderItem={renderItem}
-                    keyExtractor={(item, index) => item.subCategory?._id || index.toString()}
+                    keyExtractor={(item, index) => (item.subCategory?._id || item._id || index.toString())}
                     contentContainerStyle={{ paddingBottom: hp(10) }}
                     onEndReached={loadMore}
-                    onEndReachedThreshold={0.5}
+                    onEndReachedThreshold={0.2} // More sensitive
                     refreshControl={
                         <RefreshControl
                             refreshing={refreshing}
@@ -177,20 +179,16 @@ const SubCategoryListScreen = () => {
                     }
                 />
 
-                {selectedId !== '' && (
-                    <TouchableOpacity
-                        onPress={handleContinue}
-                        style={[styles.continueButton, { backgroundColor: THEMECOLORS[themeMode].primaryApp }]}
-                    >
-                        <Text style={[Louis_George_Cafe.bold.h5, { color: '#fff' }]}>
-                            {t('continue')}
-                        </Text>
-                    </TouchableOpacity>
-                )}
-
-                {/* <View style={{ margin: wp(4) }}>
-                    <ThemeToggle />
-                </View> */}
+                {/* {!selectedId && ( */}
+                <TouchableOpacity
+                    onPress={handleContinue}
+                    style={[styles.continueButton, { backgroundColor: THEMECOLORS[themeMode].primaryApp }]}
+                >
+                    <Text style={[Louis_George_Cafe.bold.h5, { color: '#fff' }]}>
+                        {t('continue')}
+                    </Text>
+                </TouchableOpacity>
+                {/* )} */}
             </View>
         </>
     );
@@ -202,13 +200,14 @@ const styles = StyleSheet.create({
         padding: wp(3),
     },
     subCategoryBox: {
-        borderWidth: 1,
+        borderBottomWidth: 1,
         borderRadius: wp(2),
         padding: wp(3),
         marginBottom: hp(1),
         flexDirection: 'row',
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
+        paddingVertical: hp(2),borderBottomColor:"#CCC"
     },
     subCategoryTitle: {
         marginLeft: wp(2)
@@ -223,7 +222,7 @@ const styles = StyleSheet.create({
         paddingVertical: hp(1.5),
         paddingHorizontal: wp(10),
         borderRadius: wp(2),
-        marginVertical: wp(1)
+        marginVertical: wp(2)
     }
 });
 

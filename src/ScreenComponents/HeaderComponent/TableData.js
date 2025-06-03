@@ -127,7 +127,10 @@ export default function EmployeeTable() {
             <View style={styles.tableContainer}>
                 <Text style={[isTamil ?
                     Louis_George_Cafe.bold.h7 :
-                    Louis_George_Cafe.bold.h5, { marginHorizontal: wp(3), marginTop: wp(3) }]}>{t('payrollActivities')}</Text>
+                    Louis_George_Cafe.bold.h5, {
+                    marginHorizontal: wp(3), marginTop: wp(3),
+                    lineHeight: wp(6)
+                }]}>{t('payrollActivities')}</Text>
                 <View style={styles.line} />
                 <View style={styles.headerContainer}>
                     <Text style={[isTamil ?

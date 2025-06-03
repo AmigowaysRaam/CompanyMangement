@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     itemText: {
-        fontFamily: Louis_George_Cafe.Regular,
+        // fontFamily: Louis_George_Cafe.Regular,
     },
 });
 
