@@ -27,6 +27,7 @@ function HeaderComponent({
   placeholder,
   openModal,
   showBackArray,
+  working,
   ...props
 }) {
   const navigation = useNavigation();
@@ -117,12 +118,31 @@ function HeaderComponent({
               </View>
               <View style={{ flexDirection: "row", alignSelf: "center", justifyContent: "center", alignItems: "center" }}>
                 <TouchableOpacity style={styles.iconButton}
+                  onPress={() => navigation.navigate('PunchInOut')}
                 >
-                  <MaterialCommunityIcons name="calendar" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
+                  {
+                    working ?
+                      <MaterialCommunityIcons name="radiobox-marked" size={hp(3)} color={THEMECOLORS[themeMode].validation} />
+                      :
+                      <Image
+                        tintColor={THEMECOLORS[themeMode].primary}
+                        source={require('../assets/animations/punchInOut.png')}
+                        style={{ width: hp(3.5), height: hp(3.5) }}
+                      />
+
+                  }
+
+
+
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.iconButton}>
+                <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('SearchScreen')}>
                   <MaterialCommunityIcons name="magnify" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
+                {/* <Image
+                  source={{ uri: 'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif' }}
+                  style={{ width: hp(3.5), height: hp(3.5) }}
+                /> */}
+
                 <TouchableOpacity style={styles.iconButton} onPress={() =>
                   navigation.navigate('Notifications')
                 }>
@@ -166,10 +186,9 @@ function HeaderComponent({
             <>
               <View style={{ flexDirection: "row" }}>
                 {
-                  showBackArray &&
-                  <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconButton}>
-                    <Text style={{ lineHeight: hp(4) }}>
-                      <MaterialCommunityIcons name="chevron-left" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
+                  <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconutton}>
+                    <Text style={{ lineHeight: hp(4), marginRight: wp(2) }}>
+                      <MaterialCommunityIcons name={showBackArray && "chevron-left"} size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                     </Text>
                   </TouchableOpacity>
                 }

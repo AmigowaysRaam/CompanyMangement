@@ -28,6 +28,14 @@ import ChangePassword from "../screens/ChangePassword";
 import PayrollHistory from "../screens/PayrollHistory";
 import EmployeeList from "../screens/EmployeeList";
 import Projects from "../screens/Projects/Projects";
+import SearchScreen from "../screens/SearchScreen";
+import JobDetails from "../screens/JobDetails";
+import ClientScreen from "../screens/ClientScreen";
+import FileManager from "../screens/FileManager";
+import CreateEmployee from "../screens/CreateEmployee";
+import PunchInOut from "../screens/PunchInPuchout";
+import LeaveManageMent from "../screens/LeaveManageMent";
+import AddLeaveForm from "../screens/AddLeaveForm";
 
 
 const Stack = createNativeStackNavigator();
@@ -67,8 +75,16 @@ function InitialRouter() {
         <Stack.Screen name="PayrollHistory" component={PayrollHistory} />
         <Stack.Screen name="EmployeeList" component={EmployeeList} />
         <Stack.Screen name="Projects" component={Projects} />
+        <Stack.Screen name="SearchScreen" component={SearchScreen} />
+        <Stack.Screen name="JobDetails" component={JobDetails} />
+        <Stack.Screen name="ClientScreen" component={ClientScreen} />
+        <Stack.Screen name="FileManager" component={FileManager} />
+        <Stack.Screen name="CreateEmployee" component={CreateEmployee} />
+        <Stack.Screen name="PunchInOut" component={PunchInOut} />
+        <Stack.Screen name="LeaveManagement" component={LeaveManageMent} />
+        <Stack.Screen name="AddLeaveForm" component={AddLeaveForm} />
 
-        
+
         
       </Stack.Navigator>
     </NavigationContainer>

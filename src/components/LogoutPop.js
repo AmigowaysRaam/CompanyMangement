@@ -23,18 +23,23 @@ const LogoutModal = ({ isVisible, onCancel }) => {
     const [loading, setLoading] = useState(false);
 
     const handleLogout = async () => {
-        setLoading(true);
-        setTimeout(async () => {
-            try {
+        try {
+            const punchTime = await AsyncStorage.getItem('punchInTime');
+            if (punchTime) {
+                navigation.navigate('PunchInOut');
+            }
+            else {
+                setLoading(true);
                 await AsyncStorage.clear();
                 dispatch({ type: 'APP_USER_LOGIN_SUCCESS', payload: null });
                 navigation.replace('LoginScreen');
-            } catch (error) {
-                console.error('Logout failed:', error);
-            } finally {
-                setLoading(false);
             }
-        }, 1000); // 1 second delay to enhance the transition
+
+        } catch (error) {
+            console.error('Logout failed:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

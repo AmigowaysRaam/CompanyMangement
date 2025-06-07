@@ -174,9 +174,61 @@ const API_GET_EMPLOYEE_PAYROLL_LIST = {
   responseDataKey: "data",
 };
 
+// API_GET_PROJECT_STATS_CONTENT_URL
+const API_GET_PROJECT_STATS_CONTENT_URL = {
+  url: `${API_BASE_URL}mob-getprojects`,
+  method: "POST",
+  responseDataKey: "data",
+};
 
+// API_GET_JOB_DETAILS_URL
+const API_GET_JOB_DETAILS_URL = {
+  url: `${API_BASE_URL}mob-job-details`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// API_GET_CLINET_DATA_URL
+const API_GET_CLINET_DATA_URL = {
+  url: `${API_BASE_URL}mob-client-details`,
+  method: "POST",
+  responseDataKey: "data",
+};
 
-export const API_REQUESTS = {
+// API_CREATE_EMPLOYEE_URL
+const API_CREATE_EMPLOYEE_URL = {
+  url: `${API_BASE_URL}mob-create-employee`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_CREATE_PUNCH_IN_OUT_URL
+const API_CREATE_PUNCH_IN_OUT_URL = {
+  url: `${API_BASE_URL}mob-attendance-punchin-out`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// API_GET_PUNCH_IN_OUT_HISTORY_URL
+const API_GET_PUNCH_IN_OUT_HISTORY_URL = {
+  url: `${API_BASE_URL}mob-get-attaendance-records`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_LEAVE_FORM_SUBMIT_URL
+const API_LEAVE_FORM_SUBMIT_URL = {
+  url: `${API_BASE_URL}addleave`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_LEAVE_ARRAY_URL
+const API_GET_LEAVE_ARRAY_URL = {
+  url: `${API_BASE_URL}getleavebyemployee`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+export default {
   APP_GENERATE_TOKEN,
   API_SITE_URL, API_LANGUAGE_URL, API_LOGIN_URL, API_LANGUAGE_CONTENT_URL,
   API_GET_CATEGORY_LIST, API_GET_SUB_CATEGORY_LIST, GET_SIDE_MENU_API,
@@ -184,5 +236,7 @@ export const API_REQUESTS = {
   API_HOME_SCREEN_CONTENT_URL, GET_EMPLOYEE_DETAILS_API, API_GET_USER_DETAILS_URL, API_UPDATE_USER_DETAILS_URL,
   API_EMPLOYEE_CONTENT_URL, API_ATTENDANCE_CONTENT_URL, API_MOBILE_OTP, API_SET_MPIN, API__MPIN_LOGIN_URL,
   API_RESETMPIN_URL, API_CHANGE_NOTIFICATION_URL, API_CHANGE_PASSCODE_URL, API_GET_PAYROLL_LIST,
-  API_GET_EMPLOYEE_LIST,API_GET_EMPLOYEE_PAYROLL_LIST
+  API_GET_EMPLOYEE_LIST, API_GET_EMPLOYEE_PAYROLL_LIST, API_GET_PROJECT_STATS_CONTENT_URL, API_GET_JOB_DETAILS_URL, API_GET_CLINET_DATA_URL,
+  API_CREATE_EMPLOYEE_URL, API_CREATE_PUNCH_IN_OUT_URL, API_GET_PUNCH_IN_OUT_HISTORY_URL,
+  API_LEAVE_FORM_SUBMIT_URL,API_GET_LEAVE_ARRAY_URL
 };

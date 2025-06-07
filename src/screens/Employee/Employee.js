@@ -36,6 +36,7 @@ export default function Employee() {
       dispatch(
         getemployeeDetails(userdata?.data?.id, (response) => {
           if (response.success) {
+            // alert(JSON.stringify(employeeData.showCreateEmployee,null, 2, ))
             setEmployeeData(response);
           }
           setLoading(false);
@@ -137,6 +138,28 @@ export default function Employee() {
             </View>
           </View>
 
+          {
+            employeeData?.showCreateEmployee &&
+            <View>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('CreateEmployee')}
+                style={{
+                  alignSelf: "flex-end",
+                  backgroundColor: THEMECOLORS[themeMode].buttonBg,
+                  paddingHorizontal: wp(3),
+                  marginHorizontal: wp(3), borderRadius: wp(1), marginBottom: wp(2)
+                }}>
+                <Text style={[Louis_George_Cafe.bold.h7, {
+                  alignSelf: "flex-end",
+                  color: THEMECOLORS[themeMode].buttonText,
+                  lineHeight: wp(6), paddingVertical: wp(1)
+                }]}>
+                  {t('add_employee')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          }
+
           {/* Employee Table */}
           {employeeData?.employeeList?.length > 0 && (
             <View
@@ -164,10 +187,10 @@ export default function Employee() {
                 showsVerticalScrollIndicator={false}
                 ListFooterComponent={
                   <TouchableOpacity onPress={() => navigation.navigate('EmployeeList')} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
-                  <Text style={[Louis_George_Cafe.regular.h9, {
+                    <Text style={[Louis_George_Cafe.regular.h9, {
                       lineHeight: wp(5)
-                  }]}>{t('viewAll')}</Text>
-              </TouchableOpacity>
+                    }]}>{t('viewAll')}</Text>
+                  </TouchableOpacity>
                 }
                 contentContainerStyle={{
                   paddingBottom: hp(10),
@@ -183,7 +206,7 @@ export default function Employee() {
                     <View style={{ marginHorizontal: wp(2) }}>
                       <View style={styles.avatar}>
                         <Text style={[Louis_George_Cafe.regular.h7, { fontSize: wp(4), color: '#000' }]}>
-                          {emp.name.charAt(0)}
+                          {emp?.name?.charAt(0)}
                         </Text>
                       </View>
                     </View>
@@ -194,7 +217,7 @@ export default function Employee() {
                         { flex: 2, width: wp(18) },
                       ]}
                     >
-                      {emp.name}
+                      {emp?.name}
                     </Text>
                     <Text
                       style={[

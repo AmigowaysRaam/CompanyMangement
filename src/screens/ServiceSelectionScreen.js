@@ -19,7 +19,8 @@ const options = [
   { label: 'both_service_and_product', value: 'both' },
 ];
 
-const ServiceSelectionScreen = () => {
+const ServiceSelectionScreen = () => {  
+
   const [selected, setSelected] = useState(null);
   const navigation = useNavigation();
   const { currency, langCode } = useCurrentLocation();

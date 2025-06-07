@@ -37,23 +37,7 @@ const SettingsScreen = () => {
         }
     });
 
-    // const dummyData = [
-    //     {
-    //         section: "Account Settings",
-    //         items: [
-    //             { title: "My Profile", slug: "MyProfile" },
-    //             { title: "Reset MPIN", slug: "ChangeMpin" },
-    //             { title: "Change Password", slug: "ChangePassword" },
-    //         ]
-    //     },
-    //     {
-    //         section: "Notification",
-    //         items: [
-    //             { title: "Enable Notifications", slug: "EnableNotification" }
-    //         ]
-    //     }
-    // ];
-
+  
     const fetchSettings = async () => {
         setLoading(true);
         dispatch(getSettingMenus(userdata, (response) => {

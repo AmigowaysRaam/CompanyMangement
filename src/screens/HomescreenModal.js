@@ -66,6 +66,11 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             'Attendance & Leave': 'Attendance',
             'Compensation & Benefits': 'CompenSationBenifts',
             'Settings': 'SettingsScreen',
+            'Job Details': 'JobDetails',
+            'Client': 'ClientScreen',
+            'Files': 'FileManager',
+            'Leaves': 'LeaveManagement',
+            'Project': 'Projects'
         };
 
         const route = routes[item];
@@ -94,6 +99,25 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             />
         </TouchableOpacity>
     );
+
+    const staticMapItems = [1, 2, 3, 4, 5, 6,];
+    const renderStaticMapItem = () => {
+        return staticMapItems.map((item, index) => (
+            <View
+                key={index}
+                style={{
+                    backgroundColor: themeMode === 'dark' ? "#222" : "#f1f1f1",
+                    width: wp(78),
+                    height: hp(6),
+                    borderRadius: wp(3),
+                    alignSelf: "center",
+                    marginVertical: wp(2),
+
+                }}
+            />
+        ));
+    };
+
 
     // Render main menu item, with optional submenu
     const renderMenuItem = ({ item, index }) => {
@@ -141,7 +165,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.modalOverlay}>
                     <View style={[{
-                        backgroundColor: THEMECOLORS[themeMode].background,
+                        backgroundColor: showLogoutModal ? 'grey' : THEMECOLORS[themeMode].background,
                     }, styles.modalBox]}>
                         <ImageBackground
                             source={require("../../src/assets/animations/profile_bg.png")}
@@ -193,7 +217,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                         <View style={{ marginVertical: hp(2), flex: 1, paddingHorizontal: wp(2) }}>
                             {
                                 isLoading ?
-                                    <ActivityIndicator size={wp(10)} style={{ marginVertical: wp(10) }} color={THEMECOLORS[themeMode].textPrimary} />
+                                    renderStaticMapItem()
                                     :
                                     <FlatList
                                         data={sideMenusList}
@@ -220,7 +244,6 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                     // onClose()
                                 }
                                 }
-
                             >
                                 <Text
                                     numberOfLines={1}
@@ -231,6 +254,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                 >
                                     {t('log_out')}
                                 </Text>
+
                                 <MaterialCommunityIcons
                                     name="logout"
                                     size={wp(4)}

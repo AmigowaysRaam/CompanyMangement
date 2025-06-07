@@ -57,6 +57,7 @@ const EmplyeeDetails = () => {
       dispatch(getEmplyeeDetails(user?.id, (response) => {
         if (response.success) {
           setEmployeeDetails(response.data[0]);
+          // alert(JSON.stringify(response.data[0]))
         }
         setIsLoading(false);
       }));
@@ -113,7 +114,6 @@ const EmplyeeDetails = () => {
                 ₹ {employeeDetails?.salary}
               </Text>
             </View>
-
             <View style={styles.infoContainer}>
               <Text style={[Louis_George_Cafe.regular.h7, styles.label, { color: theme.textPrimary }]}>
                 {t('startdate')}

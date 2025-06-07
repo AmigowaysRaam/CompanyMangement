@@ -7,7 +7,7 @@ import {
   FlatList,
   RefreshControl,
 } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import { hp } from "../../resources/dimensions";
 import HeaderComponent from "../../components/HeaderComponent";
@@ -25,17 +25,17 @@ import { useTranslation } from "react-i18next";
 import HomeScreenLoader from "../HomeScreenLoader";
 
 const HomeScreen = () => {
-  const navigation = useNavigation();
+
   const dispatch = useDispatch();
-  const userdata = useSelector((state) => state.auth.user);
+  const userdata = useSelector((state) => state.auth.user?.data);
   const { themeMode } = useTheme();
   const { t, i18n } = useTranslation();
-  const isTamil = i18n.language === "ta";
-
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [homeData, setHomeData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [working, setWorking] = useState(false);
+
 
   // Prevent hardware back button action on this screen
   useFocusEffect(
@@ -53,7 +53,8 @@ const HomeScreen = () => {
       getHomePageData(userdata?.id, (response) => {
         if (response.success && response.data?.length > 0) {
           setHomeData(response.data[0]);
-          console.log(response.data[0], null, 2)
+          console.log(response.punchedInToday, null, 2)
+          setWorking(response.punchedInToday)
         }
         setLoading(false);
         setRefreshing(false);
@@ -76,7 +77,6 @@ const HomeScreen = () => {
     EmployeeTable: (data) => <EmployeeTable data={data} />,
     PaySlip: (data) => <EmployeePaylist data={data} />, // PaySlip key maps to EmployeePaylist
   };
-
 
   // Swipe gesture to open modal
   const panResponder = useRef(
@@ -111,7 +111,7 @@ const HomeScreen = () => {
       style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background }}
       {...panResponder.panHandlers}
     >
-      <HeaderComponent title={t("home")} openModal={handleMenuClick} />
+      <HeaderComponent working={working} title={t("home")} openModal={handleMenuClick} />
       {loading ? (
         <HomeScreenLoader />
       ) : (

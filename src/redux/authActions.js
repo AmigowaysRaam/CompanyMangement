@@ -44,7 +44,7 @@ import {
 
 
 } from "./actionsTypes";
-import { API_REQUESTS } from "../api/api-end-points";
+import API_REQUESTS from "../api/api-end-points";
 
 
 const sendRequest = async (requestConfig, data = {}, headers = {}) => {
@@ -105,6 +105,39 @@ export const getSettingMenus = (userdata, callback) => async (dispatch) => {
     dispatch({ type: APP_GET_SETTINGS_MENU_FAILURE, error: error.message });
   }
 };
+
+
+// getCLinetData
+
+export const getCLinetData = (userdata, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_CLINET_DATA_URL;
+    const response = await sendRequest(endpoint, { userid: userdata });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching getCLinetData:", error.message);
+  }
+};
+
+
+// getJobDetailsArr
+export const getJobDetailsArr = (userdata, callback) => async (dispatch) => {
+  dispatch({ type: APP_GET_SETTINGS_MENU_REQUEST });
+  try {
+    const endpoint = API_REQUESTS.API_GET_JOB_DETAILS_URL;
+    const response = await sendRequest(endpoint, { userid: userdata });
+    dispatch({ type: APP_GET_SETTINGS_MENU_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching getJobDetailsArr:", error.message);
+    dispatch({ type: APP_GET_SETTINGS_MENU_FAILURE, error: error.message });
+  }
+};
+
+
+
 
 // changeNoftificationStatus
 export const changeNoftificationStatus = (userdata, callback) => async (dispatch) => {
@@ -192,13 +225,13 @@ export const getCategoryList = (type, page, limit, searchText, callback) => asyn
 };
 
 // getPayRollHistory
-export const getPayRollHistory = (uId,employId, page, limit, searchText, callback) => async (dispatch) => {
+export const getPayRollHistory = (uId, employId, page, limit, searchText, callback) => async (dispatch) => {
   const payLoadParams = {
     page: searchText ? null : page,
     limit: searchText ? null : limit,
     search: searchText,
     userid: uId,
-    employId:employId
+    employId: employId
   };
   try {
     const endpoint = API_REQUESTS.API_GET_PAYROLL_LIST;
@@ -336,10 +369,55 @@ export const getHomePageData = (payLoad, callback) => async (dispatch) => {
   }
 };
 
+// getLeaveArray
+export const getLeaveArray = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_LEAVE_ARRAY_URL;
+    const response = await sendRequest(endpoint, { employeeId: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getLeaveArray:", error.message);
+  }
+};
 
-// APP_EMPLOYEE_TAB_MENU_REQUEST,
-// APP_EMPLOYEE_TAB_MENU_SUCCESS,
-// APP_EMPLOYEE_TAB_MENU_FAILURE,
+// levaeFormSubmit
+export const levaeFormSubmit = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_LEAVE_FORM_SUBMIT_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("levaeFormSubmit:", error.message);
+  }
+};
+
+
+
+// create-punch
+export const punchInOutApi = (payLoad, type, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_CREATE_PUNCH_IN_OUT_URL;
+    const response = await sendRequest(endpoint, { userId: payLoad, type: type });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("punchInOutApi:", error.message);
+  }
+};
+
+// getPunchinOutHistory
+export const getPunchinOutHistory = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_PUNCH_IN_OUT_HISTORY_URL;
+    const response = await sendRequest(endpoint, { userId: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("punchInOutApi:", error.message);
+  }
+};
 
 // getemployeeDetails
 export const getemployeeDetails = (payLoad, callback) => async (dispatch) => {
@@ -360,19 +438,36 @@ export const getemployeeDetails = (payLoad, callback) => async (dispatch) => {
 
 // getAttendaceData
 export const getAttendaceData = (payLoad, callback) => async (dispatch) => {
-  // dispatch({ type: APP_EMPLOYEE_TAB_MENU_REQUEST });
-  // alert(payLoad)
   try {
     const endpoint = API_REQUESTS.API_ATTENDANCE_CONTENT_URL;
     const response = await sendRequest(endpoint, { userid: payLoad });
-    // dispatch({ type: APP_EMPLOYEE_TAB_MENU_SUCCESS, payload: response });
     if (callback) callback(response);
     return response;
   } catch (error) {
     console.error("APP_USER_HOMEPAGE_FAILURE:", error.message);
-    // dispatch({ type: APP_EMPLOYEE_TAB_MENU_FAILURE, error: error.message });
   }
 };
+
+// getProjectsStats
+export const getProjectsStats = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_PROJECT_STATS_CONTENT_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getProjectsStats:", error.message);
+  }
+};
+
+
+
+
+
+
+
+
+
 
 // getOtpByMobilenumber
 export const getOtpByMobilenumber = (payLoad, callback) => async (dispatch) => {
@@ -496,3 +591,29 @@ export const updateFormSubmit = (userId, payLoad, callback) => async (dispatch) 
   }
 };
 
+// createEmployeeCall
+export const createEmployeeCall = (userId, payLoad, callback) => async (dispatch) => {
+
+  try {
+
+    const endpoint = API_REQUESTS.API_CREATE_EMPLOYEE_URL.url;
+    const formData = new FormData();
+    formData.append('full_name', payLoad.fullname);
+    formData.append('username', payLoad.username);
+    formData.append('designation', payLoad.designation);
+    formData.append('dob', payLoad.dob);
+    formData.append('email', payLoad.email);
+    formData.append('phone', payLoad.phone);
+    formData.append('userid', userId);
+    formData.append('password', "password");
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await response.json();
+    if (callback) callback(data);
+    return data;
+  } catch (error) {
+    console.error("createEmployeeCallApi:", error.message);
+  }
+};

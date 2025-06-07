@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text,TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text,TouchableOpacity,Pressable } from 'react-native';
 import { hp, wp } from '../../resources/dimensions';
 import { Louis_George_Cafe } from '../../resources/fonts';
 import LinearGradient from 'react-native-linear-gradient';
@@ -40,7 +40,7 @@ const PieChart = (data) => {
   }, []);
 
   return (
-    <TouchableOpacity onPress={()=>navigation.navigate('Projects')} style={[styles.card, {
+    <Pressable onPress={()=>navigation.navigate('Projects')} style={[styles.card, {
       backgroundColor: THEMECOLORS[themeMode].cardBackground,
     }]}>
       <Text style={[Louis_George_Cafe.bold.h6, { alignSelf: "flex-start", marginBottom: wp(5) }]}>
@@ -72,7 +72,7 @@ const PieChart = (data) => {
           ))}
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

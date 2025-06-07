@@ -60,6 +60,7 @@ const ProfileScreen = () => {
             'Settings': 'SettingsScreen',
             'Notifications': 'Notifications',
             'Compensation & Benefits': 'CompenSationBenifts',
+            'Leaves': 'LeaveManagement'
         };
 
         const route = routeMap[label];
@@ -67,7 +68,6 @@ const ProfileScreen = () => {
             navigation.navigate(route);
         }
     };
-
 
     useFocusEffect(
         React.useCallback(() => {
@@ -174,7 +174,11 @@ const ProfileScreen = () => {
     };
 
     return (
-        <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background, paddingVertical: wp(1) }}>
+        <View style={{
+            flex: 1,
+            backgroundColor: THEMECOLORS[themeMode].background,
+            paddingVertical: wp(1),opacity: showLogoutModal ? 0.4 :1
+        }}>
             <HeaderComponent title={t('profile')} showBackArray={false} />
             <View style={styles.coverContainer}>
                 <LinearGradient
@@ -210,7 +214,6 @@ const ProfileScreen = () => {
                 renderStaticMapItem()
                 :
                 <>
-
                     <FlatList
                         ref={flatListRef}
                         data={sideMenusList}
@@ -218,8 +221,8 @@ const ProfileScreen = () => {
                         keyExtractor={(item, index) => index.toString()}
                         contentContainerStyle={{
                             paddingHorizontal: wp(5),
-                            paddingTop: hp(2),
-                            paddingBottom: hp(4)
+                            // paddingTop: hp(2),
+                            // paddingBottom: hp(2)
                         }}
                         getItemLayout={(data, index) => ({
                             length: hp(8), // approx row height
@@ -227,14 +230,13 @@ const ProfileScreen = () => {
                             index,
                         })}
                     />
-
                     <TouchableOpacity
                         onPress={() => setShowLogoutModal(true)}
                         style={{
                             flexDirection: "row",
                             justifyContent: "space-between",
                             alignItems: "center",
-                            marginVertical: hp(6),
+                            marginVertical: hp(5),
                             paddingHorizontal: hp(4),
                             position: "relative"
                         }}
