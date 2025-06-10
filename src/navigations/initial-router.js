@@ -36,6 +36,7 @@ import CreateEmployee from "../screens/CreateEmployee";
 import PunchInOut from "../screens/PunchInPuchout";
 import LeaveManageMent from "../screens/LeaveManageMent";
 import AddLeaveForm from "../screens/AddLeaveForm";
+import LoginHistory from "../screens/LoginHistory";
 
 
 const Stack = createNativeStackNavigator();
@@ -83,6 +84,10 @@ function InitialRouter() {
         <Stack.Screen name="PunchInOut" component={PunchInOut} />
         <Stack.Screen name="LeaveManagement" component={LeaveManageMent} />
         <Stack.Screen name="AddLeaveForm" component={AddLeaveForm} />
+        <Stack.Screen name="LoginHistory" component={LoginHistory} />
+
+
+        
 
 
         

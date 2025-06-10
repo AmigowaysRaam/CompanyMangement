@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import { Platform, PermissionsAndroid } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-
 const GOOGLE_MAPS_API_KEY = 'AIzaSyCcVC5KE1BKOvgTlgaMC6k5vbrOASMubHg'; // Replace with your real API key
 
 const countryDialCodes = {
@@ -67,6 +66,7 @@ const getCountryFromCoords = async (lat, lon) => {
 };
 
 export const useCurrentLocation = () => {
+
   const [location, setLocation] = useState(null);
   const [countryCode, setCountryCode] = useState(null);
   const [dialCode, setDialCode] = useState(null);

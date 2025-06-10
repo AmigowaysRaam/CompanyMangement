@@ -14,6 +14,7 @@ import { loginWithMpin } from '../redux/authActions';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../context/ThemeContext';
 import { THEMECOLORS } from '../resources/colors/colors';
+import { useCurrentLocation } from '../hooks/location';
 
 const LoginWithMPIN = () => {
 
@@ -28,6 +29,7 @@ const LoginWithMPIN = () => {
   const { t, i18n } = useTranslation();
   const isTamil = i18n.language === 'ta';
   const item = route.params;
+  const { dialCode, location } = useCurrentLocation();
 
   const handleChange = (text, index) => {
     if (!/^\d?$/.test(text)) return;
@@ -65,7 +67,9 @@ const LoginWithMPIN = () => {
     setIsLoading(true);
     const params = {
       userid: userdata?.data?.id || item?.response?.userid,
-      mpin: mpinDigits.join('')
+      mpin: mpinDigits.join(''),
+      latitude: location?.coords?.latitude,
+      longitude: location?.coords?.longitude
     };
     // alert(JSON.stringify(params))
     dispatch(loginWithMpin(params, (response) => {

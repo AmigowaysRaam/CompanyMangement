@@ -117,24 +117,6 @@ function HeaderComponent({
                 </TouchableOpacity>
               </View>
               <View style={{ flexDirection: "row", alignSelf: "center", justifyContent: "center", alignItems: "center" }}>
-                <TouchableOpacity style={styles.iconButton}
-                  onPress={() => navigation.navigate('PunchInOut')}
-                >
-                  {
-                    working ?
-                      <MaterialCommunityIcons name="radiobox-marked" size={hp(3)} color={THEMECOLORS[themeMode].validation} />
-                      :
-                      <Image
-                        tintColor={THEMECOLORS[themeMode].primary}
-                        source={require('../assets/animations/punchInOut.png')}
-                        style={{ width: hp(3.5), height: hp(3.5) }}
-                      />
-
-                  }
-
-
-
-                </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('SearchScreen')}>
                   <MaterialCommunityIcons name="magnify" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>

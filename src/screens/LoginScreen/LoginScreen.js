@@ -29,11 +29,14 @@ import { loginUser } from "../../redux/authActions";
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from "../../context/Language";
 import i18n from "../../resources/config/i18";
+import { useCurrentLocation } from "../../hooks/location";
+
 
 const LoginScreen = () => {
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const { dialCode, location } = useCurrentLocation();
   const { themeMode } = useTheme();
   const { language } = useLanguage();
   const [username, setUsername] = useState(__DEV__ ? "ram@gmail.com" : "");
@@ -74,9 +77,16 @@ const LoginScreen = () => {
     }
     if (hasError) return;
     setIsLoading(true);
-    const credentials = { email: username, password };
+    const credentials = {
+      email: username, password,
+
+      latitude: location?.coords?.latitude,
+      longitude: location?.coords?.longitude
+    };
+    // alert(JSON.stringify(credentials))
+    
     dispatch(loginUser(credentials, (response) => {
-      setIsLoading(false);
+      setIsLoading(false); 
       if (response.success) {
         AsyncStorage.setItem('user_data', JSON.stringify(response));
         Toast.show({
@@ -105,6 +115,9 @@ const LoginScreen = () => {
   };
 
   useEffect(() => {
+
+    // console.log(location?.coords?.latitude,"location")
+    // console.log(location?.coords?.longitude,"longitude")
 
     if (lerror) {
       setIsLoading(false);

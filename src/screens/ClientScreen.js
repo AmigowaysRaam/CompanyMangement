@@ -81,6 +81,8 @@ const ClientScreen = () => {
             <View style={styles.divider} />
             <View style={[{
                 flexDirection: "row", justifyContent: "space-between", marginBottom: wp(2)
+                , borderBottomWidth: wp(0.1),
+                paddingVertical: wp(1), borderColor: "#c1c1c1"
             }]}>
                 <Text style={[
                     Louis_George_Cafe.regular.h7,

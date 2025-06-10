@@ -6,7 +6,9 @@ import {
     FlatList,
     TouchableOpacity,
     Image,
+    Animated, Easing
 } from 'react-native';
+
 import { wp, hp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -35,6 +37,29 @@ const ProfileScreen = () => {
     const [sideMenusList, setsideMenusList] = useState(sideMenusArray ? sideMenusArray?.data : []);
     const [isLoading, setisLoading] = useState(false);
     const flatListRef = useRef(null);
+    const [hideText, setHideText] = useState(false);
+
+    const lockPosition = useRef(new Animated.Value(0)).current;
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    const animateLockToCenter = () => {
+        setHideText(true); // hide the text
+        Animated.timing(lockPosition, {
+            toValue: 1,
+            duration: 500,
+            easing: Easing.out(Easing.exp),
+            useNativeDriver: true,
+        }).start(() => {
+            setShowLogoutModal(true); // or any follow-up logic
+        });
+    };
+
+    const translateX = lockPosition.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, wp(25)] // Adjust this based on how far it needs to move
+    });
+
+
 
     const toggleSubmenu = (index) => {
         const isExpanding = expandedIndex !== index;
@@ -60,7 +85,11 @@ const ProfileScreen = () => {
             'Settings': 'SettingsScreen',
             'Notifications': 'Notifications',
             'Compensation & Benefits': 'CompenSationBenifts',
-            'Leaves': 'LeaveManagement'
+            'Leaves': 'LeaveManagement',
+            'Project': 'Projects',
+            'Client': 'ClientScreen',
+            'Files': 'FileManager',
+            'Job Details': 'JobDetails',
         };
 
         const route = routeMap[label];
@@ -68,6 +97,7 @@ const ProfileScreen = () => {
             navigation.navigate(route);
         }
     };
+    const [showDownArrow, setShowDownArrow] = useState(false);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -83,6 +113,16 @@ const ProfileScreen = () => {
             }));
         }, [userdata?.data?.id])
     );
+
+    const handleScroll = (event) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+
+        const paddingToBottom = 20; // some threshold for bottom detection
+        const isAtBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
+
+        setShowDownArrow(!isAtBottom);
+    };
+
 
     useEffect(() => {
         const userId = userdata?.data?.id;
@@ -177,7 +217,8 @@ const ProfileScreen = () => {
         <View style={{
             flex: 1,
             backgroundColor: THEMECOLORS[themeMode].background,
-            paddingVertical: wp(1),opacity: showLogoutModal ? 0.4 :1
+            paddingVertical: wp(1),
+            // opacity: showLogoutModal ? 0.9 : 1
         }}>
             <HeaderComponent title={t('profile')} showBackArray={false} />
             <View style={styles.coverContainer}>
@@ -194,21 +235,22 @@ const ProfileScreen = () => {
                         />
                     </View>
                 </LinearGradient>
-            </View>
-            <View style={styles.infoContainer}>
-                <Text style={[
-                    isTamil ? Louis_George_Cafe.bold.h5 : Louis_George_Cafe.bold.h4,
-                    { color: THEMECOLORS[themeMode].textPrimary }
-                ]}>
-                    {userdata?.data?.full_name}
-                </Text>
-                <Text style={[
+                <View style={styles.infoContainer}>
+                    <Text style={[
+                        isTamil ? Louis_George_Cafe.bold.h5 : Louis_George_Cafe.bold.h4,
+                        { color: THEMECOLORS[themeMode].textPrimary }
+                    ]}>
+                        {userdata?.data?.full_name}
+                    </Text>
+                    {/* <Text style={[
                     isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
                     { color: THEMECOLORS[themeMode].textPrimary }
                 ]}>
                     {userdata?.data?.designation}
-                </Text>
+                </Text> */}
+                </View>
             </View>
+
 
             {isLoading ?
                 renderStaticMapItem()
@@ -221,49 +263,108 @@ const ProfileScreen = () => {
                         keyExtractor={(item, index) => index.toString()}
                         contentContainerStyle={{
                             paddingHorizontal: wp(5),
-                            // paddingTop: hp(2),
-                            // paddingBottom: hp(2)
+                            // backgroundColor: "red",
+                            minHeight: hp(20), // or whatever minimum height you want
                         }}
+
                         getItemLayout={(data, index) => ({
                             length: hp(8), // approx row height
                             offset: hp(8) * index,
                             index,
                         })}
+                        onScroll={handleScroll}
+                        scrollEventThrottle={16} // smoother scroll events
                     />
-                    <TouchableOpacity
-                        onPress={() => setShowLogoutModal(true)}
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginVertical: hp(5),
-                            paddingHorizontal: hp(4),
-                            position: "relative"
-                        }}
-                    >
-                        <Text style={[
-                            isTamil ? Louis_George_Cafe.bold.h7 : Louis_George_Cafe.bold.h6,
-                            { color: THEMECOLORS[themeMode].textPrimary, lineHeight: wp(6) }
-                        ]}>
-                            {t('log_out')}
-                        </Text>
-                        <MaterialCommunityIcons
-                            name={'logout'}
-                            size={hp(2.5)}
-                            color={THEMECOLORS[themeMode].textPrimary}
-                        />
+                    {showDownArrow && (
+                        <View style={{
+                            position: 'absolute',
+                            bottom: hp(8), // position just above the bottom padding
+                            alignSelf: 'center',
+                            backgroundColor: 'rgba(0,0,0,0.7)', // optional background
+                            borderRadius: wp(4),
+                            padding: wp(1),
+                            zIndex: 10,
+                            paddingHorizontal: wp(3),
+
+                        }}>
+                            <MaterialCommunityIcons
+                                name="chevron-down"
+                                size={hp(3)}
+                                color={THEMECOLORS[themeMode].background}
+                            />
+                        </View>
+                    )}
+
+
+                    <TouchableOpacity onPress={() => animateLockToCenter()} style={{
+                        marginTop: hp(3)
+                    }}>
+                        <LinearGradient
+                            colors={['#011f4b', '#03396c', '#005b96']}
+                            start={{ x: 1, y: 0 }}
+                            end={{ x: 0, y: 1 }}
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                paddingVertical: wp(1),    // reduce vertical padding
+                                width: wp(50),               // reduce width
+                                backgroundColor: '#012970',
+                                borderRadius: wp(10),         // smaller border radius
+                                paddingHorizontal: wp(2),    // reduce horizontal padding
+                                // marginVertical: wp(2),       // reduce margin
+                                alignSelf: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Animated.View
+                                style={{
+                                    backgroundColor: "#D6DCE7",
+                                    alignItems: "center",
+                                    // padding: wp(1),           // reduce padding inside icon container
+                                    paddingHorizontal: wp(4),
+                                    // paddingVertical: wp(2),
+                                    borderRadius: wp(5),      // smaller border radius
+                                    transform: [{ translateX }],
+                                }}
+                            >
+                                <MaterialCommunityIcons
+                                    name={'logout'}
+                                    size={hp(5)}               // smaller icon size
+                                    color={'#012970'}
+                                />
+                            </Animated.View>
+
+                            {!hideText && (
+                                <Text
+                                    style={[
+                                        isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h5,  // smaller font size styles
+                                        { color: "#FFF", lineHeight: wp(4), marginRight: hp(1) }
+                                    ]}
+                                >
+                                    {t('log_out')}
+                                </Text>
+                            )}
+                        </LinearGradient>
                     </TouchableOpacity>
+
                 </>
 
             }
 
-
-
-
             {showLogoutModal &&
                 <LogoutModal
                     isVisible={showLogoutModal}
-                    onCancel={() => setShowLogoutModal(false)}
+                    onCancel={() => {
+                        setShowLogoutModal(false);
+                        setHideText(false); // show the text back
+                        Animated.timing(lockPosition, {
+                            toValue: 0,
+                            duration: 500,
+                            easing: Easing.out(Easing.exp),
+                            useNativeDriver: true,
+                        }).start();
+                    }}
+
                 />
             }
         </View >
@@ -279,7 +380,7 @@ const styles = StyleSheet.create({
     coverImage: {
         ...StyleSheet.absoluteFillObject,
         width: '100%',
-        height: '80%',
+        height: '60%',
         alignSelf: "center",
         justifyContent: "flex-end",
     },
@@ -288,7 +389,7 @@ const styles = StyleSheet.create({
         zIndex: 2,
         alignSelf: "center",
         position: "relative",
-        top: hp(4)
+        top: hp(3)
     },
 
     profileImage: {
@@ -301,7 +402,7 @@ const styles = StyleSheet.create({
 
     infoContainer: {
         alignItems: 'center',
-        marginBottom: wp(2)
+        marginBottom: hp(1)
     },
 
     menuItem: {
@@ -310,7 +411,7 @@ const styles = StyleSheet.create({
         marginBottom: hp(1),
     },
     submenuItem: {
-        paddingVertical: hp(1),
+        paddingVertical: wp(1),
         paddingHorizontal: wp(2),
         borderRadius: wp(1),
         marginBottom: hp(0.5),

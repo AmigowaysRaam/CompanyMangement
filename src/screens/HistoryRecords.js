@@ -1,18 +1,21 @@
 // components/HistoryRecords.js
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { THEMECOLORS } from '../resources/colors/colors';
+import { useNavigation } from '@react-navigation/native';
 
 const HistoryRecords = ({ loading, history }) => {
     const { themeMode } = useTheme();
     const { t } = useTranslation();
+    const navigation = useNavigation();
 
     useEffect(() => {
         // Add any initialization logic here
+        // alert(JSON.stringify(history))
     }, []);
 
     const renderItem = ({ item, index }) => (
@@ -137,6 +140,17 @@ const HistoryRecords = ({ loading, history }) => {
                             paddingBottom: hp(3),
                             flexGrow: 1,
                         }}
+
+                        ListFooterComponent={
+                            <TouchableOpacity
+                                // LoginHistory
+                                onPress={() => navigation.navigate('LoginHistory')}
+                                style={{ alignSelf: "center", margin: wp(2), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
+                                <Text style={[Louis_George_Cafe.regular.h8, {
+                                    lineHeight: wp(5)
+                                }]}>{t('viewAll')}</Text>
+                            </TouchableOpacity>
+                        }
                         ListEmptyComponent={
                             <Text
                                 style={{
@@ -156,8 +170,9 @@ const HistoryRecords = ({ loading, history }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         marginTop: hp(3),
+        maxHeight: wp(40)
     },
     title: {
         fontSize: wp(4.5),
@@ -167,15 +182,19 @@ const styles = StyleSheet.create({
     headerRow: {
         flexDirection: 'row',
         borderBottomWidth: 1,
-        borderColor: '#ccc',
+        borderColor: '#555',
         paddingBottom: hp(1),
         marginBottom: hp(1),
     },
+
     recordRow: {
         flexDirection: 'row',
         marginBottom: hp(0.1),
         padding: hp(2),
+        borderRadius: wp(1),
+        borderBottomWidth: wp(0.1)
     },
+
     cell: {
         flex: 1,
         textAlign: 'center',
@@ -197,7 +216,9 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: wp(10),
         borderTopRightRadius: wp(10),
         paddingVertical: wp(4),
-        flex: 1,
+        // flex: 1,
+        minHeight: wp(90),
+        paddingBottom: wp(10)
     },
 });
 

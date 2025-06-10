@@ -41,7 +41,9 @@ import {
   APP_GET_SETTINGS_MENU_SUCCESS,
   APP_GET_SETTINGS_MENU_FAILURE,
 
-
+  APP_GET_PUNCHED_REQUEST,
+  APP_GET_PUNCHED_SUCCESS,
+  APP_GET_PUNCHED_FAILURE,
 
 } from "./actionsTypes";
 import API_REQUESTS from "../api/api-end-points";
@@ -153,6 +155,8 @@ export const changeNoftificationStatus = (userdata, callback) => async (dispatch
 
 // loginUser
 export const loginUser = (credentials, callback) => async (dispatch) => {
+  // alert(JSON.stringify(credentials, null, 2))
+  
   dispatch({ type: APP_USER_LOGIN_REQUEST });
   try {
     const endpoint = API_REQUESTS.API_LOGIN_URL;
@@ -256,6 +260,25 @@ export const getEmployeeList = (uId, page, limit, searchText, callback) => async
     const endpoint = API_REQUESTS.API_GET_EMPLOYEE_LIST;
     const response = await sendRequest(endpoint, payLoadParams);
     console.log("dataFetch Success", response)
+    if (callback) callback(response); // ✅ Check if callback exists before calling
+    return response;
+  } catch (error) {
+    console.error("Error fetching CATEGORIES:", error.message);
+  }
+};
+
+// getHistoryApiCall
+export const getHistoryApiCall = (uId, page, limit, searchText, callback) => async (dispatch) => {
+  const payLoadParams = {
+    page: searchText ? null : page,
+    limit: searchText ? null : limit,
+    search: searchText,
+    userId: uId,
+  };
+  try {
+    const endpoint = API_REQUESTS.API_GET_LOGIN_HISTOY_LIST;
+    const response = await sendRequest(endpoint, payLoadParams);
+    console.log("getHistoryApiCall Success", response)
     if (callback) callback(response); // ✅ Check if callback exists before calling
     return response;
   } catch (error) {
@@ -418,6 +441,33 @@ export const getPunchinOutHistory = (payLoad, callback) => async (dispatch) => {
     console.error("punchInOutApi:", error.message);
   }
 };
+
+
+// APP_GET_PUNCHED_REQUEST,
+// APP_GET_PUNCHED_SUCCESS,
+// APP_GET_PUNCHED_FAILURE,
+
+
+// getPunchinOut
+export const getPunchinOut = (payLoad, callback) => async (dispatch) => {
+  dispatch({ type: APP_GET_PUNCHED_REQUEST });
+  try {
+    const endpoint = API_REQUESTS.API_APP_PUNCHED_URL;
+    const response = await sendRequest(endpoint, { userId: payLoad });
+    dispatch({ type: APP_GET_PUNCHED_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("APP_GET_PUNCHED_FAILURE:", error.message);
+    dispatch({ type: APP_GET_PUNCHED_FAILURE, error: error.message });
+  }
+};
+
+
+
+
+
+
 
 // getemployeeDetails
 export const getemployeeDetails = (payLoad, callback) => async (dispatch) => {

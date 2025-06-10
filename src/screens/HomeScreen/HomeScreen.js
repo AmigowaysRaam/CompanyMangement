@@ -65,6 +65,7 @@ const HomeScreen = () => {
   // Fetch data on screen focus or when userdata changes
   useFocusEffect(
     React.useCallback(() => {
+      // alert(JSON.stringify(userdata))
       fetchHomeData();
     }, [userdata])
   );

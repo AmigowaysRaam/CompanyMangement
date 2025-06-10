@@ -32,6 +32,16 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [sideMenusList, setsideMenusList] = useState(sideMenusArray ? sideMenusArray?.data : []);
     const [isLoading, setisLoading] = useState(false);
+    const [showDownArrow, setShowDownArrow] = useState(true);
+
+    const handleScroll = (event) => {
+        const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+
+        const isAtBottom = contentOffset.y + layoutMeasurement.height >= contentSize.height - 20; // 20px buffer
+        setShowDownArrow(!isAtBottom);
+    };
+
+
     // Toggle expand/collapse submenu for a menu index
 
     const toggleExpand = (index) => {
@@ -41,6 +51,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
         }));
     };
     useEffect(() => {
+        // console.log(userdata?.data?.lastLoginLocation, 'userdata')
         dispatch(getSideMenus(userdata?.data?.id))
         setsideMenusList(sideMenusArray?.data)
         if (_.isEmpty(sideMenusArray?.data)) {
@@ -112,7 +123,6 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                     borderRadius: wp(3),
                     alignSelf: "center",
                     marginVertical: wp(2),
-
                 }}
             />
         ));
@@ -173,7 +183,18 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                             style={{ width: "100%", height: hp(42) }}
                         >
 
+                            {/* <Text
+                                    numberOfLines={1}
+                                    style={[
+                                        Louis_George_Cafe.bold.h9,
+                                        { alignSelf: "center", maxWidth: wp(60), color: THEMECOLORS[themeMode].white, alignSelf: "center" }
+                                    ]}
+                                >
+                                    {userdata?.data?.lastLoginLocation}
+                                </Text> */}
                             <ThemeToggle />
+
+
                             <View style={{ width: "100%", height: hp(32), alignItems: "center" }}>
                                 <TouchableOpacity style={{ marginVertical: hp(4) }} onPress={() => {
                                     onClose()
@@ -182,33 +203,57 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                 } >
                                     <Image
                                         source={require("../assets/animations/user_1.png")}
-                                        style={{ width: wp(35), height: wp(35), borderRadius: wp(25) }}
+                                        style={{ width: wp(26), height: wp(26), borderRadius: wp(25) }}
                                     />
                                     <MaterialCommunityIcons
                                         name="pencil-outline"
-                                        size={wp(7)}
+                                        size={wp(6)}
                                         color={COLORS.button_bg_color}
                                         style={{ alignSelf: "flex-end", position: "relative", bottom: hp(3), right: hp(2), backgroundColor: THEMECOLORS[themeMode].white, borderRadius: wp(5), padding: wp(0.5) }}
                                     />
                                 </TouchableOpacity>
-                                <View style={{ position: "relative", bottom: wp(10) }} >
+                                <View style={{ position: "relative", bottom: wp(9) }} >
                                     <Text
                                         numberOfLines={1}
                                         style={[
-                                            Louis_George_Cafe.bold.h5,
-                                            { alignSelf: "center", maxWidth: wp(60), color: THEMECOLORS[themeMode].white, alignSelf: "center" }
+                                            Louis_George_Cafe.bold.h6,
+                                            { alignSelf: "center", maxWidth: wp(60), color: THEMECOLORS[themeMode].white, alignSelf: "center", lineHeight: wp(7) }
                                         ]}
                                     >
                                         {userdata?.data?.full_name}
                                     </Text>
-                                    <Text
+                                    {/* <Text
                                         numberOfLines={1}
                                         style={[
-                                            Louis_George_Cafe.regular.h7,
+                                            Louis_George_Cafe.regular.h8,
                                             { alignSelf: "center", color: THEMECOLORS[themeMode].white, textTransform: "capitalize" },
                                         ]}
                                     >
                                         {userdata?.data?.designation}
+                                    </Text> */}
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            Louis_George_Cafe.bold.h8,
+                                            {
+                                                alignSelf: "center", color: THEMECOLORS[themeMode].white, textTransform: "capitalize",
+                                                lineHeight: wp(7)
+                                            },
+                                        ]}
+                                    >
+                                        {`#${userdata?.data?.id}`}
+                                    </Text>
+                                    <Text
+                                        numberOfLines={1}
+                                        style={[
+                                            Louis_George_Cafe.bold.h8,
+                                            {
+                                                alignSelf: "center", color: THEMECOLORS[themeMode].white, textTransform: "capitalize",
+                                                lineHeight: wp(7)
+                                            },
+                                        ]}
+                                    >
+                                        {`📍${userdata?.data?.lastLoginLocation}`}
                                     </Text>
                                 </View>
                             </View>
@@ -225,8 +270,25 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                         renderItem={renderMenuItem}
                                         scrollEnabled
                                         showsVerticalScrollIndicator={false}
+                                        onScroll={handleScroll}
+                                        scrollEventThrottle={16}
                                     />
                             }
+                            
+                            {showDownArrow && (
+                                <View style={[{
+                                    position: 'absolute',
+                                    bottom: wp(0),
+                                    alignSelf: 'center',
+                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    borderRadius: wp(4),
+                                    padding: wp(1),
+                                    elevation: 4,
+                                }]}>
+                                    <MaterialCommunityIcons name="chevron-down" size={wp(5)} color="gray" />
+                                </View>
+                            )}
+
                         </View>
                         <View
                             style={{

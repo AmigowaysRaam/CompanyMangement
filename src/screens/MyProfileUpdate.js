@@ -104,7 +104,19 @@ const MyProfileUpdate = () => {
         }));
     };
 
-    const handleChange = (key, value) => {
+    // handleAlertUser
+    // const handleAlertUser = (eFlag) => {
+    //     alert('kljkljkljkl')
+    //     if (!eFlag) {
+    //         ToastAndroid.show(`You can't edit this field`, ToastAndroid.SHORT);
+    //     }
+    // };
+
+    const handleChange = (key, value, eFlag) => {
+        if (eFlag) {
+            ToastAndroid.show(`You can't edit this field`, ToastAndroid.SHORT);
+            return
+        }
         setFields({ ...fields, [key]: value });
         setErrors({ ...errors, [key]: '' });
     };
@@ -112,6 +124,7 @@ const MyProfileUpdate = () => {
     return (
         <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background }}>
             <HeaderComponent title={t('My Profile')} showBackArray={true} />
+            {/* <ThemeToggle /> */}
             {isLoading ?
                 <ProfileScreenLoader />
                 :
@@ -157,38 +170,52 @@ const MyProfileUpdate = () => {
                                     <ActivityIndicator style={{ marginVertical: wp(5) }} />
                                     :
                                     <View style={styles.inputContainer}>
-                                        {
-                                            [
-                                                { key: 'fullname', label: t('fullname'), placeholder: t('enteryourfullname'), editable: true },
-                                                { key: 'username', label: t('username'), placeholder: t('enteryourusername'), editable: false },
-                                                { key: 'designation', label: t('designation'), placeholder: t('enteryourdesignation'), editable: false },
-                                                { key: 'dob', label: t('dob'), placeholder: t('yyyy-mm-dd'), editable: false },
-                                                { key: 'email', label: t('email'), placeholder: t('enteryouremail'), editable: false },
-                                                { key: 'phone', label: t('phone'), placeholder: t('enteryourphonenumber'), editable: false }
-                                            ].map(field => (
-                                                <View key={field.key} style={{ marginBottom: hp(2) }}>
-                                                    <Text style={[
-                                                        isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
-                                                        styles.label,
-                                                        { color: THEMECOLORS[themeMode].textPrimary }
-                                                    ]}>
-                                                        {field.label}
-                                                    </Text>
+                                        {[
+                                            { key: 'fullname', label: t('fullname'), placeholder: t('enteryourfullname'), editable: true },
+                                            { key: 'username', label: t('username'), placeholder: t('enteryourusername'), editable: false },
+                                            { key: 'designation', label: t('designation'), placeholder: t('enteryourdesignation'), editable: false },
+                                            { key: 'dob', label: t('dob'), placeholder: t('yyyy-mm-dd'), editable: false },
+                                            { key: 'email', label: t('email'), placeholder: t('enteryouremail'), editable: false },
+                                            { key: 'phone', label: t('phone'), placeholder: t('enteryourphonenumber'), editable: false }
+                                        ].map(field => (
+                                            <View key={field.key} style={{ marginBottom: hp(2) }}>
+                                                <Text style={[
+                                                    isTamil ? Louis_George_Cafe.regular.h8 : Louis_George_Cafe.regular.h6,
+                                                    styles.label,
+                                                    { color: THEMECOLORS[themeMode].textPrimary,
+                                                        lineHeight:wp(5)
+                                                     }
+                                                ]}>
+                                                    {field.label}
+                                                </Text>
+
+                                                <TouchableOpacity
+                                                    activeOpacity={field.editable ? 1 : 0.7}
+                                                    onPress={() => {
+                                                        if (!field.editable) {
+                                                            ToastAndroid.show(`${'u_cnt_edit'}`, ToastAndroid.SHORT);
+                                                        }
+                                                    }}
+                                                >
                                                     <TextInput
+                                                        pointerEvents={field.editable ? 'auto' : 'none'}
                                                         editable={field.editable}
                                                         value={fields[field.key]}
-                                                        onChangeText={(value) => handleChange(field.key, value)}
+                                                        onChangeText={(value) => handleChange(field.key, value, field.editable)}
                                                         placeholder={field.placeholder}
                                                         placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
                                                         style={[
                                                             styles.input,
                                                             {
-                                                                backgroundColor: THEMECOLORS[themeMode].viewBackground,
                                                                 color: THEMECOLORS[themeMode].textPrimary,
-                                                                borderColor: field.editable ? THEMECOLORS[themeMode].textPrimary :
-                                                                    "#444"
+                                                                backgroundColor: field.editable
+                                                                    ? THEMECOLORS[themeMode].inputBackground
+                                                                    : THEMECOLORS[themeMode].background,
+                                                                borderWidth: field.editable ? wp(0.4) : wp(0),
+                                                                borderBottomWidth: field.editable ? wp(0.4) : wp(0.5),
+                                                                borderColor: THEMECOLORS[themeMode].textPrimary,
                                                             },
-                                                            isTamil && { fontSize: wp(3.5) }
+                                                            isTamil && { fontSize: wp(3) }
                                                         ]}
                                                         keyboardType={
                                                             field.key === 'email'
@@ -198,12 +225,20 @@ const MyProfileUpdate = () => {
                                                                     : 'default'
                                                         }
                                                     />
-                                                    {errors[field.key] && (
-                                                        <Text style={[Louis_George_Cafe.regular.h8, { color: 'red', margin: wp(2) }]}>{errors[field.key]}</Text>
-                                                    )}
-                                                </View>
-                                            ))}
+                                                </TouchableOpacity>
+
+                                                {errors[field.key] && (
+                                                    <Text style={[Louis_George_Cafe.regular.h8, { color: 'red', margin: wp(2) }]}>
+                                                        {errors[field.key]}
+                                                    </Text>
+                                                )}
+                                            </View>
+                                        ))}
+
                                     </View>
+
+
+
                             }
                             {/* <ThemeToggle /> */}
                         </ScrollView>
@@ -263,7 +298,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     input: {
-        borderWidth: 1,
+        // borderWidth: 1,
         borderRadius: wp(3),
         padding: wp(3),
     },

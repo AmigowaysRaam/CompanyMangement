@@ -1,36 +1,92 @@
 import React, { useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+} from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+
+import { getSiteSettings } from "../redux/authActions";
+import { useTheme } from "../context/ThemeContext";
+import { THEMECOLORS } from "../resources/colors/colors";
+import { COLORS } from "../resources/Colors";
+import { wp, hp } from "../resources/dimensions";
+import { Louis_George_Cafe } from "../resources/fonts";
+
+// Screens
 import HomeScreen from "../screens/HomeScreen/HomeScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import Attendance from "../screens/Attendance/Attendance";
-import { useDispatch, useSelector } from "react-redux";
-import { getSiteSettings } from "../redux/authActions";
-import { COLORS } from "../resources/Colors";
-import { hp, wp } from "../resources/dimensions";
-import {  Louis_George_Cafe } from "../resources/fonts";
-import { Image } from "react-native"; // add this at the top
 import Employee from "../screens/Employee/Employee";
-import { THEMECOLORS } from "../resources/colors/colors";
-import { useTheme } from "../context/ThemeContext";
-import { useTranslation } from "react-i18next";
+import PunchInOut from "../screens/PunchInPuchout";
+
+// Local icon map
+// import iconMap from "../assets/iconMap";
+
+const iconMap = {
+  home_filled: require('../assets/animations/home_filled.png'),
+  home_outline: require('../assets/animations/home_outline.png'),
+  employee_fill: require('../assets/animations/employee_fill.png'),
+  employee_outline: require('../assets/animations/employee_outline.png'),
+  attendance_fill: require('../assets/animations/attendance_fill.png'),
+  attendance_outline: require('../assets/animations/attendance_outline.png'),
+  profile_fill: require('../assets/animations/profile_fill.png'),
+  profile_outline: require('../assets/animations/profile_outline.png'),
+  punh_nav: require('../assets/animations/punchin.png'),
+};
 
 const Tab = createBottomTabNavigator();
+
+// Dummy tab config array
+const tabData = [
+  {
+    name: "HomeScreen",
+    label: "Home",
+    iconFilled: "home_filled",
+    iconOutline: "home_outline",
+    component: HomeScreen,
+  },
+  {
+    name: "Employee",
+    label: "Employees",
+    iconFilled: "employee_fill",
+    iconOutline: "employee_outline",
+    component: Employee,
+  },
+  {
+    name: "punchinout",
+    label: "",
+    icon: "punh_nav", // static icon
+    isStatic: true,
+    iconSize: wp(9),
+    component: PunchInOut,
+  },
+  {
+    name: "Attendance",
+    label: "Attendance",
+    iconFilled: "attendance_fill",
+    iconOutline: "attendance_outline",
+    component: Attendance,
+  },
+  {
+    name: "Profile",
+    label: "Profile",
+    iconFilled: "profile_fill",
+    iconOutline: "profile_outline",
+    component: ProfileScreen,
+  },
+];
+
 const TabNavigator = () => {
+
   const { themeMode } = useTheme();
   const userId = useSelector((state) => state.auth.user?._id);
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
-  const CustomTabBarButton = (props) => (
-    <TouchableOpacity
-      {...props}
-      activeOpacity={1} // Disables ripple effect
-      style={[props.style, {
-      }]}
-    >
-      {props.children}
-    </TouchableOpacity>
-  );
 
   useEffect(() => {
     if (userId) {
@@ -38,58 +94,57 @@ const TabNavigator = () => {
     }
   }, [userId]);
 
+  const CustomTabBarButton = (props) => (
+    <TouchableOpacity {...props} activeOpacity={1}>
+      {props.children}
+    </TouchableOpacity>
+  );
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
+        const currentTab = tabData.find((tab) => tab.name === route.name);
         return {
           tabBarButton: (props) => <CustomTabBarButton {...props} />,
           tabBarIcon: ({ focused }) => {
-            let imageSource;
-            switch (route.name) {
-              case 'HomeScreen':
-                imageSource = focused
-                  ? require('../assets/animations/home_filled.png')
-                  : require('../assets/animations/home_outline.png');
-                break;
-          
-              case 'Employee':
-                imageSource = focused
-                  ? require('../assets/animations/employee_fill.png')
-                  : require('../assets/animations/employee_outline.png'); // ✅ fixed typo "emplyee"
-                break;
-          
-              case 'Attendance':
-                imageSource = focused
-                  ? require('../assets/animations/attendance_fill.png')
-                  : require('../assets/animations/attendance_outline.png');
-                break;
-          
-              case 'Profile':
-                imageSource = focused
-                  ? require('../assets/animations/profile_fill.png')
-                  : require('../assets/animations/profile_outline.png');
-                break;
-          
-              default:
-                imageSource = require('../assets/animations/home_tab.png');
-            }
+            const isPunchTab = currentTab?.name === "punchinout";
+            const iconSize = isPunchTab ? wp(16) : wp(7);
+            const iconKey = currentTab?.isStatic
+              ? currentTab.icon
+              : focused
+                ? currentTab?.iconFilled
+                : currentTab?.iconOutline;
+
+            const imageSource = iconMap[iconKey];
+
             return (
-              <View style={[styles.iconContainer,]}>
+              <View style={styles.iconContainer}>
                 {focused && (
                   <View
                     style={{
                       backgroundColor: COLORS.button_bg_color,
-                      height: wp(14),
-                      width: wp(14),
+                      height: wp(18),
+                      width: wp(18),
                       borderRadius: wp(20),
                       bottom: wp(1),
                     }}
                   />
                 )}
-                <View style={{ position: 'absolute' }}>
+                <View style={{
+                  position: "absolute",
+                  bottom: isPunchTab && focused ? wp(4) : wp(1),
+                }}>
                   <Image
                     source={imageSource}
-                    style={{ width: wp(6), height: wp(6), tintColor: '#fff', marginTop: wp(1) }}
+                    style={{
+                      width: iconSize,
+                      height: iconSize,
+                      tintColor: !isPunchTab ? "#fff" : "",
+                      marginTop: wp(1),
+                      top: isPunchTab ? hp(3) : 0,
+                      // bottom: isPunchTab ? wp(2) : wp(4),
+
+                    }}
                     resizeMode="contain"
                   />
                 </View>
@@ -97,68 +152,58 @@ const TabNavigator = () => {
             );
           },
           tabBarLabel: ({ focused }) => {
-            let label;
-            switch (route.name) {
-              case 'HomeScreen':
-                label = 'Home';
-                break;
-              case 'Employee':
-                label = 'Employees';
-                break;
-              case 'Attendance':
-                label = 'Attendance';
-                break;
-              case 'Profile':
-                label = 'Profile';
-                break;
-              default:
-                label = '';
-            }
+            const label = currentTab?.label || "";
             return (
               <Text
                 style={[
                   Louis_George_Cafe.regular.h9,
-                  styles.tababel,
-                  { color: '#fff', fontSize: wp(i18n.language == 'ta' ? 2 : 2.5), marginTop: wp(1), lineHeight: wp(3) },
+                  styles.tabLabel,
+                  {
+                    color: "#fff",
+                    fontSize: wp(i18n.language === "ta" ? 1.8 : 2.3),
+                    marginTop: wp(1),
+                    lineHeight: wp(3),
+                  },
                 ]}
               >
                 {t(label)}
               </Text>
             );
           },
+
           headerShown: false,
           tabBarStyle: {
             height: hp(7),
-            width: '100%', borderColor: THEMECOLORS[themeMode].primaryApp
+            width: "100%",
+            borderColor: THEMECOLORS[themeMode].primaryApp,
+            backgroundColor: THEMECOLORS[themeMode].primaryApp,
           },
           tabBarItemStyle: {
-            backgroundColor: THEMECOLORS[themeMode].primaryApp
+            backgroundColor: THEMECOLORS[themeMode].primaryApp,
           },
         };
       }}
     >
-      <Tab.Screen name="HomeScreen" component={HomeScreen} />
-      <Tab.Screen name="Employee" component={Employee} />
-      <Tab.Screen name="Attendance" component={Attendance} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      {tabData.map((tab) => (
+        <Tab.Screen
+          key={tab.name}
+          name={tab.name}
+          component={tab.component}
+        />
+      ))}
     </Tab.Navigator>
   );
 };
 
 const styles = StyleSheet.create({
   iconContainer: {
-    alignItems: "center", justifyContent: 'center',
-    width: wp(8), height: wp(10)
+    alignItems: "center",
+    justifyContent: "center",
+    width: wp(8),
+    height: wp(10),
   },
   tabLabel: {
     marginTop: wp(1),
-  },
-  activeTabIndicator: {
-    width: "30%",
-    height: 10,
-    position: "absolute",
-    bottom: 0,
-    // backgroundColor: COLORS.button_bg_color,
   },
 });
 
