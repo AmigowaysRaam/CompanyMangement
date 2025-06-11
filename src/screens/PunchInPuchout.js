@@ -70,6 +70,13 @@ const PunchInOut = () => {
     const [isLunchCompleted, setisLunchCompleted] = useState(false);
 
 
+    useAndroidBackHandler(() => {
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+        }
+    });
+
+
     const showConfirmation = (message, actionCallback) => {
         setConfirmMessage(message);
         setConfirmAction(() => actionCallback);
@@ -164,9 +171,8 @@ const PunchInOut = () => {
 
     useFocusEffect(
         React.useCallback(() => {
-            const uid = userdata?.id || storedUserId;
+            const uid = userdata?.id;
             if (!uid) return;
-
             setIsloading(true);
             dispatch(getPunchinOutHistory(uid, (response) => {
                 if (response.success) {

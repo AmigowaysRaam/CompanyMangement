@@ -280,17 +280,18 @@ const ProfileScreen = () => {
                             position: 'absolute',
                             bottom: hp(8), // position just above the bottom padding
                             alignSelf: 'center',
-                            backgroundColor: 'rgba(0,0,0,0.7)', // optional background
+                            backgroundColor: '#f9f9f9',
+                            // optional background
                             borderRadius: wp(4),
                             padding: wp(1),
                             zIndex: 10,
-                            paddingHorizontal: wp(3),
+                            // paddingHorizontal: wp(1),
 
                         }}>
                             <MaterialCommunityIcons
                                 name="chevron-down"
                                 size={hp(3)}
-                                color={THEMECOLORS[themeMode].background}
+                                color={'black'}
                             />
                         </View>
                     )}

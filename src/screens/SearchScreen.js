@@ -80,12 +80,12 @@ const SearchScreen = () => {
                         <View>
                             <Text style={[styles.categoryTitle,
                             {
-                                color: THEMECOLORS[themeMode].background
+                                color: THEMECOLORS[themeMode].textPrimary
                             }
                             ]}>{item.name}</Text>
                             <Text style={[styles.categoryTitle,
                             {
-                                color: THEMECOLORS[themeMode].background
+                                color: THEMECOLORS[themeMode].textPrimary
                             }
                             ]}>{item.price}</Text>
                         </View>
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     },
     categoryDescription: {
         fontSize: wp(3.5),
-        color: '#777',
+        // color: '#777',
 
     },
 });

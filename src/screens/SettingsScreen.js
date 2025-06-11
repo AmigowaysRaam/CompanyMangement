@@ -43,7 +43,6 @@ const SettingsScreen = () => {
         dispatch(getSettingMenus(userdata, (response) => {
             if (response.success) {
                 setSettingsData(response?.data.Settings)
-                // alert(JSON.stringify(response?.data?.notificationsExist))
                 setIsNotificationEnabled(response?.data?.notificationsExist)
                 setLoading(false)
             }
@@ -54,7 +53,6 @@ const SettingsScreen = () => {
     };
 
     useEffect(() => {
-        // Simulate API call
         fetchSettings();
     }, []);
     const staticMapItems = [1, 2, 3, 4, 5, 6, 7];

@@ -72,6 +72,7 @@ const LeaveManageMent = () => {
 
     const renderItem = ({ item }) => (
         <View style={[styles.card, { backgroundColor: THEMECOLORS[themeMode].card }]}>
+
             <View style={styles.cardHeader}>
                 <Text style={[Louis_George_Cafe.bold.h5, { color: THEMECOLORS[themeMode].textPrimary }]}>
                     {item.leaveType}
@@ -124,7 +125,6 @@ const LeaveManageMent = () => {
                     style={{ paddingHorizontal: wp(2) }}
                 />
             </TouchableOpacity>
-
             {loading ? (
                 <ActivityIndicator
                     size="large"

@@ -71,10 +71,12 @@ const LoginWithMPIN = () => {
       latitude: location?.coords?.latitude,
       longitude: location?.coords?.longitude
     };
-    // alert(JSON.stringify(params))
+    // alert(JSON.stringify(userdata?.data))
     dispatch(loginWithMpin(params, (response) => {
       setIsLoading(false);
+      // alert(JSON.stringify(response))
       if (response) {
+        // ToastAndroid.show(response.message, ToastAndroid.SHORT);
         if (response.success) {
           navigation.reset({
             index: 0,
@@ -89,8 +91,16 @@ const LoginWithMPIN = () => {
           ToastAndroid.show(response.message, ToastAndroid.SHORT);
         }
       }
+      else{
+        ToastAndroid.show('Network error occurred', ToastAndroid.SHORT);
+      }
+
     }));
   };
+
+  useEffect(() => {
+    // alert(JSON.stringify(userdata?.data))
+  }, [])
 
   return (
     <KeyboardAvoidingView
@@ -154,7 +164,7 @@ const LoginWithMPIN = () => {
                 </TouchableOpacity>
             }
             <View style={{ flexDirection: !isTamil ? "row" : "column", justifyContent: "space-around", marginTop: hp(2) }}>
-              <TouchableOpacity onPress={() => handleloginwithusername()}>
+              {/* <TouchableOpacity onPress={() => handleloginwithusername()}>
                 <Text style={[
                   isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h7,
                   {
@@ -162,11 +172,11 @@ const LoginWithMPIN = () => {
                     marginVertical: hp(1),
                     color: THEMECOLORS[themeMode].textPrimary,
                     textDecorationLine: "underline"
-                  }
+                  } 
                 ]}>
                   {t('loginwithusername')}
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
 
               <TouchableOpacity onPress={() => handleMovetoLogin()}>
                 <Text style={[

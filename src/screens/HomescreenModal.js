@@ -81,7 +81,8 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             'Client': 'ClientScreen',
             'Files': 'FileManager',
             'Leaves': 'LeaveManagement',
-            'Project': 'Projects'
+            'Project': 'Projects',
+            'Payroll': 'PayrollDetails'
         };
 
         const route = routes[item];
@@ -274,22 +275,28 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                         scrollEventThrottle={16}
                                     />
                             }
-                            
-                            {showDownArrow && (
-                                <View style={[{
+                        </View>
+                        {showDownArrow && (
+                                <View style={{
                                     position: 'absolute',
-                                    bottom: wp(0),
+                                    bottom: hp(6), // position just above the bottom padding
                                     alignSelf: 'center',
-                                    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                                    backgroundColor: '#f9f9f9',
+                                    // optional background
                                     borderRadius: wp(4),
                                     padding: wp(1),
-                                    elevation: 4,
-                                }]}>
-                                    <MaterialCommunityIcons name="chevron-down" size={wp(5)} color="gray" />
+                                    zIndex: 10,
+                                    // paddingHorizontal: wp(1),
+
+                                }}>
+                                    <MaterialCommunityIcons
+                                        name="chevron-down"
+                                        size={hp(3)}
+                                        color={'black'}
+                                    />
                                 </View>
                             )}
 
-                        </View>
                         <View
                             style={{
                                 margin: hp(2),

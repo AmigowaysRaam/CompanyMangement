@@ -36,8 +36,8 @@ const HistoryRecords = ({ loading, history }) => {
             <Text style={[Louis_George_Cafe.regular.h9, styles.cell]}>
                 {item?.punchOutTime || '-'}
             </Text>
-            <Text style={[Louis_George_Cafe.regular.h9, styles.cell]}>-</Text>
-            <Text style={[Louis_George_Cafe.regular.h9, styles.cell]}>-</Text>
+            <Text style={[Louis_George_Cafe.regular.h9, styles.cell]}>{`${item?.totalWorkedHours} h` || '-'}</Text>
+            {/* <Text style={[Louis_George_Cafe.regular.h9, styles.cell]}>-</Text> */}
         </View>
     );
 
@@ -115,8 +115,9 @@ const HistoryRecords = ({ loading, history }) => {
                             styles.headerCell,
                         ]}
                     >
-                        {t('break')}
+                        {t('total_working')}
                     </Text>
+                    {/*
                     <Text
                         style={[
                             Louis_George_Cafe.bold.h9,
@@ -125,7 +126,7 @@ const HistoryRecords = ({ loading, history }) => {
                         ]}
                     >
                         {t('lunch')}
-                    </Text>
+                    </Text> */}
                 </View>
 
                 {loading ? (
@@ -141,16 +142,20 @@ const HistoryRecords = ({ loading, history }) => {
                             flexGrow: 1,
                         }}
 
-                        ListFooterComponent={
-                            <TouchableOpacity
-                                // LoginHistory
-                                onPress={() => navigation.navigate('LoginHistory')}
-                                style={{ alignSelf: "center", margin: wp(2), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
-                                <Text style={[Louis_George_Cafe.regular.h8, {
-                                    lineHeight: wp(5)
-                                }]}>{t('viewAll')}</Text>
-                            </TouchableOpacity>
-                        }
+                        // ListFooterComponent={() => {
+                        //     {
+                        //         history.length != 0 &&
+                        //             <TouchableOpacity
+                        //                 onPress={() => navigation.navigate('LoginHistory')}
+                        //                 style={{ alignSelf: "center", margin: wp(2), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
+                        //                 <Text style={[Louis_George_Cafe.regular.h8, {
+                        //                     lineHeight: wp(5)
+                        //                 }]}>{t('viewAll')}</Text>
+                        //             </TouchableOpacity>
+                        //     }
+                        // }
+                        // }
+
                         ListEmptyComponent={
                             <Text
                                 style={{
@@ -163,6 +168,17 @@ const HistoryRecords = ({ loading, history }) => {
                         }
                     />
                 )}
+                {
+                    history.length != 0 &&
+                    <TouchableOpacity
+                        // LoginHistory
+                        onPress={() => navigation.navigate('LoginHistory')}
+                        style={{ alignSelf: "center", margin: wp(2), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
+                        <Text style={[Louis_George_Cafe.regular.h8, {
+                            lineHeight: wp(5)
+                        }]}>{t('viewAll')}</Text>
+                    </TouchableOpacity>
+                }
             </View>
         </View>
     );

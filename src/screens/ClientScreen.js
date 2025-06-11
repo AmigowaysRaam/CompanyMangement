@@ -20,11 +20,12 @@ import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
 const ClientScreen = () => {
 
     const { themeMode } = useTheme();
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigation = useNavigation();
     const [clinetsData, setSettingsData] = useState([]);
     const [loading, setLoading] = useState(true);
     const dispatch = useDispatch();
+    const isTamil = i18n.language == 'ta'
     const userdata = useSelector((state) => state.auth.user?.data?.id);
 
     useAndroidBackHandler(() => {
@@ -44,6 +45,7 @@ const ClientScreen = () => {
     };
 
     useEffect(() => {
+        // alert(i18n)
         fetchSettings();
     }, []);
 
@@ -71,7 +73,7 @@ const ClientScreen = () => {
                 '#F1F1F1',
             borderWidth: wp(0.5),
         }]}>
-            <Text style={[
+            <Text numberOfLines={1} style={[
                 Louis_George_Cafe.bold.h7,
                 styles.cardTitle,
                 { color: THEMECOLORS[themeMode].textPrimary }
@@ -85,9 +87,9 @@ const ClientScreen = () => {
                 paddingVertical: wp(1), borderColor: "#c1c1c1"
             }]}>
                 <Text style={[
-                    Louis_George_Cafe.regular.h7,
+                    isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
                     styles.cardText,
-                    { color: THEMECOLORS[themeMode].textPrimary }
+                    { color: THEMECOLORS[themeMode].textPrimary, lineHeight: wp(6) }
                 ]}>
                     {t('agreementDate')}
                 </Text>
@@ -101,14 +103,14 @@ const ClientScreen = () => {
             <View style={styles.dateRow}>
                 <View style={styles.dateBlock}>
                     <Text style={[
-                        Louis_George_Cafe.regular.h7,
+                          isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
                         styles.cardText,
                         { color: THEMECOLORS[themeMode].textPrimary }
                     ]}>
                         {t('startDate')}
                     </Text>
                     <Text style={[
-                        Louis_George_Cafe.bold.h7,
+                         isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
                         { color: THEMECOLORS[themeMode].textPrimary }
                     ]}>
                         {item.startDate}
@@ -117,14 +119,14 @@ const ClientScreen = () => {
 
                 <View style={styles.dateBlock}>
                     <Text style={[
-                        Louis_George_Cafe.regular.h7,
+                         isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
                         styles.cardText,
                         { color: THEMECOLORS[themeMode].textPrimary }
                     ]}>
                         {t('endDate')}
                     </Text>
                     <Text style={[
-                        Louis_George_Cafe.bold.h7,
+                         isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
                         { color: THEMECOLORS[themeMode].textPrimary }
                     ]}>
                         {item.endDate}
@@ -132,15 +134,18 @@ const ClientScreen = () => {
                 </View>
             </View>
             <Text style={[
-                Louis_George_Cafe.regular.h7,
+                 isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
                 styles.cardText,
-                { color: THEMECOLORS[themeMode].textPrimary, marginTop: hp(1.2) }
+                {
+                    color: THEMECOLORS[themeMode].textPrimary, marginTop: hp(1.2),
+                    lineHeight: wp(6)
+                }
             ]}>
                 {t('budgetProgress')} : {item.budgetProgress}
             </Text>
             <View style={{ flexDirection: "row" }}>
                 <Text style={[
-                    Louis_George_Cafe.bold.h6,
+                    isTamil ? Louis_George_Cafe.bold.h7 : Louis_George_Cafe.bold.h6,
                     {
                         alignSelf: "flex-start", borderRadius: wp(2), paddingHorizontal: wp(0),
                         lineHeight: wp(6),
@@ -150,7 +155,7 @@ const ClientScreen = () => {
                     {t('status')} :
                 </Text>
                 <Text style={[
-                    Louis_George_Cafe.regular.h7,
+                    isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
                     {
                         backgroundColor: item.status !== 'Completed' ? THEMECOLORS[themeMode].primaryApp
                             : '#B6DEAF',
@@ -230,7 +235,7 @@ const styles = StyleSheet.create({
         marginBottom: hp(1),
     },
     cardText: {
-        fontSize: wp(3.6),
+        // fontSize: wp(3.6),
         marginBottom: hp(1),
     },
     divider: {

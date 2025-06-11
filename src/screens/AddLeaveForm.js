@@ -75,9 +75,7 @@ const AddLeaveForm = () => {
             employeeId: userdata?.id,
             reason
         };
-
         setLoading(true);
-
         dispatch(
             levaeFormSubmit(formData, (response) => {
                 setLoading(false);

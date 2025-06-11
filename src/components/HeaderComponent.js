@@ -6,7 +6,8 @@ import {
   Image,
   ToastAndroid,
   BackHandler,
-  ActivityIndicator
+  ActivityIndicator,
+  Animated
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { wp, hp } from "../resources/dimensions";
@@ -42,6 +43,7 @@ function HeaderComponent({
   const [languagesList, setSelectedLanguageList] = useState(langugelist ? langugelist : []);
   const openMenu = () => setMenuVisible(true);
   const closeMenu = () => setMenuVisible(false);
+  const slideAnim = React.useRef(new Animated.Value(-200)).current; // Start off-screen to the left
 
   const fnchangeLanguage = (langCode, flag) => {
     setLanguage(langCode); // Update context (if using Context API)
@@ -64,9 +66,28 @@ function HeaderComponent({
         // console.warn('Translation response is invalid or missing data.');
       }
     }));
+
     i18n.changeLanguage(langCode);
     closeMenu();
   };
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 500, // duration of the animation
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => true; // Prevent back action
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+      return () =>
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [])
+  );
+
+
 
   useEffect(() => {
     dispatch(getLanguageList)
@@ -90,6 +111,7 @@ function HeaderComponent({
 
   useFocusEffect(
     React.useCallback(() => {
+
       const onBackPress = () => true; // Prevent back action
       BackHandler.addEventListener("hardwareBackPress", onBackPress);
       return () =>
@@ -120,11 +142,6 @@ function HeaderComponent({
                 <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('SearchScreen')}>
                   <MaterialCommunityIcons name="magnify" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
-                {/* <Image
-                  source={{ uri: 'https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif' }}
-                  style={{ width: hp(3.5), height: hp(3.5) }}
-                /> */}
-
                 <TouchableOpacity style={styles.iconButton} onPress={() =>
                   navigation.navigate('Notifications')
                 }>
@@ -162,6 +179,11 @@ function HeaderComponent({
                     ))}
                   </Menu>
                 }
+                <TouchableOpacity style={styles.iconButton} onPress={() =>
+                  navigation.navigate('ChatListScreen')
+                }>
+                  <MaterialCommunityIcons name="chat-outline" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
+                </TouchableOpacity>
               </View>
             </>
             :
@@ -174,12 +196,19 @@ function HeaderComponent({
                     </Text>
                   </TouchableOpacity>
                 }
-                <Text style={[Louis_George_Cafe.bold.h6, {
-                  justifyContent: "center", alignItems: "center", textTransform: 'capitalize', lineHeight: wp(5)
-                  , margin: wp(1), marginHorizontal: wp(2), lineHeight: hp(3), color: THEMECOLORS[themeMode].primary
-                }]}>
-                  {title}
-                </Text>
+                <Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
+                  <Text style={[Louis_George_Cafe.bold.h6, {
+                    justifyContent: "center",
+                    alignItems: "center",
+                    textTransform: 'capitalize',
+                    margin: wp(1),
+                    marginHorizontal: wp(2),
+                    lineHeight: hp(3),
+                    color: THEMECOLORS[themeMode].primary
+                  }]}>
+                    {title}
+                  </Text>
+                </Animated.View>
               </View>
             </>
         }

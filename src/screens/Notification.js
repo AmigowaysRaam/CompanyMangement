@@ -18,8 +18,8 @@ import HeaderComponent from '../components/HeaderComponent';
 import { useTranslation } from 'react-i18next';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import { useNavigation } from '@react-navigation/native';
-
-const NotificationList = () => {
+ 
+const NotificationList = () => {   
 
     const { themeMode } = useTheme();
     const { t } = useTranslation();

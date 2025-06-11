@@ -67,7 +67,7 @@ export default function Projects() {
           <Text
             numberOfLines={2}
             style={[adjustFont(Louis_George_Cafe.bold.h8, 2), styles.cardLabel, {
-              color: "#747474"
+              // color: "#747474"
             }]}
           >
             {title}
@@ -187,6 +187,7 @@ export default function Projects() {
 }
 
 const styles = StyleSheet.create({
+  
   container: {
     flex: 1,
     padding: wp(2),
@@ -230,7 +231,6 @@ const styles = StyleSheet.create({
     padding: wp(2),
     marginVertical: wp(2),
   },
-  // 
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -239,7 +239,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: wp(85)
   },
-
   progressBarBackground: {
     flex: 5,
     height: hp(1),

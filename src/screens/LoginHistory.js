@@ -79,7 +79,6 @@ const LoginHistory = () => {
                     setCategories(prev => [...prev, ...newData]);
                     setPage(currentPage + 1);
                 }
-
                 setLoading(false);
                 setRefreshing(false);
                 loadingRef.current = false;
@@ -105,10 +104,12 @@ const LoginHistory = () => {
         }
     };
 
-    const renderItem = ({ item }) => {
+    const renderItem = ({ item,index }) => {
         const category = item.category || item;
         return (
-            <View style={styles.cardItem}>
+            <View style={[styles.cardItem,{
+                backgroundColor: index%2 == 0 ? "#f1f1f1":'#f8f8f8'
+            }]}>
                 <Text style={styles.cell}>{category?.date || '-'}</Text>
                 <Text style={styles.cell}>{category?.punchInTime || '-'}</Text>
                 <Text style={styles.cell}>{category?.punchOutTime || '-'}</Text>
@@ -207,9 +208,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingVertical: hp(1),
         // backgroundColor: '#fff',
-        borderRadius: wp(1.5),
-        marginBottom: hp(0.8),
+        borderRadius: wp(2),
+        marginBottom: hp(0.5),
         paddingHorizontal: wp(1),
+        paddingVertical:wp(4)
     },
 
     cell: {

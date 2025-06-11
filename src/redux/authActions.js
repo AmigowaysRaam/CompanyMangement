@@ -156,7 +156,7 @@ export const changeNoftificationStatus = (userdata, callback) => async (dispatch
 // loginUser
 export const loginUser = (credentials, callback) => async (dispatch) => {
   // alert(JSON.stringify(credentials, null, 2))
-  
+
   dispatch({ type: APP_USER_LOGIN_REQUEST });
   try {
     const endpoint = API_REQUESTS.API_LOGIN_URL;
@@ -389,6 +389,19 @@ export const getHomePageData = (payLoad, callback) => async (dispatch) => {
   } catch (error) {
     console.error("APP_USER_HOMEPAGE_FAILURE:", error.message);
     dispatch({ type: APP_USER_HOMEPAGE_FAILURE, error: error.message });
+  }
+};
+
+// getChatListApi
+
+export const getChatListApi = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_CHAT_LIST_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getChatListApi:", error.message);
   }
 };
 
@@ -665,5 +678,23 @@ export const createEmployeeCall = (userId, payLoad, callback) => async (dispatch
     return data;
   } catch (error) {
     console.error("createEmployeeCallApi:", error.message);
+  }
+};
+
+// generatePayroll
+export const generatePayroll = (userid, parollFile, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_GENERATE_PAYROLL_URL;
+    const response = await sendRequest(endpoint, {
+      employeeId: userid,
+      month: parollFile.month,
+      year: parollFile.year
+    });
+    // alert(JSON.stringify(response))
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("generatePayroll:", error.message);
   }
 };

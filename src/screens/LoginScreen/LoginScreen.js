@@ -84,7 +84,6 @@ const LoginScreen = () => {
       longitude: location?.coords?.longitude
     };
     // alert(JSON.stringify(credentials))
-    
     dispatch(loginUser(credentials, (response) => {
       setIsLoading(false); 
       if (response.success) {
@@ -93,10 +92,13 @@ const LoginScreen = () => {
           type: 'success',
           text1: 'Login successful!',
         });
+        
         // alert(JSON.stringify(response.data.mpin))
         if (response.data.mpin) {
           setTimeout(() => {
-            navigation.replace('ServiceSelection', response)
+            // navigation.replace('ServiceSelection', response)
+            navigation.replace('HomeScreen', response)
+
           }, 1000);
         }
         else {
