@@ -254,6 +254,114 @@ const API_GET_CHAT_LIST_URL = {
   responseDataKey: "data",
 };
 
+// API_FILES_DATA_URL
+const API_FILES_DATA_URL = {
+  url: `${API_BASE_URL}get-files`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_UPLOAD_DTA
+const API_UPLOAD_DTA = {
+  url: `${API_BASE_URL}file-upload`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// APIGET_CATEGORY_URL
+const APIGET_CATEGORY_URL = {
+  url: `${API_BASE_URL}getcategories`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_CRETE_CATYEGORY_URL
+const API_CRETE_CATYEGORY_URL = {
+  url: `${API_BASE_URL}mob-create-category`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_UPDATE_CATYEGORY_URL
+const API_UPDATE_CATYEGORY_URL = {
+  url: `${API_BASE_URL}mob-update-category`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// API_GET_COMPANYLIST_CONTENT_URL
+const API_GET_COMPANYLIST_CONTENT_URL = {
+  url: `${API_BASE_URL}mob-get-companies`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_COMPANY_DATA_URL
+const API_GET_COMPANY_DATA_URL = {
+  url: `${API_BASE_URL}mob-company-tabs`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_SUB_CATEGORY_LIST_ARR
+const API_GET_SUB_CATEGORY_LIST_ARR = {
+  url: `${API_BASE_URL}mob-get-subcategories`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_SUBMIT_COMPANY
+const API_SUBMIT_COMPANY = {
+  url: `${API_BASE_URL}mob-create-company`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_UPDATE_CONTACT_SUBMIT_COMPANY
+const API_UPDATE_CONTACT_SUBMIT_COMPANY = {
+  url: `${API_BASE_URL}mob-update-company`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_COMPANY_DATA_BY_ID_URL
+const API_GET_COMPANY_DATA_BY_ID_URL = {
+  url: `${API_BASE_URL}mob-companies`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_CLIENT_STEP_DATA_URL
+const API_GET_CLIENT_STEP_DATA_URL = {
+  url: `${API_BASE_URL}mob-clients-tabs`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_CREATE_CLIENT_COMPANY
+const API_CREATE_CLIENT_COMPANY = {
+  url: `${API_BASE_URL}mob-create-clients`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_UPDATE_CLIENT__DATA_URL
+const API_UPDATE_CLIENT__DATA_URL = {
+  url: `${API_BASE_URL}mob-update-client`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_CLIENT_DATA_BY_ID_URL
+const API_GET_CLIENT_DATA_BY_ID_URL = {
+  url: `${API_BASE_URL}mob-get-client`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+
+
+
+
 export default {
   APP_GENERATE_TOKEN,
   API_SITE_URL, API_LANGUAGE_URL, API_LOGIN_URL, API_LANGUAGE_CONTENT_URL,
@@ -264,7 +372,14 @@ export default {
   API_RESETMPIN_URL, API_CHANGE_NOTIFICATION_URL, API_CHANGE_PASSCODE_URL, API_GET_PAYROLL_LIST,
   API_GET_EMPLOYEE_LIST, API_GET_EMPLOYEE_PAYROLL_LIST, API_GET_PROJECT_STATS_CONTENT_URL, API_GET_JOB_DETAILS_URL, API_GET_CLINET_DATA_URL,
   API_CREATE_EMPLOYEE_URL, API_CREATE_PUNCH_IN_OUT_URL, API_GET_PUNCH_IN_OUT_HISTORY_URL,
-  API_LEAVE_FORM_SUBMIT_URL,API_GET_LEAVE_ARRAY_URL,
-  API_APP_PUNCHED_URL,API_GET_LOGIN_HISTOY_LIST,
-  API_GENERATE_PAYROLL_URL,API_GET_CHAT_LIST_URL
+  API_LEAVE_FORM_SUBMIT_URL, API_GET_LEAVE_ARRAY_URL,
+  API_APP_PUNCHED_URL, API_GET_LOGIN_HISTOY_LIST,
+  API_GENERATE_PAYROLL_URL, API_GET_CHAT_LIST_URL, API_GET_SUB_CATEGORY_LIST_ARR,
+  API_FILES_DATA_URL, API_GET_COMPANYLIST_CONTENT_URL, API_GET_COMPANY_DATA_URL,
+  API_UPLOAD_DTA, APIGET_CATEGORY_URL, API_CRETE_CATYEGORY_URL, API_UPDATE_CATYEGORY_URL,
+  API_SUBMIT_COMPANY, API_GET_CLIENT_STEP_DATA_URL,
+  API_UPDATE_CONTACT_SUBMIT_COMPANY, API_GET_COMPANY_DATA_BY_ID_URL,
+  API_CREATE_CLIENT_COMPANY,
+  API_UPDATE_CLIENT__DATA_URL,
+  API_GET_CLIENT_DATA_BY_ID_URL
 };

@@ -39,6 +39,12 @@ import AddLeaveForm from "../screens/AddLeaveForm";
 import LoginHistory from "../screens/LoginHistory";
 import PayrollDetails from "../screens/PayrollDetails";
 import ChatListScreen from "../screens/ChatListScreen";
+import CategoryManagement from "../screens/CategoryManagement";
+import AddCatgegoryForm from "../screens/AddCatgegoryForm";
+import CompanayManagement from "../screens/CompanayManagement.js";
+import CreateCompany from "../screens/CreateCompany";
+import CreateClient from "../screens/CreateClient";
+import AddProjectForm from "../screens/AddProjectForm";
 
 
 const Stack = createNativeStackNavigator();
@@ -89,6 +95,12 @@ function InitialRouter() {
         <Stack.Screen name="LoginHistory" component={LoginHistory} />
         <Stack.Screen name="PayrollDetails" component={PayrollDetails} />
         <Stack.Screen name="ChatListScreen" component={ChatListScreen} />
+        <Stack.Screen name="CategoryManagement" component={CategoryManagement} />
+        <Stack.Screen name="AddCatgegoryForm" component={AddCatgegoryForm} />
+        <Stack.Screen name="CompanyManagement" component={CompanayManagement} />
+        <Stack.Screen name="CreateCompany" component={CreateCompany} />
+        <Stack.Screen name="CreateClient" component={CreateClient} />
+        <Stack.Screen name="AddProjectForm" component={AddProjectForm} />
       </Stack.Navigator>
     </NavigationContainer>
   );

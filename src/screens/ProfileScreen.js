@@ -90,6 +90,8 @@ const ProfileScreen = () => {
             'Client': 'ClientScreen',
             'Files': 'FileManager',
             'Job Details': 'JobDetails',
+            'Category Management': 'CategoryManagement',
+            'Company Management': 'CompanyManagement'
         };
 
         const route = routeMap[label];
@@ -181,7 +183,7 @@ const ProfileScreen = () => {
                                 onPress={() => handleFnNavigate(submenu.label)}
                             >
                                 <Text style={[
-                                    isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h7,
+                                    isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h4,
                                     { color: THEMECOLORS[themeMode].textPrimary }
                                 ]}>
                                     {t(submenu.label)}

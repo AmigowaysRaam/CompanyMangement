@@ -7,8 +7,8 @@ import {
     TouchableOpacity,
     Platform,
     Image,
-    UIManager,
-    findNodeHandle
+    TextInput,
+    ToastAndroid,
 } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -16,32 +16,53 @@ import { useTheme } from "../context/ThemeContext";
 import HeaderComponent from '../components/HeaderComponent';
 import { useTranslation } from 'react-i18next';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import SearchInput from './SearchInput';
 import { Louis_George_Cafe } from '../resources/fonts';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-// Mock data
-const fileData = [
-    { id: '1', name: 'Document.pdf', type: 'pdf' },
-    { id: '2', name: 'Image.png', type: 'image' },
-    { id: '3', name: 'Music.mp3', type: 'audio' },
-    { id: '4', name: 'Video.mp4', type: 'video' },
-    { id: '5', name: 'Notes.txt', type: 'text' },
-    { id: '6', name: 'Presentation.pptx', type: 'ppt' },
-];
+import { useDispatch, useSelector } from 'react-redux';
+import { getFilesdata, getUploaddata } from '../redux/authActions';
+import DocumentPicker from 'react-native-document-picker';
+import Modal from 'react-native-modal';
 
 const FileManager = () => {
     const [searchText, setSearchText] = useState('');
     const { themeMode } = useTheme();
     const { t } = useTranslation();
     const navigation = useNavigation();
-
+    const userdata = useSelector((state) => state.auth.user?.data);
     const [menuVisible, setMenuVisible] = useState(false);
+    const [isLoading, setisLoading] = useState(false);
+
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+    const [uploadModalVisible, setUploadModalVisible] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [fileData, setfileData] = useState([]);
 
+    const [fileName, setFileName] = useState('');
+    const dispatch = useDispatch();
     const iconRefs = useRef({});
+
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchFilesData();
+        }, [userdata])
+    );
+
+    const fetchFilesData = () => {
+        setisLoading(true)
+        dispatch(
+            getFilesdata(userdata?.id, (response) => {
+                if (response.success) {
+                    // console.log(response.files);
+                    setfileData(response.files)
+                    setisLoading(false)
+
+                }
+            })
+        );
+    };
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
@@ -62,34 +83,46 @@ const FileManager = () => {
         }
     };
 
-    const renderItem = ({ item }) => {
-        return (
-            <TouchableOpacity style={[styles.fileItem, styles.shadowBox, { backgroundColor: THEMECOLORS[themeMode].white }]}>
-                <View style={styles.fileContent}>
-                    <TouchableOpacity
-                        ref={(ref) => iconRefs.current[item.id] = ref}
-                        onPress={() => handleMenuOpen(item.id)}
-                        style={{ alignSelf: "flex-end", margin: wp(1) }}
-                    >
-                        <MaterialCommunityIcons name="dots-vertical" size={hp(2.5)} color={'#5B5B5B'} />
-                    </TouchableOpacity>
+    const handleUploadFiles = () => {
+        setUploadModalVisible(false);
+        // setisLoading(true)
 
-                    <Image
-                        source={require('../assets/animations/imagePic.png')}
-                        style={styles.cardImage}
-                        resizeMode="contain"
-                    />
-                </View>
-                <View style={{ margin: wp(2) }}>
-                    <Text style={Louis_George_Cafe.regular.h8}>{item.name}</Text>
-                    <Text style={Louis_George_Cafe.regular.h9}>107.70 KB</Text>
-                    <Text style={{ fontSize: wp(1.5) }}>
-                        Last Modified: 19 Oct 2023
-                    </Text>
-                </View>
-            </TouchableOpacity>
+        dispatch(
+            getUploaddata(userdata?.id, fileName, selectedFile, (response) => {
+                ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
+                if (response.success) {
+                    setSelectedFile({}); // ✅ This sets the full object
+                    setFileName('');
+                    fetchFilesData();
+                }
+            })
         );
-    };
+    }
+
+    const renderItem = ({ item }) => (
+        <TouchableOpacity style={[styles.fileItem, styles.shadowBox, { backgroundColor: THEMECOLORS[themeMode].white }]}>
+            <View style={styles.fileContent}>
+                <TouchableOpacity
+                    ref={(ref) => iconRefs.current[item.id] = ref}
+                    onPress={() => handleMenuOpen(item.id)}
+                    style={{ alignSelf: "flex-end", margin: wp(1) }}
+                >
+                    <MaterialCommunityIcons name="dots-vertical" size={hp(2.5)} color={'#5B5B5B'} />
+                </TouchableOpacity>
+
+                <Image
+                    source={require('../assets/animations/imagePic.png')}
+                    style={styles.cardImage}
+                    resizeMode="contain"
+                />
+            </View>
+            <View style={{ margin: wp(2) }}>
+                <Text numberOfLines={1} style={Louis_George_Cafe.bold.h9}>{item.folderName}</Text>
+                <Text style={Louis_George_Cafe.regular.h9}>107.70 KB</Text>
+                <Text style={{ fontSize: wp(1.5) }}>Last Modified: 19 Oct 2023</Text>
+            </View>
+        </TouchableOpacity>
+    );
 
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
@@ -105,20 +138,36 @@ const FileManager = () => {
                 <TouchableOpacity style={[styles.actionButton, { backgroundColor: THEMECOLORS[themeMode].primaryApp }]}>
                     <Text style={{ color: THEMECOLORS[themeMode].white }}>Folder</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionButton, { backgroundColor: THEMECOLORS[themeMode].primaryApp }]}>
+                <TouchableOpacity
+                    style={[styles.actionButton, { backgroundColor: THEMECOLORS[themeMode].primaryApp }]}
+                    onPress={() => setUploadModalVisible(true)}
+                >
                     <Text style={{ color: THEMECOLORS[themeMode].white }}>Upload</Text>
                 </TouchableOpacity>
             </View>
-
-            <FlatList
-                data={fileData}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-                numColumns={2}
-                contentContainerStyle={{ marginHorizontal: wp(2) }}
-            />
-
-            {/* Pop-up menu near icon */}
+            {
+                isLoading ?
+                    <FlatList
+                        data={[1, 2, 3, 4, 5, 6]}
+                        renderItem={() =>
+                            <View style={{
+                                height: wp(34), width: wp(45), backgroundColor: THEMECOLORS[themeMode].tabInActive,
+                                margin: wp(1), borderRadius: wp(2), marginVertical: wp(2)
+                            }} />
+                        }
+                        keyExtractor={(item) => item}
+                        numColumns={2}
+                        contentContainerStyle={{ marginHorizontal: wp(2) }}
+                    />
+                    :
+                    <FlatList
+                        data={fileData}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id}
+                        numColumns={2}
+                        contentContainerStyle={{ marginHorizontal: wp(2) }}
+                    />
+            }
             {menuVisible && (
                 <>
                     <TouchableOpacity
@@ -145,6 +194,108 @@ const FileManager = () => {
                     </View>
                 </>
             )}
+            <Modal
+                isVisible={uploadModalVisible}
+                onBackdropPress={() => setUploadModalVisible(false)}
+                animationIn="slideInLeft"
+                animationOut="slideOutRight"
+                useNativeDriver={true}
+            >
+                <View style={{ backgroundColor: 'white', padding: wp(4), borderRadius: wp(2), height: hp(32) }}>
+
+                    <View>
+                        <TouchableOpacity
+                            onPress={() =>
+                                setUploadModalVisible(false)
+                            }
+                        >
+                            <MaterialCommunityIcons style={{
+                                alignSelf: "flex-end"
+                            }} name="close-circle" size={hp(4)} color={'#5B5B5B'} />
+                        </TouchableOpacity>
+                        {selectedFile ?
+                            <>
+                                <Image
+                                    source={require('../assets/animations/imagePic.png')}
+                                    style={[
+                                        {
+                                            width: wp(15),
+                                            height: wp(15),
+                                            alignSelf: "center"
+                                        }
+                                    ]}
+                                    resizeMode="contain"
+                                />
+                                <Text style={[Louis_George_Cafe.regular.h9, { color: '#555', alignSelf: "center", marginVertical: wp(3) }]}>{fileName}</Text>
+                            </>
+                            :
+                            <>
+                                <Text style={[Louis_George_Cafe.regular.h7, { marginBottom: hp(1), paddingHorizontal: wp(1) }]}>Upload File</Text>
+                                <TouchableOpacity
+                                    style={[{
+                                        backgroundColor:
+                                            THEMECOLORS[themeMode].white, marginBottom: hp(2), paddingVertical: wp(2.8), paddingHorizontal: wp(2), borderRadius: wp(2),
+                                        borderColor: "#ccc", borderWidth: wp(0.3)
+                                    }]}
+                                    onPress={async () => {
+                                        try {
+                                            const res = await DocumentPicker.pickSingle({
+                                                type: [DocumentPicker.types.allFiles],
+                                            });
+                                            // Create simulated uploaded file object
+                                            const selected = {
+                                                type: res.type || 'application/octet-stream',
+                                                name: res.name, // simulate filename
+                                                uri: res.uri, // mock full path
+                                            };
+                                            setSelectedFile(selected); // ✅ This sets the full object
+                                            setFileName(res.name);     // Optional: Just name
+                                            // console.log('Selected File Object:', selected);
+                                        } catch (err) {
+                                            if (DocumentPicker.isCancel(err)) {
+                                                console.log('User canceled the picker');
+                                            } else {
+                                                console.error('DocumentPicker Error:', err);
+                                            }
+                                        }
+                                    }}
+                                >
+                                    <Text style={{ color: '#555' }}>Choose File</Text>
+                                </TouchableOpacity>
+
+                            </>
+                        }
+
+                        <TextInput
+                            style={{
+                                borderWidth: 1,
+                                borderColor: '#ccc',
+                                borderRadius: wp(2),
+                                padding: wp(2),
+                                marginBottom: hp(2),
+                            }}
+                            placeholder="Enter file name"
+                            value={fileName}
+                            onChangeText={setFileName}
+                        />
+
+                        <TouchableOpacity
+                            style={[{ backgroundColor: THEMECOLORS[themeMode].primaryApp, padding: wp(2), alignItems: "center", borderRadius: wp(5) }]}
+                            onPress={() => {
+                                // console.log('File to upload:', {
+                                //     file: selectedFile,
+                                //     name: fileName,
+                                // });
+                                handleUploadFiles()
+                                // setUploadModalVisible(false);
+                            }}
+                        >
+                            <Text style={[Louis_George_Cafe.bold.h7, { color: '#fff' }]}>Upload</Text>
+                        </TouchableOpacity>
+
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -154,11 +305,12 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     fileItem: {
-        flex: 1,
+        width: wp(45), // 45% of screen width
         margin: wp(2),
         padding: wp(1),
         borderRadius: wp(1),
         justifyContent: 'center',
+        alignSelf: "center"
     },
     shadowBox: {
         ...Platform.select({

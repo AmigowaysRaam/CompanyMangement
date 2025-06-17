@@ -20,6 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from "../context/Language";
 import { getLanguageList, setLanguageSelected } from "../redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
+import ThemeToggle from "../ScreenComponents/HeaderComponent/ThemeToggle";
 
 function HeaderComponent({
   title,
@@ -128,6 +129,7 @@ function HeaderComponent({
           title == 'home' ?
             <>
               <View style={{ flexDirection: "row" }}>
+                
                 <TouchableOpacity onPress={openModal} style={styles.iconButton}>
                   <MaterialCommunityIcons name="menu" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
@@ -209,7 +211,9 @@ function HeaderComponent({
                     {title}
                   </Text>
                 </Animated.View>
+
               </View>
+
             </>
         }
       </View>

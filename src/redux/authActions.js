@@ -110,7 +110,6 @@ export const getSettingMenus = (userdata, callback) => async (dispatch) => {
 
 
 // getCLinetData
-
 export const getCLinetData = (userdata, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_GET_CLINET_DATA_URL;
@@ -121,6 +120,19 @@ export const getCLinetData = (userdata, callback) => async (dispatch) => {
     console.error("Error fetching getCLinetData:", error.message);
   }
 };
+
+// updateClientDetails
+export const updateClientDetails = (officeLocations, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_CLIENT__DATA_URL;
+    const response = await sendRequest(endpoint, officeLocations);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("Error fetching UpdateClientDetails:", error.message);
+  }
+};
+
 
 
 // getJobDetailsArr
@@ -190,10 +202,6 @@ export const loginWithMpin = (credentials, callback) => async (dispatch) => {
 };
 
 
-// APP_LANGUAGE_LIST_REQUEST,
-// APP_LANGUAGE_LIST_SUCCESS,
-// APP_LANGUAGE_LIST_FAILURE,
-// setLanguageSelected
 export const setLanguageSelected = (payLoad, callback) => async (dispatch) => {
   // dispatch({ type: APP_LANGUAGE_LIST_REQUEST });
   try {
@@ -227,6 +235,60 @@ export const getCategoryList = (type, page, limit, searchText, callback) => asyn
     console.error("Error fetching CATEGORIES:", error.message);
   }
 };
+
+// getSubcategoryApiiCall
+export const getSubcategoryApiiCall = (type, category ,callback) => async (dispatch) => {
+  const payLoadParams = {
+    categoryId:category
+  };
+
+  try {
+    const endpoint = API_REQUESTS.API_GET_SUB_CATEGORY_LIST_ARR;
+    const response = await sendRequest(endpoint, payLoadParams);
+    // console.log("dataFetch Success", payLoadParams)
+    if (callback) callback(response); // ✅ Check if callback exists before calling
+    return response;
+  } catch (error) {
+    console.error("Error fetching CATEGORIES:", error.message);
+  }
+};
+
+// submitCreateForm
+export const submitCreateForm = (payLoadParams ,callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_SUBMIT_COMPANY;
+    const response = await sendRequest(endpoint, payLoadParams);
+    if (callback) callback(response); // ✅ Check if callback exists before calling
+    return response;
+  } catch (error) {
+    console.error("Error submitCreateForm:", error.message);
+  }
+};
+
+// updateContactInfo
+export const updateContactInfo = (payLoadParams ,callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_CONTACT_SUBMIT_COMPANY;
+    const response = await sendRequest(endpoint, payLoadParams);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("Error UpdateContactInfo:", error.message);
+  }
+};
+
+// createNewClient
+export const createNewClient = (payLoadParams ,callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_CREATE_CLIENT_COMPANY;
+    const response = await sendRequest(endpoint, payLoadParams);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("Error UpdateContactInfo:", error.message);
+  }
+};
+
 
 // getPayRollHistory
 export const getPayRollHistory = (uId, employId, page, limit, searchText, callback) => async (dispatch) => {
@@ -391,6 +453,94 @@ export const getHomePageData = (payLoad, callback) => async (dispatch) => {
     dispatch({ type: APP_USER_HOMEPAGE_FAILURE, error: error.message });
   }
 };
+// getCompanyData
+export const getCompanyData = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_COMPANY_DATA_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompanyData:", error.message);
+  }
+};
+
+// getClientData
+export const getClientStepData = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_CLIENT_STEP_DATA_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompanyData:", error.message);
+  }
+};
+
+
+// getCompanyDetailById
+export const getCompanyDetailById = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_COMPANY_DATA_BY_ID_URL;
+    const response = await sendRequest(endpoint, { companyId: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompanyDetailById:", error.message);
+  }
+};
+
+// getClientDetailById
+export const getClientDetailById = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_CLIENT_DATA_BY_ID_URL;
+    const response = await sendRequest(endpoint, { clientId: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("GetClientDetailById:", error.message);
+  }
+};
+
+// getCompaniesList
+export const getCompaniesList = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_COMPANYLIST_CONTENT_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompaniesList:", error.message);
+  }
+};
+// getCategoryList
+export const getCategoryListCall = (payLoad, callback) => async (dispatch) => {
+  // dispatch({ type: APP_USER_HOMEPAGE_REQUEST });
+  try {
+    const endpoint = API_REQUESTS.APIGET_CATEGORY_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    // dispatch({ type: APP_USER_HOMEPAGE_SUCCESS, payload: response });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCategoryList:", error.message);
+    // dispatch({ type: APP_USER_HOMEPAGE_FAILURE, error: error.message });
+  }
+};
+
+// getFilesdata
+
+export const getFilesdata = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_FILES_DATA_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getFilesdata:", error.message);
+  }
+};
+
 
 // getChatListApi
 
@@ -681,6 +831,49 @@ export const createEmployeeCall = (userId, payLoad, callback) => async (dispatch
   }
 };
 
+
+// getUploaddata
+export const getUploaddata = (userId, fileName,fileData, callback) => async (dispatch) => {
+
+  try {
+    
+
+    const endpoint = API_REQUESTS.API_UPLOAD_DTA.url;
+    const formData = new FormData();
+    formData.append('folderName', fileName);
+    formData.append('file', fileData);
+    formData.append('userid', userId);
+    const response = await fetch(endpoint, { 
+      method: 'POST',
+      body: formData,
+    });
+    const data = await response.json();
+    if (callback) callback(data);
+    return data;
+  } catch (error) {
+    console.error("getUploaddata:", error.message);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // generatePayroll
 export const generatePayroll = (userid, parollFile, callback) => async (dispatch) => {
   // alert(JSON.stringify(payLoad))
@@ -696,5 +889,31 @@ export const generatePayroll = (userid, parollFile, callback) => async (dispatch
     return response;
   } catch (error) {
     console.error("generatePayroll:", error.message);
+  }
+};
+
+// createSubCatgoryForm
+export const createSubCatgoryForm = ( formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_CRETE_CATYEGORY_URL;
+    const response = await sendRequest(endpoint, formFields);
+    // alert(JSON.stringify(response))
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createSubCatgoryForm:", error.message);
+  }
+};
+// updateSubCatgoryForm
+export const updateSubCatgoryForm = ( formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_CATYEGORY_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createSubCatgoryForm:", error.message);
   }
 };

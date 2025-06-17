@@ -67,7 +67,7 @@ const HomeScreen = () => {
     React.useCallback(() => {
       // alert(JSON.stringify(userdata))
       fetchHomeData();
-    }, [userdata])
+    }, [userdata]) 
   );
 
   const componentMap = {

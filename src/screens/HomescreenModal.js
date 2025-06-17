@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
-    Modal, View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Image,
+    Modal,
+    View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Image,
     FlatList, ImageBackground, ActivityIndicator,
 } from "react-native";
 import { hp, wp } from "../resources/dimensions";
@@ -17,7 +18,7 @@ import _ from 'lodash';
 import LogoutModal from "../components/LogoutPop";
 import { useTranslation } from "react-i18next";
 import VersionCheck from 'react-native-version-check';
-
+// import Modal from 'react-native-modal'; 
 
 const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     // Track which menus are expanded for submenu
@@ -67,10 +68,10 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                 }
             }));
         }
-
     }, [userdata?.data?.id])
 
     const handleNavigateScreen = (item) => {
+        
         const routes = {
             'My Profile': 'Profile',
             'Notifications': 'Notifications',
@@ -82,7 +83,9 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             'Files': 'FileManager',
             'Leaves': 'LeaveManagement',
             'Project': 'Projects',
-            'Payroll': 'PayrollDetails'
+            'Payroll': 'PayrollDetails',
+            'Category Management': 'CategoryManagement',
+            'Company Management': 'CompanyManagement'
         };
 
         const route = routes[item];
@@ -90,7 +93,6 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             navigation.navigate(route);
         }
     };
-
     // Render submenu item
     const renderSubmenuItem = ({ item }) => (
         <TouchableOpacity
@@ -172,7 +174,14 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
         );
     };
     return (
-        <Modal visible={visible} transparent onRequestClose={onClose}>
+        <Modal
+            isVisible={visible}
+            onBackdropPress={onClose}
+            animationIn="none"
+            animationOut="none"
+            backdropTransitionOutTiming={0} // optional: avoids flicker
+            useNativeDriver={true}
+        >
             <TouchableWithoutFeedback onPress={onClose}>
                 <View style={styles.modalOverlay}>
                     <View style={[{
@@ -183,19 +192,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                             resizeMode="stretch"
                             style={{ width: "100%", height: hp(42) }}
                         >
-
-                            {/* <Text
-                                    numberOfLines={1}
-                                    style={[
-                                        Louis_George_Cafe.bold.h9,
-                                        { alignSelf: "center", maxWidth: wp(60), color: THEMECOLORS[themeMode].white, alignSelf: "center" }
-                                    ]}
-                                >
-                                    {userdata?.data?.lastLoginLocation}
-                                </Text> */}
                             <ThemeToggle />
-
-
                             <View style={{ width: "100%", height: hp(32), alignItems: "center" }}>
                                 <TouchableOpacity style={{ marginVertical: hp(4) }} onPress={() => {
                                     onClose()
@@ -277,25 +274,23 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                             }
                         </View>
                         {showDownArrow && (
-                                <View style={{
-                                    position: 'absolute',
-                                    bottom: hp(6), // position just above the bottom padding
-                                    alignSelf: 'center',
-                                    backgroundColor: '#f9f9f9',
-                                    // optional background
-                                    borderRadius: wp(4),
-                                    padding: wp(1),
-                                    zIndex: 10,
-                                    // paddingHorizontal: wp(1),
+                            <View style={{
+                                position: 'absolute',
+                                bottom: hp(6), // position just above the bottom padding
+                                alignSelf: 'center',
+                                backgroundColor: '#f9f9f9',
+                                borderRadius: wp(4),
+                                padding: wp(1),
+                                zIndex: 10,
 
-                                }}>
-                                    <MaterialCommunityIcons
-                                        name="chevron-down"
-                                        size={hp(3)}
-                                        color={'black'}
-                                    />
-                                </View>
-                            )}
+                            }}>
+                                <MaterialCommunityIcons
+                                    name="chevron-down"
+                                    size={hp(3)}
+                                    color={'black'}
+                                />
+                            </View>
+                        )}
 
                         <View
                             style={{

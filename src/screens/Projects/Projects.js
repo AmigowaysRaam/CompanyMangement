@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   View, Text, StyleSheet, FlatList, Image,
+  TouchableOpacity,
 } from 'react-native';
 import { wp, hp } from '../../resources/dimensions';
 import { Louis_George_Cafe } from '../../resources/fonts';
@@ -152,11 +153,46 @@ export default function Projects() {
   return (
     <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
       <HeaderComponent title={t('Projects')} showBackArray={true} />
+
       {loading ? (
         <HomeScreenLoader />
       ) : (
         <>
+
           <View style={{ maxHeight: hp(40) /* adjust as needed */, marginBottom: hp(2) }}>
+            <View style={{ marginHorizontal: wp(4) }}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate('AddProjectForm', { data: null });
+                }}
+                style={{
+                  flexDirection: 'row',
+                  width: wp(30),
+                  height: wp(8),
+                  alignSelf: 'flex-end',
+                  backgroundColor: THEMECOLORS[themeMode].primaryApp,
+                  borderRadius: wp(2),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: wp(3),
+                  margin: wp(2),
+                }}
+              >
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    Louis_George_Cafe.bold.h6,
+                    {
+                      color: THEMECOLORS[themeMode].white,
+                      lineHeight: wp(5),
+                      fontSize: isTamil ? wp(3.2) : wp(4), // Tamil-specific size
+                    },
+                  ]}
+                >
+                  {t('add_new')}
+                </Text>
+              </TouchableOpacity>
+            </View>
             <FlatList
               data={attendanceData?.attendanceStatsArray || []}
               numColumns={2}
@@ -187,7 +223,6 @@ export default function Projects() {
 }
 
 const styles = StyleSheet.create({
-  
   container: {
     flex: 1,
     padding: wp(2),

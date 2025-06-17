@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
     StyleSheet,
     FlatList,
+    TouchableOpacity,
 } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -11,7 +12,7 @@ import { useTheme } from "../context/ThemeContext";
 import HeaderComponent from '../components/HeaderComponent';
 import { useTranslation } from 'react-i18next';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCLinetData } from '../redux/authActions';
@@ -34,20 +35,22 @@ const ClientScreen = () => {
         }
     });
 
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchSettings();
+        }, [userdata,])
+    );
+
     const fetchSettings = async () => {
         setLoading(true);
         dispatch(getCLinetData(userdata, (response) => {
+            // alert(JSON.stringify(response))
             if (response.success) {
-                setSettingsData(response?.data?.Clients)
+                setSettingsData(response?.data)
             }
             setLoading(false);
         }));
     };
-
-    useEffect(() => {
-        // alert(i18n)
-        fetchSettings();
-    }, []);
 
     const staticMapItems = [1, 2, 3, 4, 5, 6, 7];
     const renderStaticMapItem = () => {
@@ -67,12 +70,14 @@ const ClientScreen = () => {
     };
 
     const renderClientCard = ({ item }) => (
-        <View style={[styles.card, {
-            backgroundColor: THEMECOLORS[themeMode].viewBackground,
-            borderColor:
-                '#F1F1F1',
-            borderWidth: wp(0.5),
-        }]}>
+        <TouchableOpacity
+            onPress={() => navigation.navigate('CreateClient', { data: item?._id })}
+
+            style={[styles.card, {
+                backgroundColor: THEMECOLORS[themeMode].viewBackground,
+                borderColor: '#F1F1F1',
+                // borderWidth: wp(0.5),
+            }]}>
             <Text numberOfLines={1} style={[
                 Louis_George_Cafe.bold.h7,
                 styles.cardTitle,
@@ -82,67 +87,28 @@ const ClientScreen = () => {
             </Text>
             <View style={styles.divider} />
             <View style={[{
-                flexDirection: "row", justifyContent: "space-between", marginBottom: wp(2)
-                , borderBottomWidth: wp(0.1),
-                paddingVertical: wp(1), borderColor: "#c1c1c1"
+                flexDirection: "row", justifyContent: "space-between", marginBottom: wp(2),
+                paddingVertical: wp(1),
             }]}>
                 <Text style={[
-                    isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
-                    styles.cardText,
-                    { color: THEMECOLORS[themeMode].textPrimary, lineHeight: wp(6) }
+                    Louis_George_Cafe.bold.h7,
+                    { color: THEMECOLORS[themeMode].textPrimary, lineHeight: wp(7) }
                 ]}>
-                    {t('agreementDate')}
+                    {item.email}
                 </Text>
+            </View>
+            
+            <View style={[{
+                flexDirection: "row", justifyContent: "space-between", marginBottom: wp(2),
+                paddingVertical: wp(1),
+            }]}>
                 <Text style={[
                     Louis_George_Cafe.bold.h7,
-                    { color: THEMECOLORS[themeMode].textPrimary }
+                    { color: THEMECOLORS[themeMode].textPrimary, lineHeight: wp(6) }
                 ]}>
-                    {item.agreementDate}
+                    {item?.companyName}
                 </Text>
             </View>
-            <View style={styles.dateRow}>
-                <View style={styles.dateBlock}>
-                    <Text style={[
-                          isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
-                        styles.cardText,
-                        { color: THEMECOLORS[themeMode].textPrimary }
-                    ]}>
-                        {t('startDate')}
-                    </Text>
-                    <Text style={[
-                         isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
-                        { color: THEMECOLORS[themeMode].textPrimary }
-                    ]}>
-                        {item.startDate}
-                    </Text>
-                </View>
-
-                <View style={styles.dateBlock}>
-                    <Text style={[
-                         isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
-                        styles.cardText,
-                        { color: THEMECOLORS[themeMode].textPrimary }
-                    ]}>
-                        {t('endDate')}
-                    </Text>
-                    <Text style={[
-                         isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
-                        { color: THEMECOLORS[themeMode].textPrimary }
-                    ]}>
-                        {item.endDate}
-                    </Text>
-                </View>
-            </View>
-            <Text style={[
-                 isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7,
-                styles.cardText,
-                {
-                    color: THEMECOLORS[themeMode].textPrimary, marginTop: hp(1.2),
-                    lineHeight: wp(6)
-                }
-            ]}>
-                {t('budgetProgress')} : {item.budgetProgress}
-            </Text>
             <View style={{ flexDirection: "row" }}>
                 <Text style={[
                     isTamil ? Louis_George_Cafe.bold.h7 : Louis_George_Cafe.bold.h6,
@@ -151,7 +117,7 @@ const ClientScreen = () => {
                         lineHeight: wp(6),
                         color: THEMECOLORS[themeMode].textPrimary
                     }
-                ]}>
+                ]}>   
                     {t('status')} :
                 </Text>
                 <Text style={[
@@ -165,12 +131,12 @@ const ClientScreen = () => {
                         color: item.status !== 'Completed' ? '#FFF'
                             : '#000',
                     }
-                ]}>
-                    {t(item.status)}
+                ]}>  
+                    {item.status == 1 ? t('active') : t('inactive')}
                 </Text>
             </View>
 
-        </View>
+        </TouchableOpacity>
     );
 
     return (
@@ -180,6 +146,21 @@ const ClientScreen = () => {
         ]}>
             {/* <ThemeToggle/> */}
             <HeaderComponent showBackArray={true} title={t('client')} />
+            {/* CreateClient */}
+            <TouchableOpacity
+                onPress={() => navigation.navigate('CreateClient', { data: null })}
+                style={{
+                    alignSelf: "flex-end", backgroundColor: THEMECOLORS[themeMode].buttonBg, padding: wp(2)
+                    , margin: wp(2), marginHorizontal: wp(5), borderRadius: wp(5), paddingHorizontal: wp(3)
+                }}>
+                <Text style={[
+                    Louis_George_Cafe.bold.h7,
+                    { color: THEMECOLORS[themeMode].buttonText }
+                ]}>
+                    {t('add_new')}
+                </Text>
+            </TouchableOpacity>
+
             {
                 loading ?
                     renderStaticMapItem() :
@@ -198,7 +179,7 @@ const ClientScreen = () => {
                                 }]}>
                                     <Text style={[
                                         Louis_George_Cafe.regular.h6,
-                                        { color: THEMECOLORS[themeMode].textPrimary }
+                                        { color: THEMECOLORS[themeMode].textPrimary, lineHeight: wp(6) }
                                     ]}>
                                         {t('no_data')}
                                     </Text>
@@ -224,7 +205,6 @@ const styles = StyleSheet.create({
         padding: wp(4),
         marginBottom: hp(2),
         borderRadius: wp(2),
-        borderWidth: 1,
         elevation: 3,
         shadowColor: '#000',
         shadowOpacity: 0.1,
