@@ -165,8 +165,6 @@ const ContactStep = ({ onNext, setCurrentStep, currentStep, cId, companyDetails,
                 }
             })
         );
-
-
         ToastAndroid.show(t('contact_info_submitted'), ToastAndroid.SHORT);
     };
 
@@ -175,7 +173,7 @@ const ContactStep = ({ onNext, setCurrentStep, currentStep, cId, companyDetails,
     }, [])
 
     return (
-        <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
+        <View  style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <Text
                 style={[
                     Louis_George_Cafe.bold.h2,

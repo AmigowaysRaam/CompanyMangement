@@ -237,9 +237,9 @@ export const getCategoryList = (type, page, limit, searchText, callback) => asyn
 };
 
 // getSubcategoryApiiCall
-export const getSubcategoryApiiCall = (type, category ,callback) => async (dispatch) => {
+export const getSubcategoryApiiCall = (type, category, callback) => async (dispatch) => {
   const payLoadParams = {
-    categoryId:category
+    categoryId: category
   };
 
   try {
@@ -254,7 +254,7 @@ export const getSubcategoryApiiCall = (type, category ,callback) => async (dispa
 };
 
 // submitCreateForm
-export const submitCreateForm = (payLoadParams ,callback) => async (dispatch) => {
+export const submitCreateForm = (payLoadParams, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_SUBMIT_COMPANY;
     const response = await sendRequest(endpoint, payLoadParams);
@@ -266,7 +266,7 @@ export const submitCreateForm = (payLoadParams ,callback) => async (dispatch) =>
 };
 
 // updateContactInfo
-export const updateContactInfo = (payLoadParams ,callback) => async (dispatch) => {
+export const updateContactInfo = (payLoadParams, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_UPDATE_CONTACT_SUBMIT_COMPANY;
     const response = await sendRequest(endpoint, payLoadParams);
@@ -278,7 +278,7 @@ export const updateContactInfo = (payLoadParams ,callback) => async (dispatch) =
 };
 
 // createNewClient
-export const createNewClient = (payLoadParams ,callback) => async (dispatch) => {
+export const createNewClient = (payLoadParams, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_CREATE_CLIENT_COMPANY;
     const response = await sendRequest(endpoint, payLoadParams);
@@ -449,7 +449,7 @@ export const getHomePageData = (payLoad, callback) => async (dispatch) => {
     if (callback) callback(response);
     return response;
   } catch (error) {
-    console.error("APP_USER_HOMEPAGE_FAILURE:", error.message);
+    console.error("getHomePageData:", error.message);
     dispatch({ type: APP_USER_HOMEPAGE_FAILURE, error: error.message });
   }
 };
@@ -462,6 +462,64 @@ export const getCompanyData = (payLoad, callback) => async (dispatch) => {
     return response;
   } catch (error) {
     console.error("getCompanyData:", error.message);
+  }
+};
+
+
+export const getTaskList = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_TASK_LIST_DATA_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getTaskList:", error.message);
+  }
+};
+
+
+export const createTaskForm = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_CREATE_TASK_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getTaskList:", error.message);
+  }
+};
+
+
+// updateTaskForm
+export const updateTaskForm = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_TASK_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getTaskList:", error.message);
+  }
+};
+
+
+
+
+
+
+
+
+
+
+// getTaskDeytails
+export const getTaskDeytails = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_TASK_BY_ID_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getTaskList:", error.message);
   }
 };
 
@@ -524,7 +582,6 @@ export const getCategoryListCall = (payLoad, callback) => async (dispatch) => {
     return response;
   } catch (error) {
     console.error("getCategoryList:", error.message);
-    // dispatch({ type: APP_USER_HOMEPAGE_FAILURE, error: error.message });
   }
 };
 
@@ -540,10 +597,7 @@ export const getFilesdata = (payLoad, callback) => async (dispatch) => {
     console.error("getFilesdata:", error.message);
   }
 };
-
-
 // getChatListApi
-
 export const getChatListApi = (payLoad, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_GET_CHAT_LIST_URL;
@@ -554,6 +608,20 @@ export const getChatListApi = (payLoad, callback) => async (dispatch) => {
     console.error("getChatListApi:", error.message);
   }
 };
+
+// getChatMessages
+export const getChatMessages = (payLoad, chatId, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_CHAT_MESSAGES_LIST_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad, chatId: chatId });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getChatListApi:", error.message);
+  }
+};
+
+
 
 // getLeaveArray
 export const getLeaveArray = (payLoad, callback) => async (dispatch) => {
@@ -626,12 +694,6 @@ export const getPunchinOut = (payLoad, callback) => async (dispatch) => {
   }
 };
 
-
-
-
-
-
-
 // getemployeeDetails
 export const getemployeeDetails = (payLoad, callback) => async (dispatch) => {
   dispatch({ type: APP_EMPLOYEE_TAB_MENU_REQUEST });
@@ -643,8 +705,21 @@ export const getemployeeDetails = (payLoad, callback) => async (dispatch) => {
     if (callback) callback(response);
     return response;
   } catch (error) {
-    console.error("APP_USER_HOMEPAGE_FAILURE:", error.message);
+    console.error("getemployeeDetails:", error.message);
     dispatch({ type: APP_EMPLOYEE_TAB_MENU_FAILURE, error: error.message });
+  }
+};
+
+
+// getProjectDetailById
+export const getProjectDetailById = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_PROJECT_DETAIL_BY_ID_URL;
+    const response = await sendRequest(endpoint, { projectId: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getProjectDetailById:", error.message);
   }
 };
 
@@ -657,7 +732,7 @@ export const getAttendaceData = (payLoad, callback) => async (dispatch) => {
     if (callback) callback(response);
     return response;
   } catch (error) {
-    console.error("APP_USER_HOMEPAGE_FAILURE:", error.message);
+    console.error("getAttendaceData:", error.message);
   }
 };
 
@@ -674,6 +749,17 @@ export const getProjectsStats = (payLoad, callback) => async (dispatch) => {
 };
 
 
+// deleteProjectById
+export const deleteProjectById = (payLoad, uId, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_PROJECT_DELETE_URL;
+    const response = await sendRequest(endpoint, { projectId: payLoad, userId: uId });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getProjectsStats:", error.message);
+  }
+};
 
 
 
@@ -740,7 +826,6 @@ export const getProfileDetailsById = (payLoad, callback) => async (dispatch) => 
     return response;
   } catch (error) {
     console.error("getProfileDetailsById:", error.message);
-    // dispatch({ type: APP_USER_HOMEPAGE_FAILURE, error: error.message });
   }
 };
 
@@ -833,17 +918,15 @@ export const createEmployeeCall = (userId, payLoad, callback) => async (dispatch
 
 
 // getUploaddata
-export const getUploaddata = (userId, fileName,fileData, callback) => async (dispatch) => {
-
+export const getUploaddata = (userId, fileName, fileData, callback) => async (dispatch) => {
   try {
-    
-
     const endpoint = API_REQUESTS.API_UPLOAD_DTA.url;
     const formData = new FormData();
     formData.append('folderName', fileName);
     formData.append('file', fileData);
     formData.append('userid', userId);
-    const response = await fetch(endpoint, { 
+
+    const response = await fetch(endpoint, {
       method: 'POST',
       body: formData,
     });
@@ -855,20 +938,93 @@ export const getUploaddata = (userId, fileName,fileData, callback) => async (dis
   }
 };
 
+export const createProjectForm = (values, userdata, callback) => async (dispatch) => {
+  try {
+    const formData = new FormData();
+    formData.append('projectName', values.projectName);
+    formData.append('company', values.company);
+    formData.append('client', values.client);
+    formData.append('startDate', values.startDate.toISOString());
+    formData.append('endDate', values.endDate.toISOString());
+    formData.append('status', values.status);
+    formData.append('luser', userdata);
+    formData.append('description', values.description);
+
+    if (Array.isArray(values.files)) {
+      values.files.forEach((file, idx) => {
+        if (file?.uri) {
+          formData.append('files', {
+            uri: file.uri,
+            type: file.type || 'application/octet-stream',
+            name: file.name || `file_${idx}`,
+          });
+        }
+      });
+    }
+    const endpoint = API_REQUESTS.API_CREATE_PROJECT_URL.url;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Server error response:', errorText);
+      throw new Error(`Server error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (callback) callback(data);
+
+    return data;
+  } catch (error) {
+    console.error("createProjectForm:", error.message);
+  }
+};
 
 
+export const updateProjectForm = (values, pId, userdata, callback) => async (dispatch) => {
+  try {
+    const formData = new FormData();
+    formData.append('projectName', values.projectName);
+    formData.append('company', values.company);
+    formData.append('client', values.client);
+    formData.append('startDate', values.startDate.toISOString());
+    formData.append('endDate', values.endDate.toISOString());
+    formData.append('status', values.status);
+    formData.append('luser', userdata);
+    formData.append('description', values.description);
+    formData.append('projectId', pId || '');
+    if (Array.isArray(values.files)) {
+      values.files.forEach((file, idx) => {
+        if (file?.uri) {
+          formData.append('files', {
+            uri: file.uri,
+            type: file.type || 'application/octet-stream',
+            name: file.name || `file_${idx}`,
+          });
+        }
+      });
+    }
+    const endpoint = API_REQUESTS.API_UPDATE_CREATE_PROJECT_URL.url;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    });
 
-
-
-
-
-
-
-
-
-
-
-
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Server error response:', errorText);
+      throw new Error(`Server error: ${response.status}`);
+    }
+    const data = await response.json();
+    if (callback) callback(data);
+    return data;
+  } catch (error) {
+    console.error("updateProjectForm:", error.message);
+  }
+};
 
 
 
@@ -893,7 +1049,7 @@ export const generatePayroll = (userid, parollFile, callback) => async (dispatch
 };
 
 // createSubCatgoryForm
-export const createSubCatgoryForm = ( formFields, callback) => async (dispatch) => {
+export const createSubCatgoryForm = (formFields, callback) => async (dispatch) => {
   // alert(JSON.stringify(payLoad))
   try {
     const endpoint = API_REQUESTS.API_CRETE_CATYEGORY_URL;
@@ -906,7 +1062,7 @@ export const createSubCatgoryForm = ( formFields, callback) => async (dispatch) 
   }
 };
 // updateSubCatgoryForm
-export const updateSubCatgoryForm = ( formFields, callback) => async (dispatch) => {
+export const updateSubCatgoryForm = (formFields, callback) => async (dispatch) => {
   // alert(JSON.stringify(payLoad))
   try {
     const endpoint = API_REQUESTS.API_UPDATE_CATYEGORY_URL;
@@ -917,3 +1073,25 @@ export const updateSubCatgoryForm = ( formFields, callback) => async (dispatch) 
     console.error("createSubCatgoryForm:", error.message);
   }
 };
+
+export const updateProjectCost = (formFields, callback) => async (dispatch) => {
+  try {
+
+    const endpoint = API_REQUESTS.API_UPDATE_CREATE_PROJECT_URL.url;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        // Do NOT set 'Content-Type': 'multipart/form-data' here; fetch sets it automatically with boundary
+      },
+      body: formFields,
+    });
+    const data = await response.json();
+    if (callback) callback(data);
+    return data;
+  } catch (error) {
+    console.error("updateProjectCost error:", error.message);
+    if (callback) callback({ success: false, message: error.message });
+  }
+};
+

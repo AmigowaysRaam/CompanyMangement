@@ -71,7 +71,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     }, [userdata?.data?.id])
 
     const handleNavigateScreen = (item) => {
-        
+
         const routes = {
             'My Profile': 'Profile',
             'Notifications': 'Notifications',
@@ -85,7 +85,8 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             'Project': 'Projects',
             'Payroll': 'PayrollDetails',
             'Category Management': 'CategoryManagement',
-            'Company Management': 'CompanyManagement'
+            'Company Management': 'CompanyManagement',
+            'Task': 'TaskManagement'
         };
 
         const route = routes[item];
@@ -103,7 +104,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             }}
             style={styles.submenuItem}
         >
-            <Text style={[Louis_George_Cafe.regular.h8, { color: THEMECOLORS[themeMode].textPrimary }]}>
+            <Text style={[Louis_George_Cafe.regular.h7, { color: THEMECOLORS[themeMode].textPrimary }]}>
                 {item.label}
             </Text>
             <MaterialCommunityIcons
@@ -351,7 +352,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
 const styles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.6)",
+        backgroundColor: "rgba(0,0,0,0.5)",
         justifyContent: "flex-start",
     },
     logoutBtn: {
@@ -383,9 +384,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         paddingHorizontal: wp(4),
     },
+
     submenuItem: {
         flexDirection: "row", justifyContent: "space-between",
-        paddingVertical: wp(2.5),
+        paddingVertical: wp(3),
         paddingHorizontal: wp(4),
     },
 });

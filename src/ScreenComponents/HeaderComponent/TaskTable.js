@@ -12,6 +12,7 @@ import { wp, hp } from "../../resources/dimensions";
 import { COLORS } from "../../resources/Colors";
 import { Louis_George_Cafe } from "../../resources/fonts";
 import { useTranslation } from "react-i18next";
+import { useNavigation } from "@react-navigation/native";
 
 
 const TaskTable = (tdata) => {
@@ -19,6 +20,7 @@ const TaskTable = (tdata) => {
     const [data, setData] = useState(null);
     const { t, i18n } = useTranslation();
     const isTamil = i18n.language === 'ta';
+    const navigation = useNavigation();
 
     useEffect(() => {
         // alert(JSON.stringify(tdata.tdata))
@@ -51,7 +53,9 @@ const TaskTable = (tdata) => {
     );
 
     return (
-        <View style={styles.container}>
+        <TouchableOpacity style={styles.container}
+            onPress={() => navigation.navigate('TaskManagement')}
+        >
             <Text style={[Louis_George_Cafe.bold.h6, { marginVertical: wp(1) }]}>{t('tasks')}</Text>
             <Text style={[Louis_George_Cafe.bold.h9]}>
                 {tdata.tdata?.currentDate}
@@ -62,7 +66,7 @@ const TaskTable = (tdata) => {
                 renderItem={renderItem}
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
             />
-        </View>
+        </TouchableOpacity>
     );
 };
 

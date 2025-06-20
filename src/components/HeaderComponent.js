@@ -30,6 +30,7 @@ function HeaderComponent({
   openModal,
   showBackArray,
   working,
+  onTitleClick,
   ...props
 }) {
   const navigation = useNavigation();
@@ -129,7 +130,7 @@ function HeaderComponent({
           title == 'home' ?
             <>
               <View style={{ flexDirection: "row" }}>
-                
+
                 <TouchableOpacity onPress={openModal} style={styles.iconButton}>
                   <MaterialCommunityIcons name="menu" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
@@ -198,19 +199,24 @@ function HeaderComponent({
                     </Text>
                   </TouchableOpacity>
                 }
-                <Animated.View style={{ transform: [{ translateX: slideAnim }] }}>
-                  <Text style={[Louis_George_Cafe.bold.h6, {
-                    justifyContent: "center",
-                    alignItems: "center",
-                    textTransform: 'capitalize',
-                    margin: wp(1),
-                    marginHorizontal: wp(2),
-                    lineHeight: hp(3),
-                    color: THEMECOLORS[themeMode].primary
-                  }]}>
-                    {title}
-                  </Text>
-                </Animated.View>
+                <TouchableOpacity onPress={onTitleClick}>
+                  {/* <Animated.View style={{ transform: [{ translateX: slideAnim }] }}> */}
+                    <View>
+                    <Text style={[Louis_George_Cafe.bold.h6, {
+                      justifyContent: "center",
+                      alignItems: "center",
+                      textTransform: 'capitalize',
+                      margin: wp(1),
+                      marginHorizontal: wp(2),
+                      lineHeight: hp(3),
+                      color: THEMECOLORS[themeMode].primary
+                    }]}>
+                      {title}
+                    </Text>
+                    </View>
+                  {/* </Animated.View> */}
+                </TouchableOpacity>
+                {/* onTitleClick */}
 
               </View>
 

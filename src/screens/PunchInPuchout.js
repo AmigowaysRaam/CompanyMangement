@@ -402,8 +402,6 @@ const PunchInOut = () => {
                                                         </Text>
                                                     </TouchableOpacity>
                                             }
-
-
                                         </View>
                                     )}
                                 </View>

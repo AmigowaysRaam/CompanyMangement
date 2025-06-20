@@ -226,7 +226,6 @@ const styles = StyleSheet.create({
 
     },
 });
-
 const pickerStyles = {
     inputIOS: {
         fontSize: 16,

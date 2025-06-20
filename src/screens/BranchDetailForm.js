@@ -131,7 +131,6 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
         }
     };
 
-
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <Text
@@ -149,14 +148,14 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
                             style={[
                                 Louis_George_Cafe.regular.h4,
                                 styles.branchTitle,
-                                { color: THEMECOLORS[themeMode].textPrimary },
+                                { color: THEMECOLORS[themeMode].black },
                             ]}
                         >
                             {t('branch')} {index + 1}
                         </Text>
 
                         <Text
-                            style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}
+                            style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].black }]}
                         >
                             {t('branchName')}
                         </Text>
@@ -172,7 +171,7 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
                         ) : null}
 
                         <Text
-                            style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}
+                            style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].black }]}
                         >
                             {t('contactNumber')}
                         </Text>
@@ -197,7 +196,7 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
                 ))}
 
                 <TouchableOpacity style={styles.addButton} onPress={handleAddBranch}>
-                    <Text style={[Louis_George_Cafe.bold.h5, { color: THEMECOLORS[themeMode].primaryApp }]}>
+                    <Text style={[Louis_George_Cafe.bold.h5, { color: THEMECOLORS[themeMode].textPrimary }]}>
                         + {t('addAnotherBranch')}
                     </Text>
                 </TouchableOpacity>
@@ -210,7 +209,7 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
                     {loading ? (
                         <ActivityIndicator color={THEMECOLORS[themeMode].buttonText} />
                     ) : (
-                        <Text style={[Louis_George_Cafe.bold.h4, styles.buttonText, { color: THEMECOLORS[themeMode].buttonText }]}>
+                        <Text style={[Louis_George_Cafe.bold.h4, styles.butonText, { color: THEMECOLORS[themeMode].buttonText }]}>
                             {t('submit')}
                         </Text>
                     )}
@@ -231,10 +230,10 @@ const styles = StyleSheet.create({
     },
     branchContainer: {
         marginBottom: wp(6),
-        borderColor: '#ccc',
+        borderColor: '#ddd',
         borderRadius: wp(2),
         padding: wp(3),
-        backgroundColor: '#f1f1f1',
+        backgroundColor: '#ccc',
         elevation: 1, shadowOffset: 3,
         shadowColor: "#000"
     },
@@ -273,10 +272,7 @@ const styles = StyleSheet.create({
         borderRadius: wp(2),
         alignItems: 'center',
     },
-    buttonText: {
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
+    
 });
 
 export default BranchDetailForm;

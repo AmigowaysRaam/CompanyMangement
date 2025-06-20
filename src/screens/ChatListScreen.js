@@ -1,6 +1,6 @@
-import React, { useState,  } from 'react';
+import React, { useState } from 'react';
 import {
-    View,Text,StyleSheet,FlatList,Image, TouchableOpacity,
+    View, Text, StyleSheet, FlatList, Image, TouchableOpacity,
     RefreshControl,
 } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
@@ -10,14 +10,14 @@ import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import HeaderComponent from '../components/HeaderComponent';
 import SearchInput from './SearchInput';
-import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useDispatch, useSelector } from 'react-redux';
-import { getChatListApi,  } from '../redux/authActions';
-import { useFocusEffect } from '@react-navigation/native';
+import { getChatListApi } from '../redux/authActions';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 
 const ChatListScreen = () => {
-
+    
     const { themeMode } = useTheme();
     const { t } = useTranslation();
     const [searchText, setSearchText] = useState('');
@@ -26,42 +26,55 @@ const ChatListScreen = () => {
     const [loading, setLoading] = useState(true);
     const userdata = useSelector((state) => state.auth.user?.data);
     const dispatch = useDispatch();
+    const navigation = useNavigation();
+
+    useAndroidBackHandler(() => {
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+        }
+    });
+
 
     const filteredChats = chats.filter(chat =>
-        chat.name.toLowerCase().includes(searchText.toLowerCase())
+        chat?.name?.toLowerCase()?.includes(searchText.toLowerCase())
     );
 
     const onRefresh = () => {
         setRefreshing(true);
-        fetchHomeData();
+        fetchChatListData();
         setTimeout(() => setRefreshing(false), 1000);
     };
 
-
-    const fetchHomeData = () => {
+    const fetchChatListData = () => {
         setLoading(true);
-        dispatch(
-            getChatListApi(userdata?.id, (response) => {
-                if (response.success) {
-                    setChats(response?.data)
-                }
-                setLoading(false);
-                setRefreshing(false);
-            })
-        );
+        const userId = __DEV__ ? "68343c5bc897b3e0cde4326d" : userdata?.id;
+
+        dispatch(getChatListApi(userId, (response) => {
+            if (response.success) {
+                const formattedChats = response.data.map(chat => ({
+                    id: chat._id,
+                    name: chat.projectId?.projectName || 'Unnamed Project',
+                    lastMessage: chat.messages?.length
+                        ? chat.messages[chat.messages.length - 1]?.content
+                        : t('no_messages'),
+                    lastSeen: new Date(chat.createdAt).toLocaleDateString(),
+                    profilePic: '', // Placeholder, modify if backend provides avatar URL
+                }));
+                setChats(formattedChats);
+            }
+            setLoading(false);
+            setRefreshing(false);
+        }));
     };
 
-    // Fetch data on screen focus or when userdata changes
     useFocusEffect(
         React.useCallback(() => {
-            // alert(JSON.stringify(userdata))
-            fetchHomeData();
+            fetchChatListData();
         }, [userdata])
     );
 
-    const staticMapItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     const renderStaticMapItem = () => {
-        return staticMapItems.map((item, index) => (
+        return Array.from({ length: 10 }).map((_, index) => (
             <View
                 key={index}
                 style={{
@@ -77,7 +90,12 @@ const ChatListScreen = () => {
     };
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.chatCard}>
+        <TouchableOpacity style={styles.chatCard}
+            onPress={() => navigation.navigate('GroupChat', {
+                chatId: item?.id,
+                projectName: item?.name
+            })}
+        >
             <Image
                 source={item.profilePic ? { uri: item.profilePic } : require('../../src/assets/animations/anew.png')}
                 style={styles.avatar}
@@ -92,55 +110,59 @@ const ChatListScreen = () => {
             </View>
             <Text style={[Louis_George_Cafe.regular.h8, {
                 color: THEMECOLORS[themeMode].white,
-                backgroundColor: THEMECOLORS[themeMode].primaryApp, borderRadius: wp(4), paddingHorizontal: wp(1.5), marginHorizontal: wp(4),
+                backgroundColor: THEMECOLORS[themeMode].primaryApp,
+                borderRadius: wp(4),
+                paddingHorizontal: wp(1.5),
+                marginHorizontal: wp(4),
             }]}>
-                {1}
+                1
             </Text>
             <View>
                 <Text style={[styles.lastMessage, { color: THEMECOLORS[themeMode].textPrimary }]}>
                     {item.lastSeen}
                 </Text>
-                <MaterialCommunityIcons name={"check-all"} size={hp(2)} color={THEMECOLORS[themeMode].primary} style={{ marginVertical: wp(2) }} />
+                <MaterialCommunityIcons
+                    name={"check-all"}
+                    size={hp(2)}
+                    color={THEMECOLORS[themeMode].primary}
+                    style={{ marginVertical: wp(2) }}
+                />
             </View>
-
-        </TouchableOpacity>
+        </TouchableOpacity >
     );
 
     return (
         <>
             <HeaderComponent title={t('Chats')} showBackArray={true} />
             <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
-                {/* <ThemeToggle/> */}
                 <SearchInput
                     searchText={searchText}
                     setSearchText={setSearchText}
                     themeMode={themeMode}
                 />
-                {
-                    loading ?
-                        renderStaticMapItem() :
-                        <>
-                            <FlatList
-                                data={filteredChats}
-                                renderItem={renderItem}
-                                keyExtractor={(item) => item.id}
-                                contentContainerStyle={{ paddingBottom: hp(2) }}
-                                refreshControl={
-                                    <RefreshControl
-                                        refreshing={refreshing}
-                                        onRefresh={onRefresh}
-                                        tintColor={THEMECOLORS[themeMode].primaryApp}
-                                        colors={['#013CA3']}
-                                    />
-                                }
-                                ListEmptyComponent={
-                                    <View style={styles.emptyContainer}>
-                                        <Text style={styles.emptyText}>{t('no_data')}</Text>
-                                    </View>
-                                }
+                {loading ? (
+                    renderStaticMapItem()
+                ) : (
+                    <FlatList
+                        data={filteredChats}
+                        renderItem={renderItem}
+                        keyExtractor={(item) => item.id?.toString()}
+                        contentContainerStyle={{ paddingBottom: hp(2) }}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                tintColor={THEMECOLORS[themeMode].primaryApp}
+                                colors={['#013CA3']}
                             />
-                        </>
-                }
+                        }
+                        ListEmptyComponent={
+                            <View style={styles.emptyContainer}>
+                                <Text style={styles.emptyText}>{t('no_data')}</Text>
+                            </View>
+                        }
+                    />
+                )}
             </View>
         </>
     );

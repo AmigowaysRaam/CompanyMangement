@@ -358,12 +358,78 @@ const API_GET_CLIENT_DATA_BY_ID_URL = {
   responseDataKey: "data",
 };
 
+const API_CREATE_PROJECT_URL = {
+  url: `${API_BASE_URL}mob-create-projects`,
+  method: "POST",
+  responseDataKey: "data",
+};
 
 
+// API_GET_PROJECT_DETAIL_BY_ID_URL
+const API_GET_PROJECT_DETAIL_BY_ID_URL = {
+  url: `${API_BASE_URL}mob-get-project`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// API_UPDATE_CREATE_PROJECT_URL
+const API_UPDATE_CREATE_PROJECT_URL = {
+  url: `${API_BASE_URL}mob-update-project`,
+  method: "POST",
+  responseDataKey: "data",
+};
 
+// API_PROJECT_DELETE_URL
 
+const API_PROJECT_DELETE_URL = {
+  url: `${API_BASE_URL}mob-delete-project`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_CHAT_MESSAGES_LIST_URL
+const API_GET_CHAT_MESSAGES_LIST_URL = {
+  url: `${API_BASE_URL}mob-chat-details`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_UPDATE_PROJECT_DETAILS_URL
+const API_UPDATE_PROJECT_DETAILS_URL = {
+  url: `${API_BASE_URL}mob-update-project`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_TASK_LIST_DATA_URL
+const API_GET_TASK_LIST_DATA_URL = {
+  url: `${API_BASE_URL}mob-gettasks`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_CREATE_TASK_URL
+const API_CREATE_TASK_URL = {
+  url: `${API_BASE_URL}mob-create-task`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_TASK_BY_ID_URL
+const API_GET_TASK_BY_ID_URL = {
+  url: `${API_BASE_URL}mob-gettask-byid`,
+  method: "POST",
+  responseDataKey: "data",
+};
+// API_UPDATE_TASK_URL
+const API_UPDATE_TASK_URL = {
+  url: `${API_BASE_URL}mob-updatetask`,
+  method: "POST",
+  responseDataKey: "data",
+};
 export default {
   APP_GENERATE_TOKEN,
+  API_GET_TASK_BY_ID_URL, API_UPDATE_TASK_URL,
+  API_GET_TASK_LIST_DATA_URL,
   API_SITE_URL, API_LANGUAGE_URL, API_LOGIN_URL, API_LANGUAGE_CONTENT_URL,
   API_GET_CATEGORY_LIST, API_GET_SUB_CATEGORY_LIST, GET_SIDE_MENU_API,
   GET_PROFILE_MENU_API, API_MOBILE_CHECK, API_GET_SETTINGS_MENU_URL,
@@ -381,5 +447,10 @@ export default {
   API_UPDATE_CONTACT_SUBMIT_COMPANY, API_GET_COMPANY_DATA_BY_ID_URL,
   API_CREATE_CLIENT_COMPANY,
   API_UPDATE_CLIENT__DATA_URL,
-  API_GET_CLIENT_DATA_BY_ID_URL
+  API_GET_CLIENT_DATA_BY_ID_URL,
+  API_CREATE_PROJECT_URL, API_GET_PROJECT_DETAIL_BY_ID_URL,
+  API_UPDATE_CREATE_PROJECT_URL,
+  API_PROJECT_DELETE_URL,
+  API_GET_CHAT_MESSAGES_LIST_URL, API_UPDATE_PROJECT_DETAILS_URL,
+  API_CREATE_TASK_URL
 };

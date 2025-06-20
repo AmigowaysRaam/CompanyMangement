@@ -140,18 +140,22 @@ const CreateCompany = () => {
                                         borderBottomWidth: wp(currentStep === index ? 1 : 0),
                                         borderColor:
                                             currentStep === index
-                                                ? THEMECOLORS[themeMode].primaryApp
+                                                ? themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
+                                                    THEMECOLORS[themeMode].accent
                                                 : THEMECOLORS[themeMode].textPrimary,
                                     },
                                 ]}
-                                onPress={() =>  companyId && setCurrentStep(index)}
+                                onPress={() => 
+                                    companyId && 
+                                    setCurrentStep(index)}
                             >
                                 <Icon
                                     name={step.icon}
                                     size={wp(currentStep === index ? 8 : 7)}
                                     color={
                                         currentStep === index
-                                            ? THEMECOLORS[themeMode].primaryApp
+                                            ? themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
+                                                THEMECOLORS[themeMode].accent
                                             : THEMECOLORS[themeMode].textPrimary
                                     }
                                 />
@@ -160,7 +164,8 @@ const CreateCompany = () => {
                                         style={[
                                             Louis_George_Cafe.regular.h7,
                                             {
-                                                color: THEMECOLORS[themeMode].primaryApp,
+                                                color: themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
+                                                    THEMECOLORS[themeMode].accent,
                                                 paddingHorizontal: wp(2),
                                             },
                                         ]}
@@ -216,6 +221,7 @@ const styles = StyleSheet.create({
         marginBottom: wp(4),
         borderColor: '#CCC',
         paddingHorizontal: wp(2),
+
     },
     stepTab: {
         flexDirection: 'row',

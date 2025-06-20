@@ -45,6 +45,9 @@ import CompanayManagement from "../screens/CompanayManagement.js";
 import CreateCompany from "../screens/CreateCompany";
 import CreateClient from "../screens/CreateClient";
 import AddProjectForm from "../screens/AddProjectForm";
+import GroupChatScreen from "../screens/GroupChatScreen";
+import TaskManagement from "../screens/TaskManagement";
+import CreateTask from "../screens/CreateTask";
 
 
 const Stack = createNativeStackNavigator();
@@ -101,6 +104,11 @@ function InitialRouter() {
         <Stack.Screen name="CreateCompany" component={CreateCompany} />
         <Stack.Screen name="CreateClient" component={CreateClient} />
         <Stack.Screen name="AddProjectForm" component={AddProjectForm} />
+        <Stack.Screen name="GroupChat" component={GroupChatScreen} />
+        <Stack.Screen name="TaskManagement" component={TaskManagement} />
+        <Stack.Screen name="CreateTask" component={CreateTask} />
+
+
       </Stack.Navigator>
     </NavigationContainer>
   );
