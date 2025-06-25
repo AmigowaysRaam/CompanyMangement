@@ -13,10 +13,13 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { wp, hp } from '../resources/dimensions';
 import HistoryRecords from './HistoryRecords';
 import { useDispatch, useSelector } from 'react-redux';
-import { getHomePageData, getPunchinOut, getPunchinOutHistory, punchInOutApi } from '../redux/authActions';
+import {
+    getPunchinOut,
+    getPunchinOutHistory,
+    punchInOutApi
+} from '../redux/authActions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ConfirmationModal from '../components/ConfirmationModal';
-import { Louis_George_Cafe } from '../resources/fonts';
 
 const STATIC_COLORS = {
     text: '#333',
@@ -36,7 +39,6 @@ const formatTime = (ms) => {
 };
 
 const PunchInOut = () => {
-
     const { themeMode } = useTheme();
     const { t } = useTranslation();
     const navigation = useNavigation();
@@ -69,13 +71,11 @@ const PunchInOut = () => {
     const [isPunchedToday, setisPunchedToday] = useState(false);
     const [isLunchCompleted, setisLunchCompleted] = useState(false);
 
-
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
             navigation.goBack();
         }
     });
-
 
     const showConfirmation = (message, actionCallback) => {
         setConfirmMessage(message);
@@ -126,6 +126,20 @@ const PunchInOut = () => {
 
     useFocusEffect(
         React.useCallback(() => {
+            const uid = userdata?.id;
+            if (!uid) return;
+            setIsloading(true);
+            dispatch(getPunchinOutHistory(uid, (response) => {
+                if (response.success) {
+                    setHistory(response.data);
+                }
+                setIsloading(false);
+            }));
+        }, [isOnBreak, breakStart, isOnLunch, lunchStart, isPunchedIn, punchTime, storedUserId])
+    );
+
+    useFocusEffect(
+        React.useCallback(() => {
             let interval;
             if (isPunchedIn && punchTime) {
                 interval = setInterval(() => {
@@ -169,48 +183,16 @@ const PunchInOut = () => {
         }, [isOnLunch, lunchStart])
     );
 
-    useFocusEffect(
-        React.useCallback(() => {
-            const uid = userdata?.id;
-            if (!uid) return;
-            setIsloading(true);
-            dispatch(getPunchinOutHistory(uid, (response) => {
-                if (response.success) {
-                    setHistory(response.data);
-                }
-                setIsloading(false);
-            }));
-        }, [isOnBreak, breakStart, isOnLunch, lunchStart, isPunchedIn, punchTime, storedUserId])
-    );
-
-    useFocusEffect(() => {
-        const backHandler = () => {
-            if (navigation.canGoBack()) {
-                navigation.goBack();
-                return true;
-            }
-            return false;
-        };
-        // Add listener on focus
-        const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-            if (!backHandler()) {
-                e.preventDefault();
-            }
-        });
-        return unsubscribe;
-    });
 
     const fnGetAllowLogin = () => {
-        setInitialLoading(true)
-        dispatch(
-            getPunchinOut(userdata?.id, (response) => {
-                if (response.success) {
-                    setisPunchedToday(response.isPunchedCompleted);
-                    setisLunchCompleted(response.isLunchCompleted);
-                    setInitialLoading(false)
-                }
-            })
-        );
+        setInitialLoading(true);
+        dispatch(getPunchinOut(userdata?.id, (response) => {
+            if (response.success) {
+                setisPunchedToday(response.isPunchedCompleted);
+                setisLunchCompleted(response.isLunchCompleted);
+                setInitialLoading(false);
+            }
+        }));
     };
 
     const handlePunchToggle = async () => {
@@ -241,7 +223,6 @@ const PunchInOut = () => {
             dispatch(punchInOutApi(userdata?.id, "in", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
             }));
-
         } else {
             fnGetAllowLogin();
             await AsyncStorage.multiRemove(['punchInTime', 'breakStart', 'lunchStart', 'isOnBreak', 'isOnLunch', 'punchUserId']);
@@ -309,118 +290,116 @@ const PunchInOut = () => {
         <View style={[styles.container, { backgroundColor: themeMode?.background || '#fff' }]}>
             <HeaderComponent showBackArray={false} title={t('punchInOut')} />
             <View style={styles.content}>
-                {
-                    !isPunchedToday ?
-
-                        initialLoading ? <ActivityIndicator size="large" color={themeMode === 'dark' ? "#555" : '#000'} />
-                            :
-                            <>
-                                <Text style={[{ color: STATIC_COLORS.text }]}>
-                                    {isPunchedIn ? t('youArePunchedIn') : t('youArePunchedOut')}
+                {!isPunchedToday ? (
+                    initialLoading ? (
+                        <ActivityIndicator size="large" color={themeMode === 'dark' ? "#555" : '#000'} />
+                    ) : (
+                        <>
+                            <Text style={[{ color: STATIC_COLORS.text }]}>
+                                {isPunchedIn ? t('youArePunchedIn') : t('youArePunchedOut')}
+                            </Text>
+                            <View style={{ flexDirection: "row" }}>
+                                {isPunchedIn &&
+                                    <MaterialCommunityIcons name={'radiobox-marked'} size={hp(2.8)} color={'red'} />
+                                }
+                                <Text style={[styles.timestamp, { color: STATIC_COLORS.textSecondary }]}>
+                                    {t('duration')}: {elapsed}
                                 </Text>
-                                <View style={{ flexDirection: "row" }}>
-                                    {isPunchedIn &&
-                                        <MaterialCommunityIcons name={'radiobox-marked'} size={hp(2.8)} color={'red'} />
-                                    }
-                                    <Text style={[styles.timestamp, { color: STATIC_COLORS.textSecondary }]}>
-                                        {t('duration')}: {elapsed}
-                                    </Text>
+                            </View>
+
+                            <View style={{ flexDirection: "row", width: wp(95), justifyContent: "space-around" }}>
+                                <View>
+                                    <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.button,
+                                                {
+                                                    backgroundColor: isPunchedIn ? STATIC_COLORS.buttonOut : STATIC_COLORS.buttonIn,
+                                                    width: wp(30),
+                                                    height: wp(30),
+                                                    borderRadius: wp(15),
+                                                },
+                                            ]}
+                                            onPress={() =>
+                                                showConfirmation(
+                                                    isPunchedIn ? t('confirmPunchOut') : t('confirmPunchIn'),
+                                                    handlePunchToggle
+                                                )
+                                            }
+                                        >
+                                            <MaterialCommunityIcons
+                                                name={isPunchedIn ? 'logout' : 'login'}
+                                                size={wp(5)}
+                                                color={STATIC_COLORS.buttonText}
+                                            />
+                                            <Text style={styles.buttonText}>
+                                                {isPunchedIn ? t('punchOut') : t('punchIn')}
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </Animated.View>
                                 </View>
 
-                                <View style={{ flexDirection: "row", width: wp(95), justifyContent: "space-around" }}>
+                                {isPunchedIn && (
                                     <View>
-                                        <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-                                            <TouchableOpacity
-                                                style={[
-                                                    styles.button,
-                                                    {
-                                                        backgroundColor: isPunchedIn ? STATIC_COLORS.buttonOut : STATIC_COLORS.buttonIn,
-                                                        width: wp(30),
-                                                        height: wp(30),
-                                                        borderRadius: wp(15),
-                                                    },
-                                                ]}
-                                                onPress={() =>
-                                                    showConfirmation(
-                                                        isPunchedIn
-                                                            ? 'Are you sure you want to punch out?'
-                                                            : 'Are you sure you want to punch in?',
-                                                        handlePunchToggle
-                                                    )
-                                                }
-                                            >
-                                                <MaterialCommunityIcons
-                                                    name={isPunchedIn ? 'logout' : 'login'}
-                                                    size={wp(5)}
-                                                    color={STATIC_COLORS.buttonText}
-                                                />
-                                                <Text style={styles.buttonText}>
-                                                    {isPunchedIn ? t('punchOut') : t('punchIn')}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        </Animated.View>
-                                    </View>
-
-                                    {isPunchedIn && (
-                                        <View>
+                                        {!isOnLunch && (
                                             <TouchableOpacity
                                                 style={[styles.subButton, { backgroundColor: STATIC_COLORS.break }]}
                                                 onPress={() =>
                                                     showConfirmation(
-                                                        isOnBreak ? 'End your break?' : 'Start a break?',
+                                                        isOnBreak ? t('confirmEndBreak') : t('confirmStartBreak'),
                                                         toggleBreak
                                                     )
                                                 }
                                             >
                                                 <Text style={styles.subButtonText}>
-                                                    {isOnBreak ? 'End Break' : 'Start Break'}
+                                                    {isOnBreak ? t('endBreak') : t('startBreak')}
                                                 </Text>
                                             </TouchableOpacity>
+                                        )}
 
-                                            {
-                                                isLunchCompleted ?
-                                                    <TouchableOpacity
-                                                        style={[styles.subButton, { backgroundColor: STATIC_COLORS.lunch }]}
-
-                                                    >
-                                                        <Text style={styles.subButtonText}>
-                                                            {`Lunch Completed`}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                                    :
-                                                    <TouchableOpacity
-                                                        style={[styles.subButton, { backgroundColor: STATIC_COLORS.lunch }]}
-                                                        onPress={() =>
-                                                            showConfirmation(
-                                                                isOnLunch ? 'End your lunch?' : 'Start lunch?',
-                                                                toggleLunch
-                                                            )
-                                                        }
-                                                    >
-                                                        <Text style={styles.subButtonText}>
-                                                            {isOnLunch ? 'End Lunch' : 'Start Lunch'}
-                                                        </Text>
-                                                    </TouchableOpacity>
-                                            }
-                                        </View>
-                                    )}
-                                </View>
-                                <ConfirmationModal
-                                    visible={confirmVisible}
-                                    message={confirmMessage}
-                                    onConfirm={() => {
-                                        confirmAction();
-                                        setConfirmVisible(false);
-                                    }}
-                                    onCancel={() => setConfirmVisible(false)}
-                                />
-                            </>
-                        :
-                        <Image
-                            source={require('../../src/assets/animations/dayDone.png')}
-                            style={styles.profileImage}
-                        />
-                }
+                                        {!isOnBreak && (
+                                            isLunchCompleted ? (
+                                                <TouchableOpacity style={[styles.subButton, { backgroundColor: STATIC_COLORS.lunch }]}>
+                                                    <Text style={styles.subButtonText}>
+                                                        {t('lunchCompleted')}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            ) : (
+                                                <TouchableOpacity
+                                                    style={[styles.subButton, { backgroundColor: STATIC_COLORS.lunch }]}
+                                                    onPress={() =>
+                                                        showConfirmation(
+                                                            isOnLunch ? t('confirmEndLunch') : t('confirmStartLunch'),
+                                                            toggleLunch
+                                                        )
+                                                    }
+                                                >
+                                                    <Text style={styles.subButtonText}>
+                                                        {isOnLunch ? t('endLunch') : t('startLunch')}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            )
+                                        )}
+                                    </View>
+                                )}
+                            </View>
+                            <ConfirmationModal
+                                visible={confirmVisible}
+                                message={confirmMessage}
+                                onConfirm={() => {
+                                    confirmAction();
+                                    setConfirmVisible(false);
+                                }}
+                                onCancel={() => setConfirmVisible(false)}
+                            />
+                        </>
+                    )
+                ) : (
+                    <Image
+                        source={require('../../src/assets/animations/dayDone.png')}
+                        style={styles.profileImage}
+                    />
+                )}
             </View>
             <HistoryRecords loading={loading} history={history} />
         </View>
@@ -435,11 +414,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: wp(1),
         height: hp(35)
     },
-    statusText: {
-        // fontSize: wp(5),
-        marginBottom: hp(1),
-        fontWeight: '600',
-    },
     timestamp: {
         fontSize: wp(4),
         marginBottom: hp(2),
@@ -453,7 +427,7 @@ const styles = StyleSheet.create({
         elevation: 3,
         width: wp(40),
         height: wp(12),
-        alignItems:"center"
+        alignItems: "center"
     },
     subButtonText: {
         color: '#fff',

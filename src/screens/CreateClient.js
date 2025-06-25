@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     Text,
+    ToastAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { wp } from '../resources/dimensions';
@@ -16,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import { useDispatch, useSelector } from 'react-redux';
-import { getClientDetailById, getClientStepData, getCLinetData, getCompanyData, getCompanyDetailById } from '../redux/authActions';
+import { getClientDetailById, getClientStepData, } from '../redux/authActions';
 import { Louis_George_Cafe } from '../resources/fonts';
 
 import ClientBasicDetails from './ClientBasicDetails';
@@ -126,7 +127,7 @@ const CreateClient = () => {
                 </View>
             ) : (
                 <>
-                
+
                     {/* Step Icons Navigation */}
                     <View style={styles.stepTabs}>
                         {stepData.map((step, index) => (
@@ -142,9 +143,11 @@ const CreateClient = () => {
                                                 : THEMECOLORS[themeMode].textPrimary,
                                     },
                                 ]}
-                                onPress={() => 
-                                    clientId && 
-                                    setCurrentStep(index)}
+                                onPress={() =>
+                                    !clientId ?
+                                        ToastAndroid.show(t('basic_detail_need'), ToastAndroid.SHORT)
+                                        :
+                                        setCurrentStep(index)}
                             >
                                 <Icon
                                     name={step.icon}
@@ -155,7 +158,7 @@ const CreateClient = () => {
                                             : THEMECOLORS[themeMode].textPrimary
                                     }
                                 />
-                                {currentStep === index && (
+                                {currentStep === index ? (
                                     <Text
                                         style={[
                                             Louis_George_Cafe.regular.h7,
@@ -167,7 +170,24 @@ const CreateClient = () => {
                                     >
                                         {step?.label}
                                     </Text>
-                                )}
+                                )
+                                    :
+                                    stepData.length != index + 1 ?
+                                        <Icon
+                                            style={{
+                                                marginLeft: wp(4)
+                                            }}
+                                            name={'arrow-right'}
+                                            size={wp(7)}
+                                            color={
+                                                currentStep === index
+                                                    ? THEMECOLORS[themeMode].primaryApp
+                                                    : THEMECOLORS[themeMode].textPrimary
+                                            }
+                                        />
+                                        : null
+
+                                }
                             </TouchableOpacity>
                         ))}
                     </View>

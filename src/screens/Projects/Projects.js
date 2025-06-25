@@ -14,7 +14,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { deleteProjectById, getProjectsStats } from '../../redux/authActions';
 import HomeScreenLoader from '../HomeScreenLoader';
 import { useAndroidBackHandler } from '../../hooks/useAndroidBackHandler';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ConfirmationModal from '../../components/ConfirmationModal';
 
 export default function Projects() {
@@ -42,7 +41,6 @@ export default function Projects() {
   };
 
   const handleConfirmDelete = () => {
-    // Dispatch delete action or call API here
     setLoading(true);
     dispatch(deleteProjectById(selectedProjectId, userdata?.data?.id, res => {
       ToastAndroid.show(res.message, ToastAndroid.SHORT);
@@ -80,13 +78,18 @@ export default function Projects() {
           startDate: project.startDate ? new Date(project.startDate).toLocaleDateString() : 'No Start Date',
           status: project.projectStatus || 'Pending',
           completion: project.completion || 0,
+          dCounts: project.documentsCount || 0,
+
         }));
+
         setProjectList(projectsMapped);
+        // alert(JSON.stringify(res.data))
+
       }
       setLoading(false);
     }));
   }
-  
+
   const adjustFont = (style, offset) => ({
     ...style,
     fontSize: isTamil ? style.fontSize - offset + 1 : style.fontSize,
@@ -94,24 +97,26 @@ export default function Projects() {
 
   const renderProjectItem = ({ item }) => (
     <TouchableOpacity
+      onLongPress={() => handleDeletePress(item?.id)}
       style={{ marginTop: wp(2) }}
-      onPress={() => navigation.navigate('AddProjectForm', { data: item })}
+      onPress={() => navigation.navigate('CreateProject', { data: item })}
     >
-      {/* <MaterialCommunityIcons
-        onPress={() => handleDeletePress(item?.id)}
-        name="delete"
-        size={hp(4)}
-        color={'red'}
-        style={{ alignSelf: "flex-end", position: "absolute", margin: wp(1), zIndex: 1, bottom: hp(25) }}
-      /> */}
-
       <View style={[styles.projectCard, {
         marginVertical: wp(2),
         backgroundColor: THEMECOLORS[themeMode].cardBackground
       }]}>
-        <Text style={[adjustFont(Louis_George_Cafe.bold.h6, 2), {
-          paddingVertical: wp(1.2), borderBottomWidth: wp(0.4), borderColor: "#ccc"
-        }]}>{item.title}</Text>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", margin: wp(1) }}>
+          <Text style={adjustFont(Louis_George_Cafe.bold.h5, 2)}> {item.title}</Text>
+          {item?.dCounts > 0 &&
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ProjectDocumentsList', { data: item })}
+            >
+              <Text style={[adjustFont(Louis_George_Cafe.regular.h8, 2), {
+                textDecorationLine: "underline"
+              }]}> {`${item?.dCounts} ${t('documents')}`}</Text>
+            </TouchableOpacity>
+          }
+        </View>
         <View style={{ flexDirection: "row", justifyContent: "space-between", margin: wp(2) }}>
           <Text style={adjustFont(Louis_George_Cafe.bold.h8, 2)}>{t('Client') || 'Client'}: {item.client}</Text>
           <Text style={adjustFont(Louis_George_Cafe.regular.h8, 2)}>{t('Due') || 'Due'}: {item.dueDate}</Text>
@@ -120,29 +125,11 @@ export default function Projects() {
           <Text style={adjustFont(Louis_George_Cafe.regular.h8, 2)}>{t('Start') || 'Start'}: {item.startDate}</Text>
           <Text style={adjustFont(Louis_George_Cafe.regular.h8, 2)}>{t('Status') || 'Status'}: {item.status}</Text>
         </View>
-        <View style={{
-          borderRadius: wp(3),
-          overflow: 'hidden',
-          height: hp(2),
-          marginVertical: hp(1)
-        }}>
-          <View style={styles.progressContainer}>
-            <View style={styles.progressBarBackground}>
-              <View
-                style={[
-                  styles.progressBarFill,
-                  {
-                    width: `${item.completion ?? 0}%`,
-                    backgroundColor: THEMECOLORS[themeMode].primaryApp
-                  },
-                ]}
-              />
-            </View>
-          </View>
-        </View>
-        <View style={{ margin: wp(2) }}>
+
+
+        <View style={{ margin: wp(2), }}>
           <Text style={adjustFont(Louis_George_Cafe.bold.h8, 2)}>{`${item.completion}% ${t('Completed') || 'Completed'}`}</Text>
-          <View style={{ flexDirection: "row", marginVertical: wp(1), alignItems: "center" }}>
+          <View style={{ flexDirection: "row", marginVertical: wp(1), alignItems: "center", marginTop: wp(4) }}>
             <Text style={adjustFont(Louis_George_Cafe.bold.h8, 2)}>{t('Status') || 'Status'}: </Text>
             <Text style={[
               adjustFont(Louis_George_Cafe.regular.h8, 2),
@@ -171,7 +158,7 @@ export default function Projects() {
         <>
           <View style={{ marginHorizontal: wp(2), marginBottom: hp(1) }}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('AddProjectForm', { data: null })}
+              onPress={() => navigation.navigate('CreateProject', { data: null })}
               style={[
                 styles.addButton,
                 { backgroundColor: THEMECOLORS[themeMode].primaryApp },
@@ -195,7 +182,15 @@ export default function Projects() {
               borderRadius: wp(1),
             }}
             showsVerticalScrollIndicator={false}
+            ListEmptyComponent={() => (
+              <Text style={[Louis_George_Cafe.regular.h6, {
+                alignSelf: "center", marginTop: hp(20)
+              }]}>{t('no_data')}</Text>
+            )}
+            refreshing={loading}               // <-- Add this
+            onRefresh={functionGetProjects}    // <-- Add this
           />
+
         </>
       )}
       <ConfirmationModal

@@ -10,33 +10,36 @@ import {
 import { wp, hp } from '../resources/dimensions';
 import { useTheme } from '../context/ThemeContext';
 import { THEMECOLORS } from '../resources/colors/colors';
+import { useTranslation } from 'react-i18next';
 
 const ConfirmationModal = ({ visible, message, onConfirm, onCancel }) => {
-    
-    const { themeMode,  } = useTheme();
+
+    const { themeMode, } = useTheme();
     const colors = THEMECOLORS[themeMode];
+    const { t } = useTranslation();
 
     return (
+        
         <Modal transparent visible={visible} animationType="none">
             <TouchableWithoutFeedback onPress={onCancel}>
                 <View style={styles.overlay}>
                     <TouchableWithoutFeedback>
-                        <View style={[styles.container, { backgroundColor: colors.background || '#fff', borderColor: colors.border || '#ccc' }]}>
-                            <Text style={[styles.message, { color: colors.textPrimary }]}>{message}</Text>
+                        <View style={[styles.container, { backgroundColor: colors.cardBackground || '#fff', borderColor: colors.border || '#ccc' }]}>
+                            <Text style={[styles.message, { color: colors.black }]}>{message}</Text>
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
                                     style={[styles.confirmBtn, { backgroundColor: colors.buttonBg || '#013CA3' }]}
                                     onPress={onConfirm}
                                 >
-                                    <Text style={[styles.confirmText,{
-                                        color: colors.buttonText 
-                                    }]}>Yes</Text>
+                                    <Text style={[styles.confirmText, {
+                                        color: colors.buttonText
+                                    }]}>{t('yes')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.confirmBtn, { backgroundColor: colors.tabInActive || '#013CA3' }]}
                                     onPress={onCancel}
                                 >
-                                    <Text style={[styles.cancelText, { color: colors.buttonText }]}>No</Text>
+                                    <Text style={[styles.cancelText, { color: colors.buttonText }]}>{t('no')}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

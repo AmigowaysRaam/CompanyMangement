@@ -24,6 +24,7 @@ import { Louis_George_Cafe } from '../resources/fonts';
 import { createTaskForm, getTaskDeytails, levaeFormSubmit, updateTaskForm } from '../redux/authActions';
 import SearchSelectScreen from './SearchSelectScreen';
 import SearchSelectProjectScreen from './SearchSelectProjectScreen';
+import DropdownModal from '../components/DropDownModal';
 
 const CreateTask = () => {
     const { themeMode } = useTheme();
@@ -33,6 +34,12 @@ const CreateTask = () => {
     const userdata = useSelector((state) => state.auth.user?.data);
     const route = useRoute();
     const { taskId } = route.params || {};  // safely access taskId
+
+    // Modal DropDown
+    const [statusDropdownVisible, setStatusDropdownVisible] = useState(false);
+    const [priorityDropdownVisible, setPriorityDropdownVisible] = useState(false);
+
+    const [selectedItem, setSelectedItem] = useState(null);
 
     const [taskTitle, setTaskTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -142,8 +149,10 @@ const CreateTask = () => {
         }
     };
 
-
-
+    const handleSelect = (item) => {
+        setSelectedItem(item);
+        setDropdownVisible(false);
+    };
 
 
     useEffect(() => {
@@ -175,13 +184,31 @@ const CreateTask = () => {
     }, [taskId]);
 
 
+    const renderStaticMapItem = () => {
+        return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((item, index) => (
+            <View style={{ marginTop: wp(0) }}>
+                <View
+                    key={index}
+                    style={{
+                        backgroundColor: themeMode === 'dark' ? "#222" : "#f1f1f1",
+                        width: wp(90),
+                        height: hp(6),
+                        borderRadius: wp(3),
+                        alignSelf: "center",
+                        marginVertical: wp(4),
+                    }}
+                />
+            </View>
+        ));
+    };
+
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             {selectDropDown ? (
                 <SearchSelectScreen
                     selectedEIds={employee}
                     onClose={(selectedIDs) => {
-                        console.log(selectedIDs)
+                        // console.log(selectedIDs)
                         setEmployee(selectedIDs);
                         setselectDropDown(false);
                     }}
@@ -202,91 +229,92 @@ const CreateTask = () => {
                     <HeaderComponent showBackArray={true} title={taskId ? t('update_task') : t('create_task')} />
                     {
                         loading ?
-                            <ActivityIndicator></ActivityIndicator>
+                            <>{renderStaticMapItem()}</>
                             :
-                            <ScrollView contentContainerStyle={styles.form}>
-                                {/* Task Title */}
-                                <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                    {t('taskTitle')}
-                                </Text>
-                                <TextInput
-                                    maxLength={20}
-                                    style={styles.textInput}
-                                    placeholder={t('taskTitlePlaceholder')}
-                                    value={taskTitle}
-                                    onChangeText={setTaskTitle}
-                                />
-                                {errors.taskTitle && <Text style={styles.errorText}>{errors.taskTitle}</Text>}
+                            <>
+                                <ScrollView contentContainerStyle={styles.form}>
+                                    {/* Task Title */}
+                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                        {t('taskTitle')}
+                                    </Text>
+                                    <TextInput
+                                        maxLength={20}
+                                        style={styles.textInput}
+                                        placeholder={t('taskTitlePlaceholder')}
+                                        value={taskTitle}
+                                        onChangeText={setTaskTitle}
+                                    />
+                                    {errors.taskTitle && <Text style={styles.errorText}>{errors.taskTitle}</Text>}
 
 
-                                {/* Description */}
-                                <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                    {t('description')}
-                                </Text>
-                                <TextInput
-                                    maxLength={100}
+                                    {/* Description */}
+                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                        {t('description')}
+                                    </Text>
+                                    <TextInput
+                                        maxLength={100}
 
-                                    style={[styles.textInput, { height: hp(12), textAlignVertical: 'top' }]}
-                                    placeholder={t('descriptionPlaceholder')}
-                                    value={description}
-                                    onChangeText={setDescription}
-                                    multiline
-                                />
-                                {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
+                                        style={[styles.textInput, { height: hp(12), textAlignVertical: 'top' }]}
+                                        placeholder={t('descriptionPlaceholder')}
+                                        value={description}
+                                        onChangeText={setDescription}
+                                        multiline
+                                    />
+                                    {errors.description && <Text style={styles.errorText}>{errors.description}</Text>}
 
 
-                                {/* Date Pickers */}
-                                <View style={styles.datesRow}>
-                                    <View style={styles.dateContainer}>
-                                        <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                            {t('startDate')}
-                                        </Text>
-                                        <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.dateInput}>
-                                            <Text>{formatDate(startDate)}</Text>
-                                        </TouchableOpacity>
-                                        {showStartPicker && (
-                                            <DateTimePicker
-                                                value={startDate}
-                                                mode="date"
-                                                display="default"
-                                                onChange={(event, selectedDate) => {
-                                                    setShowStartPicker(Platform.OS === 'ios');
-                                                    if (selectedDate) setStartDate(selectedDate);
-                                                }}
-                                            />
-                                        )}
-                                        {errors.startDate && <Text style={styles.errorText}>{errors.startDate}</Text>}
+                                    {/* Date Pickers */}
+                                    <View style={styles.datesRow}>
+                                        <View style={styles.dateContainer}>
+                                            <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                                {t('startDate')}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => setShowStartPicker(true)} style={styles.dateInput}>
+                                                <Text>{formatDate(startDate)}</Text>
+                                            </TouchableOpacity>
+                                            {showStartPicker && (
+                                                <DateTimePicker
+                                                    value={startDate}
+                                                    mode="date"
+                                                    display="default"
+                                                    onChange={(event, selectedDate) => {
+                                                        setShowStartPicker(Platform.OS === 'ios');
+                                                        if (selectedDate) setStartDate(selectedDate);
+                                                    }}
+                                                />
+                                            )}
+                                            {errors.startDate && <Text style={styles.errorText}>{errors.startDate}</Text>}
 
+                                        </View>
+                                        <View style={styles.dateContainer}>
+                                            <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                                {t('endDate')}
+                                            </Text>
+                                            <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.dateInput}>
+                                                <Text>{formatDate(endDate)}</Text>
+                                            </TouchableOpacity>
+                                            {showEndPicker && (
+                                                <DateTimePicker
+                                                    value={endDate}
+                                                    mode="date"
+                                                    display="default"
+                                                    onChange={(event, selectedDate) => {
+                                                        setShowEndPicker(Platform.OS === 'ios');
+                                                        if (selectedDate) setEndDate(selectedDate);
+                                                    }}
+                                                />
+                                            )}
+                                            {errors.endDate && <Text style={styles.errorText}>{errors.endDate}</Text>}
+                                        </View>
                                     </View>
-                                    <View style={styles.dateContainer}>
-                                        <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                            {t('endDate')}
-                                        </Text>
-                                        <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.dateInput}>
-                                            <Text>{formatDate(endDate)}</Text>
-                                        </TouchableOpacity>
-                                        {showEndPicker && (
-                                            <DateTimePicker
-                                                value={endDate}
-                                                mode="date"
-                                                display="default"
-                                                onChange={(event, selectedDate) => {
-                                                    setShowEndPicker(Platform.OS === 'ios');
-                                                    if (selectedDate) setEndDate(selectedDate);
-                                                }}
-                                            />
-                                        )}
-                                        {errors.endDate && <Text style={styles.errorText}>{errors.endDate}</Text>}
-                                    </View>
-                                </View>
-                                {/* Employee Selection */}
-                                <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                    {t('employee')}
-                                </Text>
-                                <TouchableOpacity onPress={() => setselectDropDown(true)} style={styles.pickerWrapper}>
-                                    <Text style={{ fontSize: 16 }}>{employee.length != 0 ? `${employee?.name != '' || '' ? employee?.name : ''}` : t('selectEmployee')}</Text>
-                                </TouchableOpacity>
-                                {/* {employee.length > 0 && (
+                                    {/* Employee Selection */}
+                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                        {t('employee')}
+                                    </Text>
+                                    <TouchableOpacity onPress={() => setselectDropDown(true)} style={styles.pickerWrapper}>
+                                        <Text style={{ fontSize: 16 }}>{employee.length != 0 ? `${employee?.name != '' || '' ? employee?.name : ''}` : t('selectEmployee')}</Text>
+                                    </TouchableOpacity>
+                                    {/* {employee.length > 0 && (
                                     <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: 10 }}>
                                         {employee.map((emp) => (
                                             <View key={emp.id} style={styles.selectedItemContainer}>
@@ -298,85 +326,129 @@ const CreateTask = () => {
                                         ))}
                                     </View>
                                 )} */}
-                                {errors.employee && <Text style={styles.errorText}>{errors.employee}</Text>}
-                                {/* Project Selection */}
-                                <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                    {t('project')}
-                                </Text>
-                                <TouchableOpacity onPress={() => setSelectProjectDropDown(true)} style={styles.pickerWrapper}>
-                                    <Text style={{ fontSize: 16 }}>
-                                        {project ? `${project.name} (${project.clientName || ''})` : t('selectProject')}
+                                    {errors.employee && <Text style={styles.errorText}>{errors.employee}</Text>}
+                                    {/* Project Selection */}
+                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                        {t('project')}
                                     </Text>
-                                </TouchableOpacity>
-                                {errors.project && <Text style={styles.errorText}>{errors.project}</Text>}
-                                {/* Client */}
-                                <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                    {t('client')}
-                                </Text>
-                                <View style={[styles.pickerWrapper, { backgroundColor: '#f9f9f9' }]}>
-                                    <Text style={{ fontSize: 16 }}>
-                                        {project?.client?.name || t('selectProjectFirst')}
+                                    <TouchableOpacity onPress={() => setSelectProjectDropDown(true)} style={styles.pickerWrapper}>
+                                        <Text style={{ fontSize: 16 }}>
+                                            {project ? `${project.name} (${project.clientName || ''})` : t('selectProject')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                    {errors.project && <Text style={styles.errorText}>{errors.project}</Text>}
+                                    {/* Client */}
+                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                        {t('client')}
                                     </Text>
-                                </View>
-                                {errors.client && <Text style={styles.errorText}>{errors.client}</Text>}
-                                {/* <Text>{JSON.stringify(project?.company?.company_name )}</Text> */}
-                                {/* Company */}
-                                <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                    {t('company')}
-                                </Text>
-                                <View style={[styles.pickerWrapper, { backgroundColor: '#f9f9f9' }]}>
-                                    <Text style={{ fontSize: 16 }}>
-                                        {project?.company?.company_name || t('selectProjectFirst')}
+                                    <View style={[styles.pickerWrapper, { backgroundColor: '#f9f9f9' }]}>
+                                        <Text style={{ fontSize: 16 }}>
+                                            {project?.client?.name || t('selectProjectFirst')}
+                                        </Text>
+                                    </View>
+                                    {errors.client && <Text style={styles.errorText}>{errors.client}</Text>}
+                                    {/* <Text>{JSON.stringify(project?.company?.company_name )}</Text> */}
+
+                                    {/* Company */}
+                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                        {t('company')}
                                     </Text>
-                                </View>
-                                {/* <Text style={{ fontSize: 16 }}>
+                                    <View style={[styles.pickerWrapper, { backgroundColor: '#f9f9f9' }]}>
+                                        <Text style={{ fontSize: 16 }}>
+                                            {project?.company?.company_name || t('selectProjectFirst')}
+                                        </Text>
+                                    </View>
+                                    {/* <Text style={{ fontSize: 16 }}>
                                         {JSON.stringify(project)}
                                     </Text> */}
-                                {errors.company && <Text style={styles.errorText}>{errors.company}</Text>}
-                                {/* Status */}
-                                <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                    {t('status')}
-                                </Text>
-                                <View style={styles.pickerWrapper}>
-                                    <RNPickerSelect
-                                        onValueChange={setStatus}
-                                        items={statusOptions}
-                                        style={pickerStyles}
-                                        placeholder={{ label: t('selectStatus'), value: null }}
-                                        value={status}
-                                    />
-                                </View>
-                                {errors.status && <Text style={styles.errorText}>{errors.status}</Text>}
-                                {/* Priority */}
-                                <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                    {t('priority')}
-                                </Text>
-                                <View style={styles.pickerWrapper}>
-                                    <RNPickerSelect
-                                        onValueChange={setPriority}
-                                        items={priorityOptions}
-                                        style={pickerStyles}
-                                        placeholder={{ label: t('selectPriority'), value: null }}
-                                        value={priority}
-                                    />
-                                </View>
-                                {errors.priority && <Text style={styles.errorText}>{errors.priority}</Text>}
+                                    {errors.company && <Text style={styles.errorText}>{errors.company}</Text>}
+                                    {/* Status */}
 
-                                {/* Submit */}
-                                <TouchableOpacity
-                                    style={[styles.button, { backgroundColor: THEMECOLORS[themeMode].buttonBg }]}
-                                    onPress={onSubmit}
-                                    disabled={loading}
-                                >
-                                    {loading ? (
-                                        <ActivityIndicator color={THEMECOLORS[themeMode].buttonText} />
-                                    ) : (
-                                        <Text style={[Louis_George_Cafe.bold.h4, styles.buttonText, { color: THEMECOLORS[themeMode].buttonText }]}>
-                                            {taskId ? t('update') : t('submit')}
-                                        </Text>
-                                    )}
-                                </TouchableOpacity>
-                            </ScrollView>
+                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                        {t('status')}
+                                    </Text>
+
+                                    <View style={styles.pickerWrapper}>
+                                        <TouchableOpacity
+                                            style={[{
+                                                paddingHorizontal: wp(2)
+                                            }]}
+                                            onPress={() => setStatusDropdownVisible(true)}
+                                        >
+                                            <Text style={[Louis_George_Cafe.regular.h7, {
+                                                textTransform: "capitalize"
+                                            }]}>
+                                                {
+                                                    status
+                                                        ? statusOptions.find(item => item.value === status)?.label
+                                                        : t('selectStatus')
+                                                }
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                        <DropdownModal
+                                            visible={statusDropdownVisible}
+                                            items={statusOptions}
+                                            onSelect={(item) => {
+                                                setStatus(item.value);
+                                                setStatusDropdownVisible(false);
+                                            }}
+                                            onCancel={() => setStatusDropdownVisible(false)}
+                                            title={t('selectStatus')}
+                                        />
+                                    </View>
+                                    {errors.status && <Text style={styles.errorText}>{errors.status}</Text>}
+
+                                    {/* Priority */}
+                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                        {t('priority')}
+                                    </Text>
+
+                                    <View style={styles.pickerWrapper}>
+                                        <TouchableOpacity
+                                            style={{
+                                                paddingHorizontal: wp(2)
+                                            }}
+                                            onPress={() => setPriorityDropdownVisible(true)}
+                                        >
+                                            <Text style={{ textTransform: "capitalize" }}>
+                                                {
+                                                    priority
+                                                        ? priorityOptions.find(item => item.value === priority)?.label
+                                                        : t('selectPriority')
+                                                }
+                                            </Text>
+                                        </TouchableOpacity>
+                                        <DropdownModal
+                                            visible={priorityDropdownVisible}
+                                            items={priorityOptions}
+                                            onSelect={(item) => {
+                                                setPriority(item.value);
+                                                setPriorityDropdownVisible(false);
+                                            }}
+                                            onCancel={() => setPriorityDropdownVisible(false)}
+                                            title={t('selectPriority')}
+                                        />
+                                    </View>
+                                    {errors.priority && <Text style={styles.errorText}>{errors.priority}</Text>}
+
+                                    {/* Submit */}
+                                    <TouchableOpacity
+                                        style={[styles.button, { backgroundColor: THEMECOLORS[themeMode].buttonBg }]}
+                                        onPress={onSubmit}
+                                        disabled={loading}
+                                    >
+                                        {loading ? (
+                                            <ActivityIndicator color={THEMECOLORS[themeMode].buttonText} />
+                                        ) : (
+                                            <Text style={[Louis_George_Cafe.bold.h4, styles.buttonText, { color: THEMECOLORS[themeMode].buttonText, textTransform: "capitalize" }]}>
+                                                {taskId ? t('update') : t('submit')}
+                                            </Text>
+                                        )}
+                                    </TouchableOpacity>
+                                </ScrollView>
+                                
+                            </>
                     }
                 </>
             )}
@@ -432,6 +504,15 @@ const styles = StyleSheet.create({
         padding: 12,
         justifyContent: 'center',
         backgroundColor: '#fff',
+    },
+    pickerWrapper: {
+        marginVertical: hp(1),
+    },
+    pickerTouchable: {
+        paddingVertical: hp(1.8),
+        paddingHorizontal: wp(4),
+        borderRadius: wp(2),
+        borderWidth: wp(0.3),
     },
     datesRow: {
         flexDirection: 'row',

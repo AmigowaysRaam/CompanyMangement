@@ -17,27 +17,30 @@ import { useTranslation } from 'react-i18next';
 import { getEmployeeList } from '../redux/authActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 const PAGE_SIZE = 10;
 
-const SearchSelectScreen = ({ onClose, selectedEIds }) => {
+const SelectMultipleEmp = ({ onClose, selectedEIds }) => {
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
     const isTamil = i18n.language === 'ta';
     const dispatch = useDispatch();
     const userdata = useSelector((state) => state.auth.user?.data);
+
     const [categories, setCategories] = useState([]);
     const [page, setPage] = useState(1);
     const [isEndReached, setIsEndReached] = useState(false);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState('');
+    const [selectedEmployees, setSelectedEmployees] = useState([]);
+
     const loadingRef = useRef(false);
     const endReachedRef = useRef(false);
 
-
-
     const fetchEmployee = useCallback((currentPage = 1, isRefresh = false) => {
         if (loadingRef.current || (endReachedRef.current && !isRefresh)) return;
+
         if (isRefresh) {
             setRefreshing(true);
             setIsEndReached(false);
@@ -46,41 +49,29 @@ const SearchSelectScreen = ({ onClose, selectedEIds }) => {
         } else {
             setLoading(true);
         }
-        userdata?.id,
-            // employId?.employeeID,
-            currentPage,
-            PAGE_SIZE,
-            searchText,
 
-            loadingRef.current = true;
-        dispatch(getEmployeeList(userdata?.id,
-            // employId?.employeeID,
-            currentPage,
-            PAGE_SIZE,
-            searchText, (response) => {
-                console.log('Fetching page:', response.employeeList);
-                if (response?.success) {
-                    const newData = response.employeeList || [];
-                    if (newData.length < PAGE_SIZE) {
-                        setIsEndReached(true);
-                        endReachedRef.current = true;
-                    }
-                    if (isRefresh) {
-                        setCategories(newData);
-                        setPage(2);
-                    } else {
-                        setCategories(prev => [
-                            ...prev,
-                            ...newData,
-                        ]);
-                        setPage(currentPage + 1);
-                    }
+        loadingRef.current = true;
+        dispatch(getEmployeeList(userdata?.id, currentPage, PAGE_SIZE, searchText, (response) => {
+            if (response?.success) {
+                const newData = response.employeeList || [];
+                if (newData.length < PAGE_SIZE) {
+                    setIsEndReached(true);
+                    endReachedRef.current = true;
                 }
 
-                setLoading(false);
-                loadingRef.current = false;
-                setRefreshing(false);
-            }));
+                if (isRefresh) {
+                    setCategories(newData);
+                    setPage(2);
+                } else {
+                    setCategories(prev => [...prev, ...newData]);
+                    setPage(currentPage + 1);
+                }
+            }
+
+            setLoading(false);
+            loadingRef.current = false;
+            setRefreshing(false);
+        }));
     }, [dispatch, searchText]);
 
     useEffect(() => {
@@ -104,39 +95,34 @@ const SearchSelectScreen = ({ onClose, selectedEIds }) => {
         return () => clearTimeout(debounceTimer);
     }, [searchText, fetchEmployee]);
 
-    const [selectedEmployee, setSelectedEmployee] = useState(null);
-
     useEffect(() => {
         if (Array.isArray(selectedEIds) && selectedEIds.length > 0 && categories.length > 0) {
-            const idOrObj = selectedEIds[0];
-            let enriched = null;
-            if (typeof idOrObj === 'object') {
-                enriched = idOrObj;
-            } else {
+            const enrichedList = selectedEIds.map(idOrObj => {
+                if (typeof idOrObj === 'object') return idOrObj;
                 const match = categories.find(emp => emp.id === idOrObj);
-                if (match) enriched = { id: match.id, name: match.name };
-            }
-            setSelectedEmployee(enriched);
+                return match ? { id: match.id, name: match.name } : null;
+            }).filter(Boolean);
+            setSelectedEmployees(enrichedList);
         }
     }, [selectedEIds, categories]);
+
+    const handleSelect = (employeeData) => {
+        const exists = selectedEmployees.some(emp => emp.id === employeeData.id);
+        if (exists) {
+            setSelectedEmployees(prev => prev.filter(emp => emp.id !== employeeData.id));
+        } else {
+            setSelectedEmployees(prev => [...prev, employeeData]);
+        }
+    };
 
     const renderItem = ({ item }) => {
         const category = item.category || item;
         const employeeData = { id: category.id, name: category.name };
-        const isSelected = selectedEmployee?.id === employeeData.id;
-
-        const handleSelect = () => {
-            if (isSelected) {
-                setSelectedEmployee(null);
-            } else {
-                setSelectedEmployee(employeeData);
-            }
-                // onClose(selectedEmployee);
-        };
+        const isSelected = selectedEmployees.some(emp => emp.id === employeeData.id);
 
         return (
             <TouchableOpacity
-                onPress={handleSelect}
+                onPress={() => handleSelect(employeeData)}
                 style={[
                     styles.itemBox,
                     {
@@ -176,69 +162,71 @@ const SearchSelectScreen = ({ onClose, selectedEIds }) => {
             </View>
         );
     };
-    return (
-        <>
-            <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
-                <View style={sstyles(themeMode).searchContainer}>
-                    <MaterialCommunityIcons
-                        name="magnify"
-                        size={wp(5)}
-                        color={THEMECOLORS[themeMode].textPrimary}
-                        style={sstyles(themeMode).icon}
-                    />
-                    <TextInput
-                        value={searchText}
-                        onChangeText={setSearchText}
-                        placeholder={t('search')}
-                        placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
-                        style={sstyles(themeMode).input}
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                    />
-                    <MaterialCommunityIcons onPress={onClose}
-                        name="close"
-                        size={hp(3)}
-                        color={THEMECOLORS[themeMode].textPrimary} />
-                </View>
-                <FlatList
-                    data={categories}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => item.category?._id || index.toString()}
-                    contentContainerStyle={{ paddingBottom: hp(10), flexGrow: 1 }}
-                    onEndReached={loadMore}
-                    onEndReachedThreshold={0.1} // ✅ Lower threshold for better triggering
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                            tintColor={THEMECOLORS[themeMode].primaryApp}
-                        />
-                    }
-                    ListFooterComponent={
-                        loading && !refreshing ? (
-                            <ActivityIndicator size="small" color={THEMECOLORS[themeMode].primaryApp} />
-                        ) : null
-                    }
-                    ListEmptyComponent={ListEmptyComponent}
-                />
-                <TouchableOpacity
-                    style={[styles.doneButton, { backgroundColor: THEMECOLORS[themeMode].buttonBg }]}
-                    onPress={() => onClose(selectedEmployee)}
-                >
-                    <Text style={[styles.doneText, { color: THEMECOLORS[themeMode].buttonText, textTransform: "capitalize" }]}>
-                        {t('done')}
-                    </Text>
-                </TouchableOpacity>
 
+    return (
+    <>
+        <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
+            <View style={sstyles(themeMode).searchContainer}>
+                <MaterialCommunityIcons
+                    name="magnify"
+                    size={wp(5)}
+                    color={THEMECOLORS[themeMode].textPrimary}
+                    style={sstyles(themeMode).icon}
+                />
+                <TextInput
+                    value={searchText}
+                    onChangeText={setSearchText}
+                    placeholder={t('search')}
+                    placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
+                    style={sstyles(themeMode).input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                />
+                <MaterialCommunityIcons onPress={() => onClose([])}
+                    name="close"
+                    size={hp(3)}
+                    color={THEMECOLORS[themeMode].textPrimary} />
             </View>
-        </>
+
+            <FlatList
+                data={categories}
+                renderItem={renderItem}
+                keyExtractor={(item, index) => item.category?._id || item.id?.toString() || index.toString()}
+                contentContainerStyle={{ paddingBottom: hp(10), flexGrow: 1 }}
+                onEndReached={loadMore}
+                onEndReachedThreshold={0.1}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={THEMECOLORS[themeMode].primaryApp}
+                    />
+                }
+                ListFooterComponent={
+                    loading && !refreshing ? (
+                        <ActivityIndicator size="small" color={THEMECOLORS[themeMode].primaryApp} />
+                    ) : null
+                }
+                ListEmptyComponent={ListEmptyComponent}
+            />
+        </View>
+            <TouchableOpacity
+            style={[styles.doneButton, { backgroundColor: THEMECOLORS[themeMode].buttonBg }]}
+            onPress={() => onClose(selectedEmployees)}
+        >
+            <Text style={[styles.doneText, { color: THEMECOLORS[themeMode].buttonText, textTransform: "capitalize" }]}>
+                {t('done')}
+            </Text>
+        </TouchableOpacity>
+    </>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        padding: wp(3),
+        // flex: 1,
+        // padding: wp(3),
+        // backgroundColor:"red"
     },
     itemBox: {
         borderRadius: wp(2),
@@ -250,22 +238,24 @@ const styles = StyleSheet.create({
     },
     doneButton: {
         position: 'absolute',
-        bottom: hp(2),
+        bottom: hp(1),
         left: wp(5),
         right: wp(5),
         height: hp(6),
         borderRadius: wp(2),
         alignItems: 'center',
         justifyContent: 'center',
-        elevation: 4, // optional for shadow
+        elevation: 4,
     },
     doneText: {
         fontSize: wp(4.2),
         fontWeight: '600',
     },
-
-
+    categoryTitle: {
+        flex: 1,
+    },
 });
+
 const sstyles = (themeMode) => StyleSheet.create({
     searchContainer: {
         flexDirection: 'row',
@@ -289,4 +279,4 @@ const sstyles = (themeMode) => StyleSheet.create({
     },
 });
 
-export default SearchSelectScreen;
+export default SelectMultipleEmp;

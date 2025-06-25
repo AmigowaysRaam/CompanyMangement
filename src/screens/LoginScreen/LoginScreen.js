@@ -85,14 +85,15 @@ const LoginScreen = () => {
     };
     // alert(JSON.stringify(credentials))
     dispatch(loginUser(credentials, (response) => {
-      setIsLoading(false); 
+      setIsLoading(false);
+      // alert(JSON.stringify(response), null, 2)
       if (response.success) {
         AsyncStorage.setItem('user_data', JSON.stringify(response));
         Toast.show({
           type: 'success',
           text1: 'Login successful!',
         });
-        
+
         // alert(JSON.stringify(response.data.mpin))
         if (response.data.mpin) {
           setTimeout(() => {

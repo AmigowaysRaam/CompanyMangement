@@ -31,6 +31,8 @@ function HeaderComponent({
   showBackArray,
   working,
   onTitleClick,
+  chatCount,
+  titleAlign,
   ...props
 }) {
   const navigation = useNavigation();
@@ -113,7 +115,6 @@ function HeaderComponent({
 
   useFocusEffect(
     React.useCallback(() => {
-
       const onBackPress = () => true; // Prevent back action
       BackHandler.addEventListener("hardwareBackPress", onBackPress);
       return () =>
@@ -141,7 +142,7 @@ function HeaderComponent({
                   />
                 </TouchableOpacity>
               </View>
-              <View style={{ flexDirection: "row", alignSelf: "center", justifyContent: "center", alignItems: "center" }}>
+              <View style={{ flexDirection: "row", alignSelf: "center", justifyContent: "center", alignItems: "center", marginHorizontal: wp(2) }}>
                 <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('SearchScreen')}>
                   <MaterialCommunityIcons name="magnify" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
@@ -182,11 +183,18 @@ function HeaderComponent({
                     ))}
                   </Menu>
                 }
-                <TouchableOpacity style={styles.iconButton} onPress={() =>
+                <TouchableOpacity onPress={() =>
                   navigation.navigate('ChatListScreen')
-                }>
-                  <MaterialCommunityIcons name="chat-outline" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
-                </TouchableOpacity>
+                } style={{ flexDirection: "row" }}>
+                  <View style={styles.iconButton} >
+                    <MaterialCommunityIcons name="chat-outline" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
+                  </View>
+                  {chatCount && chatCount > 0 &&
+                    <View style={{ width: wp(5), justifyContent: "center", backgroundColor: '#ff0000', height: wp(5), borderRadius: wp(2.5), alignItems: "center", position: "absolute", left: wp(5.5), bottom: wp(3) }}>
+                      <Text style={[Louis_George_Cafe.bold.h9, { fontWeight: "500", color: "#FFF" }]}>{chatCount > 99 ? '99+' : chatCount}</Text>
+                    </View>
+                  }
+                  </TouchableOpacity>
               </View>
             </>
             :
@@ -195,13 +203,14 @@ function HeaderComponent({
                 {
                   <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconutton}>
                     <Text style={{ lineHeight: hp(4), marginRight: wp(2) }}>
-                      <MaterialCommunityIcons name={showBackArray && "chevron-left"} size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
+                      <MaterialCommunityIcons
+                        name={showBackArray && titleAlign == 'center' ? "close" : "chevron-left"} size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                     </Text>
                   </TouchableOpacity>
                 }
                 <TouchableOpacity onPress={onTitleClick}>
                   {/* <Animated.View style={{ transform: [{ translateX: slideAnim }] }}> */}
-                    <View>
+                  <View style={{ width: wp(75), alignItems: titleAlign }}>
                     <Text style={[Louis_George_Cafe.bold.h6, {
                       justifyContent: "center",
                       alignItems: "center",
@@ -213,7 +222,7 @@ function HeaderComponent({
                     }]}>
                       {title}
                     </Text>
-                    </View>
+                  </View>
                   {/* </Animated.View> */}
                 </TouchableOpacity>
                 {/* onTitleClick */}

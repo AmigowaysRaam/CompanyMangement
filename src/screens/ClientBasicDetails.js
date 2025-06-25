@@ -77,9 +77,6 @@ const ClientBasicDetails = ({ onNext, onSubmitSuccess, cId, onRefresh, clientDet
     const onSubmit = () => {
         if (!validateFields()) return;
 
-
-
-
         // clientDetails?._id
         if (clientDetails?._id) {
             const formData = {

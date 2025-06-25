@@ -11,6 +11,7 @@ import { THEMECOLORS } from '../resources/colors/colors';
 import RNPickerSelect from 'react-native-picker-select';
 import { getCompanyDetailById } from '../redux/authActions';
 import { useDispatch } from 'react-redux';
+import DropdownModal from '../components/DropDownModal';
 
 const ProjectFormFields = ({
     themeMode,
@@ -31,20 +32,29 @@ const ProjectFormFields = ({
     // branchList,
     hostingurl
 }) => {
+
     const styles = createStyles(themeMode);
     const formatDate = (date) => {
         const d = new Date(date);
         return `${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()}`;
     };
-
     const [companyOpen, setCompanyOpen] = useState(false);
     const [clientOpen, setClientOpen] = useState(false);
     const [adminOpen, setAdminOpen] = useState(false);
     const [branchList, setbranchList] = useState([]);
-
+    const [statusDropdownVisible, setStatusDropdownVisible] = useState(false);
     const [setBLoader, setsetBLoader] = useState(false);
-
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        // console.log("Selected files:");
+        values.files.forEach(file => {
+            console.log("Name:", file.name);
+            console.log("Type:", file.type);
+            console.log("URI:", file.uri);
+        });
+    }, [values.files]);
+
 
     useEffect(() => {
         setsetBLoader(true)
@@ -113,9 +123,7 @@ const ProjectFormFields = ({
             // placeholderStyle={{ color: THEMECOLORS[themeMode].textPrimary }}
             />
             {errors.company && <Text style={styles.errorText}>{errors.company}</Text>}
-            {/*  */}
             {/* Status */}
-
             {
                 branchList?.length != 0 &&
                 <>
@@ -153,11 +161,8 @@ const ProjectFormFields = ({
                         }
 
                     </View>
-                    {errors.status && <Text style={styles.errorText}>{errors.status}</Text>}</>
+                    {errors.branch && <Text style={styles.errorText}>{errors.branch}</Text>}</>
             }
-
-
-
             {/*  */}
             {/* Client */}
             <Text style={[Louis_George_Cafe.bold.h7, styles.label, {
@@ -406,21 +411,33 @@ const ProjectFormFields = ({
 
             }]}>{t('form_status')}</Text>
             <View style={styles.pickerWrapper}>
-                <RNPickerSelect
-                    placeholderTextColor={THEMECOLORS[themeMode].textPrimary}
-                    onValueChange={(value) =>
-                        setValues((prev) => ({ ...prev, status: value }))
-                    }
-                    items={statusOptions}   // Use statusOptions here
-                    placeholder={{ label: t('form_status'), value: null }}
-                    value={values.status}
-                    style={{
-                        // inputIOS: { fontSize: isTamil ? wp(3.5) : wp(4) },
-                        inputAndroid: {
-                            color: THEMECOLORS[themeMode].textPrimary
-                        },
+                <TouchableOpacity
+                    style={[{
+                        paddingHorizontal: wp(2)
+                    }]}
+                    onPress={() => setStatusDropdownVisible(true)}
+                >
+                    <Text style={[Louis_George_Cafe.regular.h7, {
+                        textTransform: "capitalize"
+                    }]}>
+                        {
+                            values.status !== null && values.status !== undefined
+                                ? statusOptions.find(item => item.value === values.status)?.label
+                                : t('selectStatus')
+                        }
+                    </Text>
+                </TouchableOpacity>
+
+                <DropdownModal
+                    visible={statusDropdownVisible}
+                    items={statusOptions}
+                    onSelect={(item) => {
+                        // alert( item.value)
+                        setValues((prev) => ({ ...prev, status: item.value }))
+                        setStatusDropdownVisible(false);
                     }}
-                    useNativeAndroidPickerStyle={false}
+                    onCancel={() => setStatusDropdownVisible(false)}
+                    title={t('selectStatus')}
                 />
             </View>
             {errors.status && <Text style={styles.errorText}>{errors.status}</Text>}

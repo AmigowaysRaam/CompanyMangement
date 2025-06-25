@@ -33,12 +33,13 @@ const TaskTable = (tdata) => {
         );
         setData(updated);
     };
-
+    
     const renderItem = ({ item }) => (
         <View >
             <TouchableOpacity onPress={() => toggleCheckbox(item.id)} style={styles.row}>
                 <MaterialCommunityIcons
-                    name={item.checked ? "checkbox-marked" : "square-outline"}
+                    // name={item.checked ? "checkbox-marked" : "square-outline"}
+                    name={"chevron-right"}
                     size={hp(3.5)}
                     color={"#555"}
                 />
@@ -47,9 +48,7 @@ const TaskTable = (tdata) => {
                     <Text style={[isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h8, styles.title]}>{item.deadline}</Text>
                 </View>
             </TouchableOpacity>
-
         </View>
-
     );
 
     return (
@@ -60,12 +59,24 @@ const TaskTable = (tdata) => {
             <Text style={[Louis_George_Cafe.bold.h9]}>
                 {tdata.tdata?.currentDate}
             </Text>
+            {/* <Text>{}</Text> */}
             <FlatList
                 data={data}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
+            // ListEmptyComponent={() => {
+            //     <View style={{ alignItems: 'center', padding: 20 }}>
+            //         <Text>View All</Text>
+            //     </View>
+            // }}
             />
+            <TouchableOpacity
+            // AssignedTask
+            onPress={() => navigation.navigate('AssignedTask')}
+            style={{ alignItems: 'center', padding: wp(0.5), borderWidth: wp(0.3), width: wp(20), alignSelf: "center", borderRadius: wp(4) }}>
+                <Text style={[Louis_George_Cafe.regular.h9]}>{t('view_all')}</Text>
+            </TouchableOpacity>
         </TouchableOpacity>
     );
 };
@@ -90,7 +101,7 @@ const styles = StyleSheet.create({
     },
     separator: {
         height: 1,
-        backgroundColor: COLORS.lightGray,
+        // backgroundColor: COLORS.lightGray,
     },
 });
 

@@ -373,7 +373,7 @@ const API_GET_PROJECT_DETAIL_BY_ID_URL = {
 };
 // API_UPDATE_CREATE_PROJECT_URL
 const API_UPDATE_CREATE_PROJECT_URL = {
-  url: `${API_BASE_URL}mob-update-project`,
+  url: `${API_BASE_URL}mob-update-ProjectCostForm`,
   method: "POST",
   responseDataKey: "data",
 };
@@ -426,10 +426,87 @@ const API_UPDATE_TASK_URL = {
   method: "POST",
   responseDataKey: "data",
 };
+// API_GET_PROJECT_STEP_DATA_URL
+const API_GET_PROJECT_STEP_DATA_URL = {
+  url: `${API_BASE_URL}mob-projects-tabs`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_FORM_SUBMIT_BY_ID_URL
+const API_FORM_SUBMIT_BY_ID_URL = {
+  url: `${API_BASE_URL}mob-create-project-basicdetails`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_PROJECT_DOCUMENT_UPLOAD_DTA
+const API_PROJECT_DOCUMENT_UPLOAD_DTA = {
+  url: `${API_BASE_URL}mob-update-project-files`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_SEND_MESSAGES_LIST_URL
+const API_SEND_MESSAGES_LIST_URL = {
+  url: `${API_BASE_URL}mob-send-message`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_PROJECT_DOCS_URL
+const API_GET_PROJECT_DOCS_URL = {
+  url: `${API_BASE_URL}mob-get-project-files`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+
+// API_GET_GROUPCHAT_DETAILS_URL
+const API_GET_GROUPCHAT_DETAILS_URL = {
+  url: `${API_BASE_URL}mob-chat-participants`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_PROJECT_REMOVE_USER_URL
+
+const API_PROJECT_REMOVE_USER_URL = {
+  url: `${API_BASE_URL}mob-chat-removemember`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+
+// API_UPDATE_PROJECT_USER_URL
+const API_UPDATE_PROJECT_USER_URL = {
+  url: `${API_BASE_URL}mob-chat-addmemnber`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_GET_ASSIGNED_TASK_USER_URL
+const API_GET_ASSIGNED_TASK_USER_URL = {
+  url: `${API_BASE_URL}mob-gettasks`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+// API_TASK_STATUS_TASK_USER_URL
+const API_TASK_STATUS_TASK_USER_URL = {
+  url: `${API_BASE_URL}mob-update-taskstatus`,
+  method: "POST",
+  responseDataKey: "data",
+};
+
+
 export default {
-  APP_GENERATE_TOKEN,
-  API_GET_TASK_BY_ID_URL, API_UPDATE_TASK_URL,
-  API_GET_TASK_LIST_DATA_URL,
+  APP_GENERATE_TOKEN, API_GET_PROJECT_STEP_DATA_URL,
+  API_UPDATE_PROJECT_USER_URL, API_GET_ASSIGNED_TASK_USER_URL,
+  API_GET_TASK_BY_ID_URL, API_UPDATE_TASK_URL, API_TASK_STATUS_TASK_USER_URL,
+  API_GET_TASK_LIST_DATA_URL, API_GET_GROUPCHAT_DETAILS_URL,
+  API_PROJECT_DOCUMENT_UPLOAD_DTA, API_GET_PROJECT_DOCS_URL,
+  API_FORM_SUBMIT_BY_ID_URL, API_SEND_MESSAGES_LIST_URL,
   API_SITE_URL, API_LANGUAGE_URL, API_LOGIN_URL, API_LANGUAGE_CONTENT_URL,
   API_GET_CATEGORY_LIST, API_GET_SUB_CATEGORY_LIST, GET_SIDE_MENU_API,
   GET_PROFILE_MENU_API, API_MOBILE_CHECK, API_GET_SETTINGS_MENU_URL,
@@ -447,7 +524,7 @@ export default {
   API_UPDATE_CONTACT_SUBMIT_COMPANY, API_GET_COMPANY_DATA_BY_ID_URL,
   API_CREATE_CLIENT_COMPANY,
   API_UPDATE_CLIENT__DATA_URL,
-  API_GET_CLIENT_DATA_BY_ID_URL,
+  API_GET_CLIENT_DATA_BY_ID_URL, API_PROJECT_REMOVE_USER_URL,
   API_CREATE_PROJECT_URL, API_GET_PROJECT_DETAIL_BY_ID_URL,
   API_UPDATE_CREATE_PROJECT_URL,
   API_PROJECT_DELETE_URL,

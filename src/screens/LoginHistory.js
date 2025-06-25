@@ -113,8 +113,7 @@ const LoginHistory = () => {
                 <Text style={styles.cell}>{category?.date || '-'}</Text>
                 <Text style={styles.cell}>{category?.punchInTime || '-'}</Text>
                 <Text style={styles.cell}>{category?.punchOutTime || '-'}</Text>
-                <Text style={styles.cell}>-</Text>
-                <Text style={styles.cell}>-</Text>
+                <Text style={styles.cell}>{`${category?.totalWorkedHours} hr` || '-'}</Text>
             </View>
         );
     };
@@ -144,8 +143,7 @@ const LoginHistory = () => {
                         <Text style={styles.headerText}>{t('date')}</Text>
                         <Text style={styles.headerText}>{t('in')}</Text>
                         <Text style={styles.headerText}>{t('out')}</Text>
-                        <Text style={styles.headerText}>{t('break')}</Text>
-                        <Text style={styles.headerText}>{t('lunch')}</Text>
+                        <Text style={styles.headerText}>{t('wokredHours')}</Text>
                     </View>
 
                     <FlatList

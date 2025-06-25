@@ -48,6 +48,11 @@ import AddProjectForm from "../screens/AddProjectForm";
 import GroupChatScreen from "../screens/GroupChatScreen";
 import TaskManagement from "../screens/TaskManagement";
 import CreateTask from "../screens/CreateTask";
+import CreateProject from "../screens/CreateProject";
+import ProjectDocumentsList from "../screens/ProjectDocumentsList";
+import GroupChatScren from "../screens/GroupChatDetails.js";
+import GroupChatDetails from "../screens/GroupChatDetails.js";
+import AssignedTask from "../screens/AssignedTask";
 
 
 const Stack = createNativeStackNavigator();
@@ -107,8 +112,10 @@ function InitialRouter() {
         <Stack.Screen name="GroupChat" component={GroupChatScreen} />
         <Stack.Screen name="TaskManagement" component={TaskManagement} />
         <Stack.Screen name="CreateTask" component={CreateTask} />
-
-
+        <Stack.Screen name="CreateProject" component={CreateProject} />
+        <Stack.Screen name="ProjectDocumentsList" component={ProjectDocumentsList} />
+        <Stack.Screen name="GroupChatScren" component={GroupChatDetails} />
+        <Stack.Screen name="AssignedTask" component={AssignedTask} />
       </Stack.Navigator>
     </NavigationContainer>
   );

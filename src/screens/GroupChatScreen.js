@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TextInput,
     TouchableOpacity, KeyboardAvoidingView, Platform, Image
@@ -12,136 +12,148 @@ import HeaderComponent from '../components/HeaderComponent';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
-import { getChatListApi, getChatMessages } from '../redux/authActions';
+import { getChatMessages, sendChatMessage } from '../redux/authActions';
+import { t } from 'i18next';
 
 const GroupChatScreen = ({ route }) => {
 
     const { themeMode } = useTheme();
-    const [message, setMessage] = useState('');
-    const { chatId, projectName } = route.params;
     const navigation = useNavigation();
-    const userdata = useSelector((state) => state.auth.user?.data);
     const dispatch = useDispatch();
+    const userdata = useSelector((state) => state.auth.user?.data);
+    const [message, setMessage] = useState('');
+    const [messages, setMessages] = useState([]);
+    const { chatId, projectName } = route.params;
+
+    const currentUserEmail = 'ram@gmail.com'; // Replace this with dynamic user data in production
+    const userId = __DEV__ ? "6852bee3cf20b70d77a5dfe0" : userdata?.id;
 
     useAndroidBackHandler(() => {
-        if (navigation.canGoBack()) {
-            navigation.goBack();
-        }
+        if (navigation.canGoBack()) navigation.goBack();
     });
 
-    const [messages, setMessages] = useState([
-        {
-            id: '1',
-            sender: 'ram@gmail.com',
-            name: 'Ram',
-            content: 'Hey team, how’s it going?',
-            timestamp: '10:00 AM',
-            profilePic: 'https://www.alpha-verse.com/assets/images/wallpapers/bg-1.png',
-        },
-        {
-            id: '2',
-            sender: 'divyaTest@gmail.com',
-            name: 'Divya',
-            content: 'All good here!',
-            timestamp: '10:01 AM',
-            profilePic: 'https://www.alpha-verse.com/assets/images/wallpapers/bg-1.png',
-        },
-    ]);
-
-    const currentUserEmail = 'ram@gmail.com'; // Replace with dynamic user info in production
+    const fetchChatListData = () => {
+        dispatch(getChatMessages(userId, chatId, (response) => {
+            if (response.success) {
+                const sortedMessages = [...response?.data?.messages].sort((a, b) => {
+                    const aTime = new Date(a.timestamp).getTime();
+                    const bTime = new Date(b.timestamp).getTime();
+                    return bTime - aTime; // newest first
+                });
+                setMessages(sortedMessages);
+            }
+        }));
+    };
 
     const handleSend = () => {
-        if (message.trim() === '') return;
 
-        const newMessage = {
+        if (!message.trim()) return;
+        const tempMessage = {
             id: Date.now().toString(),
             sender: currentUserEmail,
             content: message,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            timestamp: new Date().toISOString(),
+            position: 'right',
         };
-        setMessages([newMessage, ...messages]); // Prepend message
+
+        setMessages(prev => [tempMessage, ...prev]);
         setMessage('');
+
+        const payload = {
+            senderId: userId,
+            chatId,
+            content: message,
+        };
+
+        dispatch(sendChatMessage(payload, (response) => {
+            if (response.success) fetchChatListData();
+        }));
     };
 
     useFocusEffect(
-        React.useCallback(() => {
+        useCallback(() => {
             fetchChatListData();
         }, [userdata])
     );
 
-
-    const fetchChatListData = () => {
-        // setLoading(true);
-        const userId = __DEV__ ? "6852bee3cf20b70d77a5dfe0" : userdata?.id;
-
-        dispatch(getChatMessages(userId,chatId, (response) => {
-            alert(JSON.stringify(response.data.messages,null,2))
-            if (response.success) {
-                setMessages(response?.data?.messages);
-            }
-            // setLoading(false);
-            // setRefreshing(false);
-        }));
-    };
+    const handleNavigatSettings = () => {
+        navigation.navigate('GroupChatScren', {
+            chatId, projectName
+        })
+    }
 
     const renderItem = ({ item }) => {
-        const isOwnMessage = item.sender === currentUserEmail;
-
+        const isOwnMessage = item.position === 'right';
         return (
             <View style={styles.chatItemContainer}>
                 <View style={[
                     styles.messageRow,
                     { flexDirection: isOwnMessage ? 'row-reverse' : 'row' }
                 ]}>
-
                     <View style={styles.messageContent}>
-                    {!isOwnMessage && (
-                                <View style={{ flexDirection: 'row',
-                                //  backgroundColor:"red" 
-                                 }}>
-                                    <Image
-                                        source={{ uri: item.profilePic }}
-                                        style={styles.avatar}
-                                    />
-                                    <Text style={[Louis_George_Cafe.regular.h7,
+                        {!isOwnMessage && (
+                            <View style={{ flexDirection: 'row' }}>
+                                <Image source={{ uri: item.profilePic }} style={styles.avatar} />
+                                <Text style={[
+                                    Louis_George_Cafe.regular.h7,
                                     styles.senderName,
-                                    { color: THEMECOLORS[themeMode].textSecondary, marginLeft: wp(1), marginTop: wp(1) }
-                                    ]}>
-                                        {item.name}
-                                    </Text>
-                                </View>
-                            )}
+                                    {
+                                        // color: THEMECOLORS[themeMode].validation,
+                                        marginLeft: wp(1),
+                                        //   marginTop: wp(1) 
+                                    }
+                                ]}>
+                                    {item.name}
+                                </Text>
+                            </View>
+                        )}
                         <View style={[
                             styles.messageContainer,
                             {
                                 backgroundColor: isOwnMessage
                                     ? THEMECOLORS[themeMode].primaryApp
                                     : '#ccc',
-                                // alignSelf: isOwnMessage ? 'flex-end' : 'flex-start',
                             }
                         ]}>
-                           
-
                             <Text style={[
                                 styles.messageText,
                                 {
                                     color: isOwnMessage
                                         ? THEMECOLORS[themeMode].white
-                                        : THEMECOLORS[themeMode].textPrimary,
+                                        : THEMECOLORS[themeMode].black,
                                 }
                             ]}>
                                 {item.content}
                             </Text>
-                            <Text style={[
-                                styles.timestamp,
-                                {
-                                    color: isOwnMessage
-                                        ? THEMECOLORS[themeMode].white
-                                        : THEMECOLORS[themeMode].textSecondary,
+                            <View style={{
+                                flexDirection:"row",
+                                alignItems:"center",
+                                alignSelf:"flex-end",
+                                justifyContent:"space-between"
+                            }}>
+                                <Text style={[
+                                    styles.timestamp,
+                                    {
+                                        color: isOwnMessage
+                                            ? THEMECOLORS[themeMode].white
+                                            : THEMECOLORS[themeMode].black,
+                                    }
+                                ]}>
+                                    {new Date(item.timestamp).toLocaleTimeString([], {
+                                        hour: '2-digit',
+                                        minute: '2-digit'
+                                    })}
+
+                                </Text>
+                                {isOwnMessage &&
+                                    <MaterialCommunityIcons
+                                        name="check"
+                                        size={hp(1.8)}
+                                        color={THEMECOLORS[themeMode].white}
+                                        style={{marginLeft:wp(2)}}
+                                    />
                                 }
-                            ]}>
-                                {item.timestamp}
-                            </Text>
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -151,10 +163,17 @@ const GroupChatScreen = ({ route }) => {
 
     return (
         <>
-            <HeaderComponent title={projectName} showBackArray={true} onTitleClick={() => alert(chatId)} />
+            <HeaderComponent
+                title={projectName}
+                showBackArray={true}
+                onTitleClick={() =>
+                    // alert(chatId)
+                    handleNavigatSettings()
+                }
+            />
             <KeyboardAvoidingView
                 style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}
-                behavior={Platform.OS === "ios" ? "padding" : undefined}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
                 keyboardVerticalOffset={hp(10)}
             >
                 <FlatList
@@ -167,16 +186,18 @@ const GroupChatScreen = ({ route }) => {
                 <View style={[
                     styles.inputContainer,
                     {
-                        backgroundColor: THEMECOLORS[themeMode].inputBackground
-                            || (themeMode === 'dark' ? '#333' : '#eee')
+                        backgroundColor: themeMode !== 'dark' ? '#E5E5E5' : '#eee'
                     }
                 ]}>
                     <TextInput
                         value={message}
                         onChangeText={setMessage}
-                        placeholder="Type a message"
-                        placeholderTextColor={THEMECOLORS[themeMode].textSecondary}
-                        style={[styles.input, { color: THEMECOLORS[themeMode].textPrimary }]}
+                        placeholder={t('type_a_message')}
+                        style={[styles.input, {
+                            // color: THEMECOLORS[themeMode].textPrimary,
+                            // backgroundColor: 'red'
+                        }]}
+                    placeholderTextColor={THEMECOLORS[themeMode].primaryApp}
                     />
                     <TouchableOpacity onPress={handleSend}>
                         <MaterialCommunityIcons
@@ -195,10 +216,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-
     chatItemContainer: {
         width: '100%',
-        // paddingHorizontal: wp(3),
         marginVertical: hp(0.5),
     },
     messageRow: {
@@ -217,7 +236,6 @@ const styles = StyleSheet.create({
     messageContainer: {
         padding: wp(2),
         borderRadius: wp(4),
-        // paddingHorizontal: wp(7)
     },
     messageText: {
         fontSize: wp(3.5),
@@ -234,7 +252,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: wp(3),
         paddingVertical: hp(1.4),
         marginHorizontal: wp(1),
-        borderRadius: wp(4),
+        borderRadius: wp(2),
+        marginHorizontal: wp(3),
+        marginVertical: wp(1),
     },
     input: {
         flex: 1,

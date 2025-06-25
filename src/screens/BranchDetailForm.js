@@ -88,7 +88,7 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
     const onSubmit = () => {
         const newErrors = branches.map(branch => ({
             branchName: !branch.branchName.trim() ? t('branchNameRequired') : '',
-            contactNumber: !branch.contactNumber.trim() ? t('contactNumberRequired') : '',
+            // contactNumber: !branch.contactNumber.trim() ? t('contactNumberRequired') : '',
         }));
 
         const hasErrors = newErrors.some(err => err.branchName || err.contactNumber);
@@ -170,7 +170,7 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
                             <Text style={{ color: 'red', marginBottom: 4 }}>{errors[index].branchName}</Text>
                         ) : null}
 
-                        <Text
+                        {/* <Text
                             style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].black }]}
                         >
                             {t('contactNumber')}
@@ -185,7 +185,7 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
                         />
                         {errors[index]?.contactNumber ? (
                             <Text style={{ color: 'red', marginBottom: 4 }}>{errors[index].contactNumber}</Text>
-                        ) : null}
+                        ) : null} */}
 
                         {index > 0 && (
                             <TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveBranch(index)}>

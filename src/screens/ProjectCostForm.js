@@ -17,7 +17,7 @@ import { getProjectDetailById, updateProjectCost } from '../redux/authActions';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
-const ProjectCostForm = ({ projectId }) => {
+const ProjectCostForm = ({ projectId , onNext,projectDetails}) => {
     const { themeMode } = useTheme();
     const theme = THEMECOLORS[themeMode];
     const { t, i18n } = useTranslation();
@@ -38,44 +38,29 @@ const ProjectCostForm = ({ projectId }) => {
     const userdata = useSelector((state) => state.auth.user?.data?.id);
     const [loading, setLoading] = useState(false);
     const [values, setValues] = useState(null)
-
     useEffect(() => {
         if (projectId) {
-            setLoading(true);
-            dispatch(getProjectDetailById(projectId, (res) => {
-                if (res.success && res.data) {
-                    const data = res.data;
-                    setValues(data); // optional, you may not need this if destructuring all
-                    // alert(data.taxcalculation)
-                    // Set form fields
-                    setMilestone(String(data.milestone || ''));
-                    setTax(data.taxcalculation || '');
-                    setProjectCost(data.projectcost || '');
-                    setCostType(data.costType || '');
-                    setNotes(data.notes || '');
-
-                    if (Array.isArray(data.additionalAmount)) {
-                        const formatted = data.additionalAmount.map((item) => ({
-                            id: generateId(),
-                            label: item.label || '',
-                            value: item.input || ''
-                        }));
-                        setAdditionalFields(formatted);
-                    }
-
-                    // Optional: calculate total right away
-                    const cost = parseFloat(data.projectcost || 0);
-                    const taxVal = parseFloat(data.tax || 0);
-                    const additionalSum = data.additionalAmount?.reduce((sum, item) => {
-                        const val = parseFloat(item.input);
-                        return sum + (isNaN(val) ? 0 : val);
-                    }, 0) || 0;
-                    setTotalCost(cost + taxVal + additionalSum);
-                }
-                setLoading(false);
-            }));
+          setLoading(true)
+          const data = projectDetails
+          setMilestone(data.milestone ? String(data.milestone) : null)
+          setProjectCost(data.projectcost ? String(data.projectcost) : '')
+          setTax(data.taxcalculation ? String(data.taxcalculation) : '')
+          setCostType(data.costType || null)
+          setNotes(data.notes || '')
+          if (Array.isArray(data.additionalAmount)) {
+            const formatted = data.additionalAmount.map((item) => ({
+              id: generateId(), // unique id for each field
+              label: item.label || '',
+              value: String(item.input || ''),
+            }))
+            setAdditionalFields(formatted)
+          }
+      
+          setLoading(false)
         }
-    }, [projectId]);
+      }, [projectId, projectDetails])
+      
+
 
 
     const generateId = () => `${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -104,7 +89,6 @@ const ProjectCostForm = ({ projectId }) => {
             const val = parseFloat(field.value);
             return sum + (isNaN(val) ? 0 : val);
         }, 0);
-
         // total = project cost + tax amount + additional sums
         const total = cost + taxAmount + additionalSum;
         setTotalCost(total);
@@ -112,12 +96,10 @@ const ProjectCostForm = ({ projectId }) => {
 
     const validateFields = () => {
         const errors = {};
-
         if (!milestone) errors.milestone = t('This field is required.');
         if (!projectCost || isNaN(projectCost) || parseFloat(projectCost) <= 0) errors.projectCost = t('Enter a valid project cost.');
         if (!tax || isNaN(tax) || parseFloat(tax) < 0) errors.tax = t('Enter a valid tax amount.');
-        if (!costType) errors.costType = t('This field is required.');
-
+        // if (!costType) errors.costType = t('This field is required.');
         additionalFields.forEach(field => {
             const val = parseFloat(field.value);
             if (!field.label || field.label.trim() === '' || isNaN(val) || val < 0) {
@@ -132,30 +114,32 @@ const ProjectCostForm = ({ projectId }) => {
     };
 
     const onSubmit = () => {
-        console.log(additionalFields, "additionalFields")
+        console.log(additionalFields, "additionalFields");
         if (!validateFields()) {
             ToastAndroid.show(t('Please fill the fields'), ToastAndroid.SHORT);
             return;
         }
-        const formData = new FormData();
-        formData.append('projectId', projectId);
-        formData.append('milestone', milestone);
-        formData.append('projectcost', projectCost);
-        formData.append('taxcalculation', tax);
-        formData.append('costType', costType);
-        formData.append('notes', notes);
-        formData.append('totalcost', totalCost);
+
         const formattedAdditionalFields = additionalFields.map(field => ({
             label: field.label,
             input: field.value,
         }));
-        formData.append('additionalAmount', JSON.stringify(formattedAdditionalFields));
-        // alert(JSON.stringify(data))
+
+        const formData = {
+            projectId: projectId?.id || projectId,
+            milestone,
+            projectcost: projectCost,
+            taxcalculation: tax,
+            costType,
+            notes,
+            totalcost: totalCost,
+            additionalAmount: formattedAdditionalFields,
+        };
         dispatch(updateProjectCost(formData, (res) => {
-            console.log(JSON.stringify(res))
+            // console.log(JSON.stringify(formData));
             ToastAndroid.show(res.message, ToastAndroid.SHORT);
             if (res.success) {
-                navigation.goBack();
+                onNext?.();
             }
         }));
     };
@@ -187,6 +171,8 @@ const ProjectCostForm = ({ projectId }) => {
             backgroundColor: theme.inputBackground,
             borderRadius: 8,
             ...Louis_George_Cafe.regular,
+
+
         },
         placeholder: {
             color: theme.textPrimary,
@@ -207,7 +193,9 @@ const ProjectCostForm = ({ projectId }) => {
                     backgroundColor: theme.inputBackground,
                     height: hp(6),
                     justifyContent: 'center',
-                    marginBottom: 10
+                    marginBottom: 10,
+                    borderWidth: 1,
+                    borderColor: "#ccc"
                 }}>
                     <RNPickerSelect
                         onValueChange={setMilestone}
@@ -223,6 +211,7 @@ const ProjectCostForm = ({ projectId }) => {
                 {/* Project Cost */}
                 <Text style={{ fontSize: labelFontSize, color: theme.textPrimary, marginTop: 15, marginBottom: 8, ...Louis_George_Cafe.regular }}>{t('projectCost')}</Text>
                 <TextInput
+                    maxLength={5}
                     style={{
                         // borderWidth: 1,
                         borderRadius: 8,
@@ -232,6 +221,8 @@ const ProjectCostForm = ({ projectId }) => {
                         color: theme.textPrimary,
                         borderColor: validationErrors.projectCost ? 'red' : '#ddd',
                         marginBottom: 10,
+                        borderWidth: 1,
+                        borderColor: "#ccc",
                         ...Louis_George_Cafe.regular
                     }}
                     placeholder={t('enterProjectCost')}
@@ -247,6 +238,8 @@ const ProjectCostForm = ({ projectId }) => {
                 <TextInput
                     style={{
                         //  borderWidth: 1,
+                        borderWidth: 1,
+                        borderColor: "#ccc",
                         borderRadius: 8,
                         padding: wp(3),
                         fontSize,
@@ -268,10 +261,8 @@ const ProjectCostForm = ({ projectId }) => {
                             setTax(text);
                         }
                     }}
-
                 />
                 {validationErrors.tax && <Text style={{ color: 'red', fontSize: 12, marginBottom: 8, marginTop: -8, ...Louis_George_Cafe.regular }}>{validationErrors.tax}</Text>}
-
                 {/* Total Project Cost (Read-only) */}
                 <Text style={{ fontSize: labelFontSize, color: theme.textPrimary, marginTop: 15, marginBottom: 8, ...Louis_George_Cafe.regular }}>{t('totalProjectCost')}</Text>
                 <TouchableOpacity
@@ -286,6 +277,8 @@ const ProjectCostForm = ({ projectId }) => {
                         marginBottom: 10,
                         height: hp(6),
                         justifyContent: 'center',
+                        borderWidth: 1,
+                        borderColor: "#ccc"
                     }}>
                     <Text style={{ fontSize, color: theme.textPrimary, ...Louis_George_Cafe.regular }}>
                         {totalCost.toFixed(2)}
@@ -296,8 +289,7 @@ const ProjectCostForm = ({ projectId }) => {
                 {additionalFields.map((field) => (
                     <View key={field.id} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
                         <TextInput
-                        maxLength={15}
-
+                            maxLength={10}
                             style={{
                                 flex: 1,
                                 //  borderWidth: 1,
@@ -316,7 +308,7 @@ const ProjectCostForm = ({ projectId }) => {
                             placeholderTextColor={theme.textPrimary}
                         />
                         <TextInput
-                        maxLength={5}
+                            maxLength={5}
                             style={{
                                 flex: 1,
                                 //  borderWidth: 1,
@@ -398,22 +390,6 @@ const ProjectCostForm = ({ projectId }) => {
                     onChangeText={setNotes}
                     multiline
                 />
-                {/* {notes ? (
-                    <View style={{ marginVertical: 10 }}>
-                        <Text style={{ marginBottom: 5, ...Louis_George_Cafe.regular, color: theme.textPrimary }}>{t('preview')}:</Text>
-                        <RenderHtml
-                            contentWidth={wp(90)}
-                            source={{ html: notes }}
-                            tagsStyles={{
-                                p: { color: "red", },
-                                div: { color: theme.textPrimary, },
-                                span: { color: theme.textPrimary, },
-                                li: { color: theme.textPrimary, },
-                            }}
-                        />
-
-                    </View>
-                ) : null} */}
                 <TouchableOpacity
                     style={{
                         padding: 12,
@@ -425,7 +401,7 @@ const ProjectCostForm = ({ projectId }) => {
                     onPress={onSubmit}
                 >
                     <Text style={[Louis_George_Cafe.regular.h4, { color: theme.buttonText, }]}>
-                        {projectId ? t('update') : t('submit')}
+                        {projectId  ? t('update') : t('submit')}
                     </Text>
                 </TouchableOpacity>
             </ScrollView>

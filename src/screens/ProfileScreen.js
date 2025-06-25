@@ -183,7 +183,7 @@ const ProfileScreen = () => {
                                 onPress={() => handleFnNavigate(submenu.label)}
                             >
                                 <Text style={[
-                                    isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h4,
+                                    isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h6,
                                     { color: THEMECOLORS[themeMode].textPrimary }
                                 ]}>
                                     {t(submenu.label)}
@@ -303,7 +303,7 @@ const ProfileScreen = () => {
                         marginTop: hp(3)
                     }}>
                         <LinearGradient
-                            colors={['#011f4b', '#03396c', '#005b96']}
+                            colors={['#011f4b', '#03396c']}
                             start={{ x: 1, y: 0 }}
                             end={{ x: 0, y: 1 }}
                             style={{
@@ -341,7 +341,8 @@ const ProfileScreen = () => {
                                 <Text
                                     style={[
                                         isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h5,  // smaller font size styles
-                                        { color: "#FFF", lineHeight: wp(4), marginRight: hp(1) }
+
+                                        { color: "#FFF", lineHeight: wp(4), marginRight: hp(1),lineHeight:wp(6) }
                                     ]}
                                 >
                                     {t('log_out')}

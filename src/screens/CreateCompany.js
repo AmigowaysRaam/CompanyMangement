@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     ActivityIndicator,
     Text,
+    ToastAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { wp } from '../resources/dimensions';
@@ -143,15 +144,19 @@ const CreateCompany = () => {
                                                 ? themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
                                                     THEMECOLORS[themeMode].accent
                                                 : THEMECOLORS[themeMode].textPrimary,
+                                        opacity:companyId || index === 0 ? 1 : 0.3,
                                     },
                                 ]}
-                                onPress={() => 
-                                    companyId && 
-                                    setCurrentStep(index)}
+                                onPress={() =>
+                                    companyId ?
+                                    setCurrentStep(index):
+                                    ToastAndroid.show(t('basic_detail_need'), ToastAndroid.SHORT)
+
+                                }
                             >
                                 <Icon
                                     name={step.icon}
-                                    size={wp(currentStep === index ? 8 : 7)}
+                                    size={wp(currentStep === index ? 6 : 5)}
                                     color={
                                         currentStep === index
                                             ? themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
@@ -159,10 +164,10 @@ const CreateCompany = () => {
                                             : THEMECOLORS[themeMode].textPrimary
                                     }
                                 />
-                                {currentStep === index && (
+                                {currentStep === index ? (
                                     <Text
                                         style={[
-                                            Louis_George_Cafe.regular.h7,
+                                            Louis_George_Cafe.regular.h9,
                                             {
                                                 color: themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
                                                     THEMECOLORS[themeMode].accent,
@@ -172,7 +177,25 @@ const CreateCompany = () => {
                                     >
                                         {step?.label}
                                     </Text>
-                                )}
+                                )
+
+                                    :
+                                    stepData.length != index + 1 ?
+                                        <Icon
+                                            style={{
+                                                marginLeft: wp(4)
+                                            }}
+                                            name={'arrow-right'}
+                                            size={wp(5)}
+                                            color={
+                                                currentStep === index
+                                                    ? THEMECOLORS[themeMode].primaryApp
+                                                    : THEMECOLORS[themeMode].textPrimary
+                                            }
+                                        />
+                                        : null
+
+                                }
                             </TouchableOpacity>
                         ))}
                     </View>

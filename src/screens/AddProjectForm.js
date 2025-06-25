@@ -1,4 +1,5 @@
 // AddProjectForm.js
+// "use strict";
 import React, { useEffect, useState } from 'react';
 import {
     View, ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, ActivityIndicator, Text
@@ -35,29 +36,38 @@ const AddProjectForm = () => {
     const mapProjectDataToForm = (data) => {
         return {
             projectName: data.projectName || '',
-            company: data.projectAdmins?.[0]?.company || null,
-            client: data.client || null,
+            company: data.projectAdmins?.[0]?.company
+                ? { label: data.projectAdmins?.[0]?.companyName || '', value: data.projectAdmins?.[0]?.company }
+                : null,
+            client: data.client
+                ? { label: data.client.companyName || '', value: data.client._id }
+                : null,
             startDate: data.startDate ? new Date(data.startDate) : new Date(),
             endDate: data.endDate ? new Date(data.endDate) : new Date(),
-            status: data.status || null,
-            description: data?.description,
-            branch: data?.branch,
-            hostingurl: data?.hostingurl,
+            status: data.status === 1 || data.status === 0
+                ?  data.status 
+                : null,
+            description: data?.description || '',
+            branch: data.branch
+                ? { label: data.branch.branch_name || '', value: data.branch.branch_id }
+                : null,
+            hostingurl: data?.hostingurl || '',
             files: Array.isArray(data.file)
                 ? data.file.map((filePath) => ({
                     uri: filePath,
                     name: filePath.split('/').pop(),
-                    type: 'application/pdf', // or detect dynamically if needed
+                    type: 'application/pdf',
                 }))
                 : [],
             employee: data.teamMembers
                 ? data.teamMembers.map((member) => member._id || member.id)
                 : [],
-            admin: data.projectAdmins?.[0]?._id || null,
+            admin: data.projectAdmins?.[0]?._id
+                ? { label: data.projectAdmins?.[0]?.name || '', value: data.projectAdmins?.[0]?._id }
+                : null,
         };
     };
-
-
+    
 
     const [values, setValues] = useState({
         projectName: '',
@@ -124,7 +134,6 @@ const AddProjectForm = () => {
             }
         }));
     }, []);
-
     // Fetch project details if editing and set form values
     useEffect(() => {
         if (projectData?.id) {
@@ -172,7 +181,10 @@ const AddProjectForm = () => {
         if (!values.projectName) newErrors.projectName = t('validation_projectNameRequired');
         if (!values.company) newErrors.company = t('validation_companyRequired');
         if (!values.client) newErrors.client = t('validation_clientRequired');
-        if (!values.status) newErrors.status = t('validation_statusRequired');
+        if (values.status === null || values.status === undefined) {
+            newErrors.status = t('validation_statusRequired');
+          }
+          
         if (!values.employee || values.employee.length === 0) newErrors.employee = t('validation_employeeRequired');
         if (!values.admin) newErrors.admin = t('validation_adminRequired');
         if (!values.description) newErrors.description = t('validation_description');
@@ -190,52 +202,50 @@ const AddProjectForm = () => {
 
 
     const MAX_FILE_SIZE = 500 * 1024; // 500 KB in bytes
-
-    
-const handleFilePick = async () => {
-    try {
-        const result = await DocumentPicker.pick({
-            type: DocumentPicker.types.allFiles,
-            multiple: true,
-        });
-
-        if (result && result.length > 0) {
-            const filteredFiles = result.filter(file => {
-                if (file.size && file.size <= MAX_FILE_SIZE) {
-                    return true;
-                } else {
-                    // Show toast when file size exceeds 500 KB
-                    ToastAndroid.show(t('File exceeds 500 KB'), ToastAndroid.SHORT);
-                    return false;
-                }
+    const handleFilePick = async () => {
+        try {
+            const result = await DocumentPicker.pick({
+                type: DocumentPicker.types.allFiles,
+                multiple: true,
             });
 
-            const newFiles = filteredFiles.map((file) => ({
-                name: file.name,
-                uri: file.uri,
-                type: file.type || 'application/octet-stream',
-                size: file.size,
-            }));
+            if (result && result.length > 0) {
+                const filteredFiles = result.filter(file => {
+                    if (file.size && file.size <= MAX_FILE_SIZE) {
+                        return true;
+                    } else {
+                        // Show toast when file size exceeds 500 KB
+                        ToastAndroid.show(t('File exceeds 500 KB'), ToastAndroid.SHORT);
+                        return false;
+                    }
+                });
 
-            setValues((prev) => {
-                const existingFiles = prev.files.map(file => file.uri);
-                const uniqueNewFiles = newFiles.filter(file => !existingFiles.includes(file.uri));
-                return {
-                    ...prev,
-                    files: [...prev.files, ...uniqueNewFiles],
-                };
-            });
-        } else {
-            console.log('No files selected');
+                const newFiles = filteredFiles.map((file) => ({
+                    name: file.name,
+                    uri: file.uri,
+                    type: file.type || 'application/octet-stream',
+                    size: file.size,
+                }));
+
+                setValues((prev) => {
+                    const existingFiles = prev.files.map(file => file.uri);
+                    const uniqueNewFiles = newFiles.filter(file => !existingFiles.includes(file.uri));
+                    return {
+                        ...prev,
+                        files: [...prev.files, ...uniqueNewFiles],
+                    };
+                });
+            } else {
+                console.log('No files selected');
+            }
+        } catch (error) {
+            if (DocumentPicker.isCancel(error)) {
+                console.log('User canceled the picker');
+            } else {
+                console.error("File pick error:", error);
+            }
         }
-    } catch (error) {
-        if (DocumentPicker.isCancel(error)) {
-            console.log('User canceled the picker');
-        } else {
-            console.error("File pick error:", error);
-        }
-    }
-};
+    };
 
     const handleNavigateOtherDFomr = () => {
 
@@ -278,7 +288,6 @@ const handleFilePick = async () => {
                     setCreatedProjectId(res.data.id);
                     // setTabIndex(1);
                     navigation.goBack();
-                    
                 }
                 setLoading(false);
             }));
@@ -294,15 +303,11 @@ const handleFilePick = async () => {
                 }]} onPress={() => setTabIndex(0)}>
                     <Text style={[styles.tabText, tabIndex === 0 && styles.activeTabText]}>{t('basicInfo')}</Text>
                 </TouchableOpacity>
-
-
                 <TouchableOpacity style={[styles.tabButton, tabIndex === 1 && styles.activeTab, {
                     backgroundColor: tabIndex === 1 ? THEMECOLORS[themeMode].primaryApp : "#eee", opacity: projectData?.id ? 1 : 0.2
                 }]} onPress={() => handleNavigateOtherDFomr()}>
                     <Text style={[styles.tabText, tabIndex === 1 && styles.activeTabText]}>{t('otherdetails')}</Text>
                 </TouchableOpacity>
-
-
             </View>
 
             {tabIndex == 0 ?
@@ -341,7 +346,6 @@ const handleFilePick = async () => {
                 </ScrollView>
                 :
                 <ProjectCostForm projectId={createdProjectId} />
-
             }
         </View>
     );
@@ -355,9 +359,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     buttonText: {
-
         textTransform: "capitalize"
     },
+
     tabContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
@@ -369,16 +373,18 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderWidth: wp(0.1)
     },
+
     tabButton: {
         flex: 1,
         paddingVertical: hp(1.2),
         alignItems: 'center',
         borderRadius: 8,
-
     },
+
     activeTab: {
         // backgroundColor: '#fff',
     },
+
     tabText: {
         fontSize: 14,
         // color: '#666',

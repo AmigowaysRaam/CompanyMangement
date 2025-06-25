@@ -17,7 +17,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 
 const ChatListScreen = () => {
-    
+
     const { themeMode } = useTheme();
     const { t } = useTranslation();
     const [searchText, setSearchText] = useState('');
@@ -51,6 +51,7 @@ const ChatListScreen = () => {
 
         dispatch(getChatListApi(userId, (response) => {
             if (response.success) {
+                // alert(JSON.stringify(response.data))
                 const formattedChats = response.data.map(chat => ({
                     id: chat._id,
                     name: chat.projectId?.projectName || 'Unnamed Project',

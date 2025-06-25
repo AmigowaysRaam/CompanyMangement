@@ -35,6 +35,8 @@ const HomeScreen = () => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [working, setWorking] = useState(false);
+  const [chtCount, setchatCount] = useState(null);
+
 
 
   // Prevent hardware back button action on this screen
@@ -51,10 +53,12 @@ const HomeScreen = () => {
     setLoading(true);
     dispatch(
       getHomePageData(userdata?.id, (response) => {
+        // alert(JSON.stringify(response, null, 2))
         if (response.success && response.data?.length > 0) {
           setHomeData(response.data[0]);
-          console.log(response.punchedInToday, null, 2)
+          // alert(response.count, null, 2)
           setWorking(response.punchedInToday)
+          setchatCount(response?.count)
         }
         setLoading(false);
         setRefreshing(false);
@@ -67,7 +71,7 @@ const HomeScreen = () => {
     React.useCallback(() => {
       // alert(JSON.stringify(userdata))
       fetchHomeData();
-    }, [userdata]) 
+    }, [userdata])
   );
 
   const componentMap = {
@@ -112,7 +116,7 @@ const HomeScreen = () => {
       style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background }}
       {...panResponder.panHandlers}
     >
-      <HeaderComponent working={working} title={t("home")} openModal={handleMenuClick} />
+      <HeaderComponent chatCount={chtCount} working={working} title={t("home")} openModal={handleMenuClick} />
       {loading ? (
         <HomeScreenLoader />
       ) : (

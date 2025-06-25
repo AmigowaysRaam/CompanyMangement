@@ -134,8 +134,6 @@ const styles = StyleSheet.create({
     },
     notificationImage: {
         width: wp(14),
-
-        
         height: wp(14),
         marginRight: wp(3),
         borderRadius: wp(2),

@@ -244,7 +244,7 @@ const TimingForm = ({ onNext, setCurrentStep, currentStep, cId, companyDetails }
         <DateTimePicker
           value={timePickerValue}
           mode="time"
-          is24Hour={true}
+          is24Hour={false}
           display="default"
           onChange={handleTimeChange}
         />
