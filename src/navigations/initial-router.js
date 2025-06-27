@@ -53,6 +53,7 @@ import ProjectDocumentsList from "../screens/ProjectDocumentsList";
 import GroupChatScren from "../screens/GroupChatDetails.js";
 import GroupChatDetails from "../screens/GroupChatDetails.js";
 import AssignedTask from "../screens/AssignedTask";
+import SocialMediaScreen from "../screens/SocialMediaScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -116,6 +117,7 @@ function InitialRouter() {
         <Stack.Screen name="ProjectDocumentsList" component={ProjectDocumentsList} />
         <Stack.Screen name="GroupChatScren" component={GroupChatDetails} />
         <Stack.Screen name="AssignedTask" component={AssignedTask} />
+        <Stack.Screen name="SocialMediaScreen" component={SocialMediaScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

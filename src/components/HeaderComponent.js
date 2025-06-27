@@ -33,6 +33,8 @@ function HeaderComponent({
   onTitleClick,
   chatCount,
   titleAlign,
+  rightSideArr,
+  rIconFunction,
   ...props
 }) {
   const navigation = useNavigation();
@@ -90,9 +92,6 @@ function HeaderComponent({
         BackHandler.removeEventListener("hardwareBackPress", onBackPress);
     }, [])
   );
-
-
-
   useEffect(() => {
     dispatch(getLanguageList)
     if (languagesList?.length == 0) {
@@ -131,15 +130,14 @@ function HeaderComponent({
           title == 'home' ?
             <>
               <View style={{ flexDirection: "row" }}>
-
                 <TouchableOpacity onPress={openModal} style={styles.iconButton}>
                   <MaterialCommunityIcons name="menu" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
-                <TouchableOpacity >
-                  <Image
+                <TouchableOpacity onPress={() => navigation.navigate('Profile')} >
+                  {/* <Image
                     source={require('../assets/animations/logo_hrms.png')}
                     style={{ width: hp(3.5), height: hp(3.5), borderRadius: hp(3.5 / 2) }}
-                  />
+                  /> */}
                 </TouchableOpacity>
               </View>
               <View style={{ flexDirection: "row", alignSelf: "center", justifyContent: "center", alignItems: "center", marginHorizontal: wp(2) }}>
@@ -194,7 +192,7 @@ function HeaderComponent({
                       <Text style={[Louis_George_Cafe.bold.h9, { fontWeight: "500", color: "#FFF" }]}>{chatCount > 99 ? '99+' : chatCount}</Text>
                     </View>
                   }
-                  </TouchableOpacity>
+                </TouchableOpacity>
               </View>
             </>
             :
@@ -227,6 +225,11 @@ function HeaderComponent({
                 </TouchableOpacity>
                 {/* onTitleClick */}
 
+                {rightSideArr != '' &&
+                  <TouchableOpacity style={styles.iconButton} onPress={rIconFunction}>
+                    <MaterialCommunityIcons name={rightSideArr} size={hp(3)} color={THEMECOLORS[themeMode].primary} />
+                  </TouchableOpacity>
+                }
               </View>
 
             </>
@@ -250,6 +253,7 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     marginHorizontal: hp(0.5),
+    marginTop:wp(2)
   },
 });
 

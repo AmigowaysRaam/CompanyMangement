@@ -75,7 +75,7 @@ const TaskTable = (tdata) => {
             // AssignedTask
             onPress={() => navigation.navigate('AssignedTask')}
             style={{ alignItems: 'center', padding: wp(0.5), borderWidth: wp(0.3), width: wp(20), alignSelf: "center", borderRadius: wp(4) }}>
-                <Text style={[Louis_George_Cafe.regular.h9]}>{t('view_all')}</Text>
+                <Text style={[Louis_George_Cafe.regular.h9]}>{t('viewAll')}</Text>
             </TouchableOpacity>
         </TouchableOpacity>
     );

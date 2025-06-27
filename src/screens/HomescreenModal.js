@@ -86,7 +86,8 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             'Payroll': 'PayrollDetails',
             'Category Management': 'CategoryManagement',
             'Company Management': 'CompanyManagement',
-            'Task': 'TaskManagement'
+            'Task': 'TaskManagement',
+            'Social Connect': 'SocialMediaScreen',
         };
 
         const route = routes[item];

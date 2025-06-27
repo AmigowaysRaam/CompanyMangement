@@ -6,6 +6,7 @@ import {
   BackHandler,
   FlatList,
   RefreshControl,
+  TouchableOpacity,Text
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,6 +24,7 @@ import { getHomePageData } from "../../redux/authActions";
 import EmployeePaylist from "../../ScreenComponents/HeaderComponent/EmployeePaylist";
 import { useTranslation } from "react-i18next";
 import HomeScreenLoader from "../HomeScreenLoader";
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 
 const HomeScreen = () => {
 
@@ -37,7 +39,37 @@ const HomeScreen = () => {
   const [working, setWorking] = useState(false);
   const [chtCount, setchatCount] = useState(null);
 
+  
 
+  const facebookLogin = async () => {
+    try {
+      const result = await LoginManager.logInWithPermissions(['public_profile', 'email']);
+      
+      if (result.isCancelled) {
+        console.log('Login cancelled', result);
+        return;
+      }
+      const data = await AccessToken.getCurrentAccessToken();
+      if (!data) {
+        console.error('Failed to get access token');
+        return;
+      }
+      console.log('Access Token:', data.accessToken.toString());
+      // Send this token to your backend to authenticate
+      // Example: 
+      // const response = await fetch('/authenticate', {
+      //   method: 'POST',
+      //   body: JSON.stringify({ token: data.accessToken.toString() }),
+      //   headers: { 'Content-Type': 'application/json' }
+      // });
+      
+      // Handle the response from your backend (success, error, etc.)
+      
+    } catch (error) {
+      console.error('Facebook Login Error: ', error);
+    }
+  };
+  
 
   // Prevent hardware back button action on this screen
   useFocusEffect(
@@ -51,6 +83,7 @@ const HomeScreen = () => {
   // Fetch home data function
   const fetchHomeData = () => {
     setLoading(true);
+    // facebookLogin();
     dispatch(
       getHomePageData(userdata?.id, (response) => {
         // alert(JSON.stringify(response, null, 2))
@@ -117,6 +150,12 @@ const HomeScreen = () => {
       {...panResponder.panHandlers}
     >
       <HeaderComponent chatCount={chtCount} working={working} title={t("home")} openModal={handleMenuClick} />
+      <TouchableOpacity onPress={() => facebookLogin()}>
+        {/* facebookLogin */}
+        <Text style={{color:THEMECOLORS[themeMode].textPrimary}}>
+          Facebook Check
+        </Text>
+      </TouchableOpacity>
       {loading ? (
         <HomeScreenLoader />
       ) : (

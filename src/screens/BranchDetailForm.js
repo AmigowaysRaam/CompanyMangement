@@ -33,20 +33,20 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
             contactNumber: '',
         },
     ]);
- 
+
     const [errors, setErrors] = useState([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (companyDetails?.branches?.length > 0) {
-          const formattedBranches = companyDetails.branches.map(branch => ({
-            branchName: branch.branch_name || '',
-            contactNumber: branch.contact_number || '',
-          }));
-          setBranches(formattedBranches);
-          setErrors(formattedBranches.map(() => ({}))); // reset errors for each branch
+            const formattedBranches = companyDetails.branches.map(branch => ({
+                branchName: branch.branch_name || '',
+                contactNumber: branch.contact_number || '',
+            }));
+            setBranches(formattedBranches);
+            setErrors(formattedBranches.map(() => ({}))); // reset errors for each branch
         }
-      }, [companyDetails]);
+    }, [companyDetails]);
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
@@ -89,6 +89,7 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
         const newErrors = branches.map(branch => ({
             branchName: !branch.branchName.trim() ? t('branchNameRequired') : '',
             // contactNumber: !branch.contactNumber.trim() ? t('contactNumberRequired') : '',
+            
         }));
 
         const hasErrors = newErrors.some(err => err.branchName || err.contactNumber);
@@ -170,7 +171,7 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
                             <Text style={{ color: 'red', marginBottom: 4 }}>{errors[index].branchName}</Text>
                         ) : null}
 
-                        {/* <Text
+                        <Text
                             style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].black }]}
                         >
                             {t('contactNumber')}
@@ -183,9 +184,27 @@ const BranchDetailForm = ({ onNext, setCurrentStep, currentStep, cId, companyDet
                             onChangeText={(text) => handleChangeBranch(index, 'contactNumber', text)}
                             keyboardType="phone-pad"
                         />
-                        {errors[index]?.contactNumber ? (
+                        {errors[index]?.address ? (
                             <Text style={{ color: 'red', marginBottom: 4 }}>{errors[index].contactNumber}</Text>
-                        ) : null} */}
+                        ) : null}
+
+                        <Text
+                            style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].black }]}
+                        >
+                            {t('address')}
+                        </Text>
+                        <TextInput
+                        numberOfLines={4}
+                            // maxLength={10}
+                            style={styles.textInput}
+                            placeholder={t('enterAddress')}
+                            value={branch.address}
+                            onChangeText={(text) => handleChangeBranch(index, 'address', text)}
+                            keyboardType="phone-pad"
+                        />
+                        {errors[index]?.address ? (
+                            <Text style={{ color: 'red', marginBottom: 4 }}>{errors[index].address}</Text>
+                        ) : null}
 
                         {index > 0 && (
                             <TouchableOpacity style={styles.removeButton} onPress={() => handleRemoveBranch(index)}>
@@ -272,7 +291,7 @@ const styles = StyleSheet.create({
         borderRadius: wp(2),
         alignItems: 'center',
     },
-    
+
 });
 
 export default BranchDetailForm;

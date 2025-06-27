@@ -14,10 +14,11 @@ import i18n from './src/resources/config/i18';
 import { Provider as PaperProvider } from 'react-native-paper';
 import VersionCheck from 'react-native-version-check';
 import NetInfo from '@react-native-community/netinfo';
-import NoInternetBanner from './src/screens/NointernetBanner';
 import LinearGradient from 'react-native-linear-gradient';
 import { hp, wp } from './src/resources/dimensions';
 import { Louis_George_Cafe } from './src/resources/fonts';
+import { Settings } from 'react-native-fbsdk-next';
+
 
 if (Platform.OS === 'ios') {
   VersionCheck.setAppID('1234567890'); // Replace with your actual App Store ID
@@ -35,6 +36,7 @@ export default function App() {
 
   // Listen for internet connection
   useEffect(() => {
+    Settings.initializeSDK();
     const unsubscribe = NetInfo.addEventListener(state => {
       setIsOffline(!state.isConnected);
     });

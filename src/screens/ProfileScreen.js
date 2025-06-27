@@ -91,7 +91,9 @@ const ProfileScreen = () => {
             'Files': 'FileManager',
             'Job Details': 'JobDetails',
             'Category Management': 'CategoryManagement',
-            'Company Management': 'CompanyManagement'
+            'Company Management': 'CompanyManagement',
+            'Social Connect': 'SocialMediaScreen',
+
         };
 
         const route = routeMap[label];
@@ -342,7 +344,7 @@ const ProfileScreen = () => {
                                     style={[
                                         isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h5,  // smaller font size styles
 
-                                        { color: "#FFF", lineHeight: wp(4), marginRight: hp(1),lineHeight:wp(6) }
+                                        { color: "#FFF", lineHeight: wp(4), marginRight: hp(1), lineHeight: wp(6) }
                                     ]}
                                 >
                                     {t('log_out')}

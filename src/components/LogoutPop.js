@@ -19,9 +19,7 @@ const LogoutModal = ({ isVisible, onCancel }) => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
     const [loading, setLoading] = useState(false);
-
     const handleLogout = async () => {
         try {
             const punchTime = await AsyncStorage.getItem('punchInTime');

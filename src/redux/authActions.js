@@ -1234,3 +1234,17 @@ export const changeTaskStatus = (formFields, callback) => async (dispatch) => {
     console.error("createSubCatgoryForm:", error.message);
   }
 };
+
+// mob-socialplatforms
+// getSocialMediasArray
+export const getSocialMediasArray = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_USER_SOCIAL_MEDIA_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getSocialMediasArray:", error.message);
+  }
+};

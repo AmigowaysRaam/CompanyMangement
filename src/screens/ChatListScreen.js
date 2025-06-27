@@ -6,7 +6,6 @@ import {
 import { wp, hp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { THEMECOLORS } from '../resources/colors/colors';
-import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import HeaderComponent from '../components/HeaderComponent';
 import SearchInput from './SearchInput';
@@ -15,6 +14,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getChatListApi } from '../redux/authActions';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
+import SocialMediaPopUp from '../components/SocialMediaPopUp';
+import { useTheme } from '../context/ThemeContext';
 
 const ChatListScreen = () => {
 
@@ -27,6 +28,7 @@ const ChatListScreen = () => {
     const userdata = useSelector((state) => state.auth.user?.data);
     const dispatch = useDispatch();
     const navigation = useNavigation();
+    const [socialMediaPopUp, setSocialMediaPopup] = useState(false);
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
@@ -125,16 +127,20 @@ const ChatListScreen = () => {
                 <MaterialCommunityIcons
                     name={"check-all"}
                     size={hp(2)}
-                    color={THEMECOLORS[themeMode].primary}
+                    color={THEMECOLORS[themeMode].primaryApp}
                     style={{ marginVertical: wp(2) }}
                 />
             </View>
         </TouchableOpacity >
     );
 
+    const handleOpenDropDown = () => {
+        setSocialMediaPopup(true);
+    }
+
     return (
         <>
-            <HeaderComponent title={t('Chats')} showBackArray={true} />
+            <HeaderComponent title={t('Chats')} showBackArray={true} rightSideArr={'forum'} rIconFunction={() => handleOpenDropDown()} />
             <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
                 <SearchInput
                     searchText={searchText}
@@ -165,6 +171,13 @@ const ChatListScreen = () => {
                     />
                 )}
             </View>
+            {socialMediaPopUp &&
+                <SocialMediaPopUp 
+                isVisible={socialMediaPopUp}
+                onCancel={() => {
+                    setSocialMediaPopup(false);
+                }}
+                />}
         </>
     );
 };

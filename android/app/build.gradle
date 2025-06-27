@@ -3,12 +3,21 @@ apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 apply plugin: 'com.google.gms.google-services'  // Add this line
 
+// apply plugin: 'com.facebook.sdk.applicationId'
+// facebook {
+//     appId = '1082945133132002'
+//     clientToken = '2379b7447defb29370e5f68143f4dcb9'
+// }
+
+
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
 static def versionToNumber(major, minor, patch) {
   return patch * 100 + minor * 10000 + major * 1000000
 }
+
+
 
 def getRNVersion() {
   def version = providers.exec {
@@ -182,6 +191,7 @@ shrinkResources true
 dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+implementation 'com.facebook.android:facebook-android-sdk:16.3.0'
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
