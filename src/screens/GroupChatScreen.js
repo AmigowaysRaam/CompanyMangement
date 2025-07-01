@@ -26,7 +26,7 @@ const GroupChatScreen = ({ route }) => {
     const { chatId, projectName } = route.params;
 
     const currentUserEmail = 'ram@gmail.com'; // Replace this with dynamic user data in production
-    const userId = __DEV__ ? "6852bee3cf20b70d77a5dfe0" : userdata?.id;
+    const userId =userdata?.id;
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) navigation.goBack();
@@ -46,11 +46,11 @@ const GroupChatScreen = ({ route }) => {
     };
 
     const handleSend = () => {
-
         if (!message.trim()) return;
+        // alert(JSON.stringify(userdata))
         const tempMessage = {
             id: Date.now().toString(),
-            sender: currentUserEmail,
+            sender: userdata.email,
             content: message,
             timestamp: new Date().toISOString(),
             position: 'right',

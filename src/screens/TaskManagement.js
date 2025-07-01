@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
     FlatList,
     RefreshControl,
+    ActivityIndicator,
 } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
 import { COLORS } from '../resources/Colors';
@@ -128,36 +129,48 @@ const TaskManagement = () => {
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <HeaderComponent showBackArray={true} title={t('tasks_management')} />
+            {
+                loading ?
+                    <ActivityIndicator size={wp(10)} style={{marginTop:hp(20)}} />
 
-            <TouchableOpacity
-                onPress={() => navigation.navigate('CreateTask', { taskId: null })}
-                style={[styles.addButton, { backgroundColor: THEMECOLORS[themeMode].buttonBg }]}
-            >
-                <Text style={[Louis_George_Cafe.regular.h7, { color: THEMECOLORS[themeMode].buttonText }]}>
-                    {t('add_task')}
-                </Text>
-            </TouchableOpacity>
+                    :
+                    <>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('CreateTask', { taskId: null })}
+                            style={[styles.addButton, { backgroundColor: THEMECOLORS[themeMode].buttonBg }]}
+                        >
+                            <Text style={[Louis_George_Cafe.regular.h7, { color: THEMECOLORS[themeMode].buttonText }]}>
+                                {t('add_task')}
+                            </Text>
+                        </TouchableOpacity>
 
-            <FlatList
-                data={notifications}
-                keyExtractor={(item) => item._id || item.id?.toString() || Math.random().toString()}
-                renderItem={renderItem}
-                contentContainerStyle={notifications.length === 0 && styles.emptyListContent}
-                ListEmptyComponent={
-                    <Text style={[Louis_George_Cafe.bold.h4, styles.noDataText, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                        {t('no_data')}
-                    </Text>
-                }
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        colors={[COLORS.button_bg_color]}
-                        tintColor={COLORS.button_bg_color}
-                    />
-                }
-                style={styles.list}
-            />
+                        <FlatList
+                            data={notifications}
+                            keyExtractor={(item) => item._id || item.id?.toString() || Math.random().toString()}
+                            renderItem={renderItem}
+                            contentContainerStyle={notifications.length === 0 && styles.emptyListContent}
+                            ListEmptyComponent={
+                                <Text style={[Louis_George_Cafe.bold.h4, styles.noDataText, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                    {t('no_data')}
+                                </Text>
+                            }
+                            refreshControl={
+                                <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={onRefresh}
+                                    colors={[COLORS.button_bg_color]}
+                                    tintColor={COLORS.button_bg_color}
+                                />
+                            }
+                            style={styles.list}
+                        />
+
+                    </>
+            }
+
+
+
+
         </View>
     );
 };

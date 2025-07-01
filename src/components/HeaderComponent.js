@@ -7,7 +7,8 @@ import {
   ToastAndroid,
   BackHandler,
   ActivityIndicator,
-  Animated
+  Animated,
+  TouchableWithoutFeedback
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { wp, hp } from "../resources/dimensions";
@@ -20,7 +21,6 @@ import { useTranslation } from 'react-i18next';
 import { useLanguage } from "../context/Language";
 import { getLanguageList, setLanguageSelected } from "../redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
-import ThemeToggle from "../ScreenComponents/HeaderComponent/ThemeToggle";
 
 function HeaderComponent({
   title,
@@ -133,12 +133,12 @@ function HeaderComponent({
                 <TouchableOpacity onPress={openModal} style={styles.iconButton}>
                   <MaterialCommunityIcons name="menu" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('Profile')} >
+                {/* <TouchableOpacity onPress={() => navigation.navigate('Profile')} > */}
                   {/* <Image
                     source={require('../assets/animations/logo_hrms.png')}
                     style={{ width: hp(3.5), height: hp(3.5), borderRadius: hp(3.5 / 2) }}
                   /> */}
-                </TouchableOpacity>
+                {/* </TouchableOpacity> */}
               </View>
               <View style={{ flexDirection: "row", alignSelf: "center", justifyContent: "center", alignItems: "center", marginHorizontal: wp(2) }}>
                 <TouchableOpacity style={styles.iconButton} onPress={() => navigation.navigate('SearchScreen')}>
@@ -187,7 +187,8 @@ function HeaderComponent({
                   <View style={styles.iconButton} >
                     <MaterialCommunityIcons name="chat-outline" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                   </View>
-                  {chatCount && chatCount > 0 &&
+                  {
+                  chatCount && chatCount != '0' &&
                     <View style={{ width: wp(5), justifyContent: "center", backgroundColor: '#ff0000', height: wp(5), borderRadius: wp(2.5), alignItems: "center", position: "absolute", left: wp(5.5), bottom: wp(3) }}>
                       <Text style={[Louis_George_Cafe.bold.h9, { fontWeight: "500", color: "#FFF" }]}>{chatCount > 99 ? '99+' : chatCount}</Text>
                     </View>
@@ -198,7 +199,7 @@ function HeaderComponent({
             :
             <>
               <View style={{ flexDirection: "row" }}>
-                {
+                {showBackArray &&
                   <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconutton}>
                     <Text style={{ lineHeight: hp(4), marginRight: wp(2) }}>
                       <MaterialCommunityIcons
@@ -206,7 +207,8 @@ function HeaderComponent({
                     </Text>
                   </TouchableOpacity>
                 }
-                <TouchableOpacity onPress={onTitleClick}>
+                
+                <TouchableWithoutFeedback onPress={onTitleClick}>
                   {/* <Animated.View style={{ transform: [{ translateX: slideAnim }] }}> */}
                   <View style={{ width: wp(75), alignItems: titleAlign }}>
                     <Text style={[Louis_George_Cafe.bold.h6, {
@@ -222,11 +224,13 @@ function HeaderComponent({
                     </Text>
                   </View>
                   {/* </Animated.View> */}
-                </TouchableOpacity>
+                </TouchableWithoutFeedback>
                 {/* onTitleClick */}
 
                 {rightSideArr != '' &&
-                  <TouchableOpacity style={styles.iconButton} onPress={rIconFunction}>
+                  <TouchableOpacity style={[styles.iconButton,{
+                    marginHorizontal:wp(-1)
+                  }]} onPress={rIconFunction}>
                     <MaterialCommunityIcons name={rightSideArr} size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                   </TouchableOpacity>
                 }

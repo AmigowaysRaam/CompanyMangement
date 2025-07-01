@@ -76,24 +76,40 @@ const ProfileScreen = () => {
         }
     };
 
-    const handleFnNavigate = (label) => {
-        console.log(label);
 
+    // const flatListRef = useRef(null); // <-- Step 1: Create ref
+    const handleScrollToBottom = () => {
+        if (flatListRef.current) {
+            flatListRef.current.scrollToEnd({ animated: true }); // <-- Step 2: Scroll to end
+        }
+    };
+
+
+    const handleFnNavigate = (label) => {
+        // console.log(label);
         const routeMap = {
-            'My Profile': 'MyProfileUpdate',
-            'Attendance & Leave': 'Attendance',
-            'Settings': 'SettingsScreen',
+            'My Profile': 'Profile',
             'Notifications': 'Notifications',
+            'Attendance & Leave': 'Attendance',
             'Compensation & Benefits': 'CompenSationBenifts',
-            'Leaves': 'LeaveManagement',
-            'Project': 'Projects',
+            'Settings': 'SettingsScreen',
+            'Job Details': 'JobDetails',
             'Client': 'ClientScreen',
             'Files': 'FileManager',
-            'Job Details': 'JobDetails',
+            'Leave': 'LeaveManagement',
+            'Project': 'Projects',
+            'Payroll': 'PayrollDetails',
             'Category Management': 'CategoryManagement',
             'Company Management': 'CompanyManagement',
+            'Task': 'TaskManagement',
             'Social Connect': 'SocialMediaScreen',
-
+            'Role Settings': 'RolesandPrevilages',
+            'Chats': 'ChatListScreen',
+            'Home': "HomeScreen",
+            'All Employees': "EmployeeList",
+            'Companies': 'CompanyManagement',
+            'Project Management': 'Projects',
+            'Client Management': 'ClientScreen',
         };
 
         const route = routeMap[label];
@@ -101,29 +117,33 @@ const ProfileScreen = () => {
             navigation.navigate(route);
         }
     };
-    const [showDownArrow, setShowDownArrow] = useState(false);
 
+    const [showDownArrow, setShowDownArrow] = useState(false);
     useFocusEffect(
         React.useCallback(() => {
-            const userId = userdata?.data?.id;
-            dispatch(getSideMenus(userId, (response) => {
-                if (response?.success) {
-                    setsideMenusList(response.data);
-                    setisLoading(false);
-                } else {
-                    setsideMenusList([]);
-                    setisLoading(false);
-                }
-            }));
+            dispatch(getSideMenus(userdata?.data?.id));
+            setsideMenusList(sideMenusArray?.data);
+            if (_.isEmpty(sideMenusArray?.data)) {
+                setisLoading(true);
+                dispatch(getSideMenus({ userid: userdata?.data?.id }, (response) => {
+                    if (response.success) {
+                        // alert(JSON.stringify(response))
+                        setisLoading(false);
+                        setsideMenusList(response.data);
+                    } else {
+                        setsideMenusList(sideMenusArray ? sideMenusArray : []);
+                        setisLoading(true);
+                    }
+                }));
+            } else {
+            }
         }, [userdata?.data?.id])
     );
 
     const handleScroll = (event) => {
         const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-
         const paddingToBottom = 20; // some threshold for bottom detection
         const isAtBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - paddingToBottom;
-
         setShowDownArrow(!isAtBottom);
     };
 
@@ -131,7 +151,7 @@ const ProfileScreen = () => {
     useEffect(() => {
         const userId = userdata?.data?.id;
         setisLoading(true);
-        dispatch(getSideMenus(userId, (response) => {
+        dispatch(getSideMenus({ userid: userdata?.data?.id }, (response) => {
             if (response?.success) {
                 setsideMenusList(response.data);
                 setisLoading(false);
@@ -157,8 +177,11 @@ const ProfileScreen = () => {
                     }}
                 >
                     <Text style={[
-                        isTamil ? Louis_George_Cafe.regular.h8 : Louis_George_Cafe.regular.h6,
-                        { color: THEMECOLORS[themeMode].textPrimary }
+                        isTamil ? Louis_George_Cafe.regular.h8 : Louis_George_Cafe.regular.h5,
+                        {
+                            color: THEMECOLORS[themeMode].textPrimary,
+                            textTransform: "capitalize"
+                        }
                     ]}>
                         {t(item.label)}
                     </Text>
@@ -234,7 +257,7 @@ const ProfileScreen = () => {
                 >
                     <View style={styles.profileImageContainer}>
                         <Image
-                            source={require('../../src/assets/animations/user_1.png')}
+                            source={{ uri: userdata?.data?.profileImage }}
                             style={styles.profileImage}
                         />
                     </View>
@@ -242,16 +265,16 @@ const ProfileScreen = () => {
                 <View style={styles.infoContainer}>
                     <Text style={[
                         isTamil ? Louis_George_Cafe.bold.h5 : Louis_George_Cafe.bold.h4,
-                        { color: THEMECOLORS[themeMode].textPrimary }
+                        { color: THEMECOLORS[themeMode].textPrimary, textTransform: "capitalize" }
                     ]}>
                         {userdata?.data?.full_name}
                     </Text>
-                    {/* <Text style={[
-                    isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
-                    { color: THEMECOLORS[themeMode].textPrimary }
-                ]}>
-                    {userdata?.data?.designation}
-                </Text> */}
+                    <Text style={[
+                        isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
+                        { color: THEMECOLORS[themeMode].textPrimary }
+                    ]}>
+                        {userdata?.data?.userid}
+                    </Text>
                 </View>
             </View>
 
@@ -279,7 +302,7 @@ const ProfileScreen = () => {
                         onScroll={handleScroll}
                         scrollEventThrottle={16} // smoother scroll events
                     />
-                    {showDownArrow && (
+                    {showDownArrow && sideMenusList?.length > 6 && (
                         <View style={{
                             position: 'absolute',
                             bottom: hp(8), // position just above the bottom padding
@@ -290,9 +313,9 @@ const ProfileScreen = () => {
                             padding: wp(1),
                             zIndex: 10,
                             // paddingHorizontal: wp(1),
-
                         }}>
                             <MaterialCommunityIcons
+                                onPress={handleScrollToBottom}
                                 name="chevron-down"
                                 size={hp(3)}
                                 color={'black'}
@@ -305,7 +328,7 @@ const ProfileScreen = () => {
                         marginTop: hp(3)
                     }}>
                         <LinearGradient
-                            colors={['#011f4b', '#03396c']}
+                            colors={['#013CA3', `${'#013CA3'}`]}
                             start={{ x: 1, y: 0 }}
                             end={{ x: 0, y: 1 }}
                             style={{
@@ -313,7 +336,7 @@ const ProfileScreen = () => {
                                 justifyContent: "space-between",
                                 paddingVertical: wp(1),    // reduce vertical padding
                                 width: wp(50),               // reduce width
-                                backgroundColor: '#012970',
+                                backgroundColor: '#D6DCE7',
                                 borderRadius: wp(10),         // smaller border radius
                                 paddingHorizontal: wp(2),    // reduce horizontal padding
                                 // marginVertical: wp(2),       // reduce margin
@@ -321,7 +344,7 @@ const ProfileScreen = () => {
                                 alignItems: "center",
                             }}
                         >
-                            <Animated.View
+                            {/* <Animated.View
                                 style={{
                                     backgroundColor: "#D6DCE7",
                                     alignItems: "center",
@@ -331,13 +354,13 @@ const ProfileScreen = () => {
                                     borderRadius: wp(5),      // smaller border radius
                                     transform: [{ translateX }],
                                 }}
-                            >
-                                <MaterialCommunityIcons
-                                    name={'logout'}
-                                    size={hp(5)}               // smaller icon size
-                                    color={'#012970'}
-                                />
-                            </Animated.View>
+                            > */}
+                            <MaterialCommunityIcons
+                                name={'logout'}
+                                size={hp(5)}               // smaller icon size
+                                color={'#fff'}
+                            />
+                            {/* </Animated.View> */}
 
                             {!hideText && (
                                 <Text
@@ -352,9 +375,7 @@ const ProfileScreen = () => {
                             )}
                         </LinearGradient>
                     </TouchableOpacity>
-
                 </>
-
             }
 
             {showLogoutModal &&
@@ -395,20 +416,20 @@ const styles = StyleSheet.create({
         zIndex: 2,
         alignSelf: "center",
         position: "relative",
-        top: hp(3)
+        top: hp(1),
     },
 
     profileImage: {
-        width: wp(35),
-        height: wp(35),
-        borderRadius: wp(18),
+        width: wp(30),
+        height: wp(30),
+        borderRadius: wp(15),
         borderWidth: 3,
         borderColor: '#fff'
     },
 
     infoContainer: {
         alignItems: 'center',
-        marginBottom: hp(1)
+        marginBottom: hp(1),
     },
 
     menuItem: {
@@ -417,7 +438,7 @@ const styles = StyleSheet.create({
         marginBottom: hp(1),
     },
     submenuItem: {
-        paddingVertical: wp(1),
+        paddingVertical: wp(3),
         paddingHorizontal: wp(2),
         borderRadius: wp(1),
         marginBottom: hp(0.5),

@@ -18,7 +18,7 @@ import { useCurrentLocation } from '../hooks/location';
 
 const LoginWithMPIN = () => {
 
-  const [mpinDigits, setMpinDigits] = useState(__DEV__ ? ['1', '2', '1', '2'] : ['', '', '', '']);
+  const [mpinDigits, setMpinDigits] = useState(__DEV__ ? ['1', '2', '3', '4'] : ['', '', '', '']);
   const { themeMode } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const userdata = useSelector((state) => state.auth.user);
@@ -91,7 +91,7 @@ const LoginWithMPIN = () => {
           ToastAndroid.show(response.message, ToastAndroid.SHORT);
         }
       }
-      else{
+      else {
         ToastAndroid.show('Network error occurred', ToastAndroid.SHORT);
       }
 
@@ -164,7 +164,7 @@ const LoginWithMPIN = () => {
                 </TouchableOpacity>
             }
             <View style={{ flexDirection: !isTamil ? "row" : "column", justifyContent: "space-around", marginTop: hp(2) }}>
-              {/* <TouchableOpacity onPress={() => handleloginwithusername()}>
+              <TouchableOpacity onPress={() => handleloginwithusername()}>
                 <Text style={[
                   isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h7,
                   {
@@ -176,7 +176,7 @@ const LoginWithMPIN = () => {
                 ]}>
                   {t('loginwithusername')}
                 </Text>
-              </TouchableOpacity> */}
+              </TouchableOpacity>
 
               <TouchableOpacity onPress={() => handleMovetoLogin()}>
                 <Text style={[
@@ -193,8 +193,12 @@ const LoginWithMPIN = () => {
               </TouchableOpacity>
             </View>
 
-
-
+            {/* 
+            <TouchableOpacity onPress={() => navigation?.navigate('RolesandPrevilages')}>
+        <Text style={[Louis_George_Cafe.bold.h5, { color: THEMECOLORS[themeMode].textPrimary, alignSelf: "center",backgroundColor:"red",padding:wp(4) }]}>
+          rOLE bASED
+        </Text>
+      </TouchableOpacity> */}
 
           </View>
         </ScrollView>

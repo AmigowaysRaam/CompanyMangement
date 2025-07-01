@@ -130,7 +130,7 @@ export default function Employee() {
                   <View
                     style={[
                       styles.progressBarFill,
-                      { width: `${employeeData?.genderRatio?.male ?? 0}%` },
+                      { width: `${employeeData?.genderRatio?.male ?? 0}%` },      
                     ]}
                   />
                 </View>
@@ -177,15 +177,21 @@ export default function Employee() {
                 <Text numberOfLines={1} style={[styles.tableCell, {}]}>
                   {t('employee')}
                 </Text>
-                <Text numberOfLines={1} style={[styles.tableCell, {}]}>
-                  {t('performance')}
+                <Text numberOfLines={1} style={[styles.tableCell, {
+                   textTransform: 'capitalize'
+                }]}>
+                  {t('id')}
                 </Text>
+                {/* <Text numberOfLines={1} style={[styles.tableCell, {}]}>
+                  {t('performance')}
+                </Text> */}
               </View>
               <FlatList
                 data={employeeData.employeeList}
                 keyExtractor={(item) => item.id.toString()}
                 showsVerticalScrollIndicator={false}
                 ListFooterComponent={
+                  employeeData?.employeeList?.length > 5 &&
                   <TouchableOpacity onPress={() => navigation.navigate('EmployeeList')} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
                     <Text style={[Louis_George_Cafe.regular.h9, {
                       lineHeight: wp(5)
@@ -220,6 +226,15 @@ export default function Employee() {
                       {emp?.name}
                     </Text>
                     <Text
+                      numberOfLines={1}
+                      style={[
+                        adjustFont(styles.tableCell, 1),
+                        { textTransform: 'capitalize' },
+                      ]}
+                    >
+                      {emp?.uId || '-'}
+                    </Text>
+                    {/* <Text
                       style={[
                         adjustFont(Louis_George_Cafe.regular.h9, 1),
                         {
@@ -233,7 +248,7 @@ export default function Employee() {
                       ]}
                     >
                       {Math.floor(Math.random() * 50) + 50}%
-                    </Text>
+                    </Text> */}
                   </TouchableOpacity>
                 )}
               />
@@ -253,66 +268,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(1),
   },
   card: {
-    flex: 1,
-    height: wp(30),
-    borderRadius: wp(5),
-    marginHorizontal: wp(1),
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 3 },
-    shadowRadius: 5,
-    elevation: 5,
+    flex: 1, height: wp(30), borderRadius: wp(5), marginHorizontal: wp(1),
+    justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowOffset: { width: 0, height: 3 }, shadowRadius: 5, elevation: 5,
   },
   gendercard: {
-    height: wp(48),
-    borderRadius: wp(5),
-    marginHorizontal: wp(2),
-    backgroundColor: '#FFEAE8',
-    marginVertical: wp(4),
+    height: wp(48), borderRadius: wp(5), marginHorizontal: wp(2),
+    backgroundColor: '#FFEAE8', marginVertical: wp(4),
   },
   progressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: wp(4),
-    marginVertical: hp(1),
+    flexDirection: 'row', alignItems: 'center', marginHorizontal: wp(4), marginVertical: hp(1),
   },
 
   progressBarBackground: {
-    flex: 5,
-    height: hp(1.5),
-    backgroundColor: '#D9D9D9',
-    borderRadius: hp(1),
-    overflow: 'hidden',
+    flex: 5, height: hp(1.5), backgroundColor: '#D9D9D9',
+    borderRadius: hp(1), overflow: 'hidden',
   },
   progressBarFill: {
-    height: '100%',
-    backgroundColor: '#80B377',
-    borderRadius: hp(1),
+    height: '100%', backgroundColor: '#80B377', borderRadius: hp(1),
   },
   tableRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: wp(2),
-    borderBottomWidth: 1,
-    borderBottomColor: '#DADADA',
-    justifyContent: "space-between"
+    flexDirection: 'row', alignItems: 'center', paddingVertical: wp(2),
+    borderBottomWidth: 1, borderBottomColor: '#DADADA',
+    justifyContent: "space-between", paddingHorizontal: wp(3)
   },
   tableHeader: {
     backgroundColor: '#E8DAF8', flexDirection: "row", justifyContent: "space-between", paddingHorizontal: wp(4), paddingVertical: wp(2)
-  },
-  tableCell: {
-    fontSize: wp(3),
-    color: '#333',
-    paddingHorizontal: wp(2),
+  }, tableCell: {
+    fontSize: wp(3), color: '#333', paddingHorizontal: wp(2),
   },
   avatar: {
-    width: wp(8),
-    height: wp(8),
-    borderRadius: wp(4),
-    backgroundColor: '#C1B9CC',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: wp(8), height: wp(8), borderRadius: wp(4), backgroundColor: '#C1B9CC',
+    justifyContent: 'center', alignItems: 'center',
   },
 });

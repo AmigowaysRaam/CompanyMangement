@@ -14,13 +14,13 @@ import { Louis_George_Cafe } from '../resources/fonts';
 import { THEMECOLORS } from '../resources/colors/colors';
 import { useTheme } from '../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
-import { getEmployeeList, getPayRollHistory } from '../redux/authActions';
+import { getEmployeeList } from '../redux/authActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import HeaderComponent from '../components/HeaderComponent';
-import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
 import SearchInput from './SearchInput';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
+
 const PAGE_SIZE = 13;
 
 const EmployeeList = () => {
@@ -30,7 +30,7 @@ const EmployeeList = () => {
     const navigation = useNavigation();
     const route = useRoute();
     const dispatch = useDispatch();
-    // const employId = route?.params;
+
     const userdata = useSelector((state) => state.auth.user?.data);
 
     const [categories, setCategories] = useState([]);
@@ -48,8 +48,10 @@ const EmployeeList = () => {
             navigation.goBack();
         }
     });
+
     const fetchCategories = useCallback((currentPage = 1, isRefresh = false) => {
         if (loadingRef.current || (endReachedRef.current && !isRefresh)) return;
+
         if (isRefresh) {
             setRefreshing(true);
             setIsEndReached(false);
@@ -60,31 +62,26 @@ const EmployeeList = () => {
         }
 
         loadingRef.current = true;
+
         dispatch(getEmployeeList(
             userdata?.id,
-            // employId?.employeeID,
             currentPage,
             PAGE_SIZE,
             searchText,
             (response) => {
-                console.log(`Fetching page: ${currentPage}`);
                 if (response?.success) {
                     const newData = response.employeeList || [];
                     if (newData.length < PAGE_SIZE) {
                         setIsEndReached(true);
                         endReachedRef.current = true;
                     }
+
                     if (isRefresh) {
                         setCategories(newData);
                         setPage(2);
                     } else {
-                        setCategories(prev => [
-                            ...prev,
-                            ...newData,
-                            // Uncomment below to avoid duplicates (only if IDs are unique)
-                            // ...newData.filter(item => !prev.some(p => p.category?._id === item.category?._id)),
-                        ]);
-                        setPage(currentPage + 1); // ✅ Use currentPage to avoid async issues
+                        setCategories(prev => [...prev, ...newData]);
+                        setPage(currentPage + 1);
                     }
                 }
 
@@ -102,11 +99,13 @@ const EmployeeList = () => {
     const onRefresh = () => {
         fetchCategories(1, true);
     };
+
     const loadMore = () => {
         if (!loadingRef.current && !endReachedRef.current) {
             fetchCategories(page);
         }
     };
+
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             fetchCategories(1, true);
@@ -118,27 +117,18 @@ const EmployeeList = () => {
     const renderItem = ({ item, index }) => {
         const category = item.category || item;
         return (
-            <TouchableOpacity
-                style={[styles.cardBox, { backgroundColor: '#EDF2FF' }]}
+            <TouchableOpacity style={[styles.cardBox, { backgroundColor: '#EDF2FF' }]}
+                onPress={() =>
+                    navigation.navigate('EmplyeeDetails', item)
+                }
             >
-                <Text style={[
-                    Louis_George_Cafe.regular.h9,
-                    styles.categoryTitle,
-                    {
-                        fontSize: isTamil ? wp(2.5) : wp(3.5)
-                    }
-                ]}>
-                    {`${index + 1} . ${category.name}`}
+                <Text style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignLeft, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
+                    {`${index + 1}. ${category.name}`}
                 </Text>
-
-                <Text style={[
-                    Louis_George_Cafe.regular.h9,
-                    styles.categoryTitle,
-                    {
-                        fontSize: isTamil ? wp(2.5) : wp(3.5),
-
-                    }
-                ]}>
+                <Text style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignCenter, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
+                    {category?.eId || '-'}
+                </Text>
+                <Text style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignRight, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
                     {category?.position}
                 </Text>
             </TouchableOpacity>
@@ -155,84 +145,54 @@ const EmployeeList = () => {
             </View>
         );
     };
+
     return (
         <>
             <HeaderComponent title={t('employeeList')} showBackArray={true} />
             <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
-                {
-                    // categories?.length != 0 && !loading && !refreshing &&
-                    <SearchInput
-                        searchText={searchText}
-                        setSearchText={setSearchText}
-                        themeMode={themeMode}
-                    />
-                }
-                {
-                    // categories?.length != 0 &&  !refreshing ?
-                    <View style={{
-                        backgroundColor: "#EDF2FF", justifyContent: "center", borderRadius: wp(2), paddingTop: wp(3), flex: 1
-                    }}>
-                        <View
-                            style={[styles.cardBox, {
-                            }]}
-                        >
-                            <Text style={[
-                                Louis_George_Cafe.bold.h9,
-                                styles.categoryTitle,
-                                {
-                                    // color: THEMECOLORS[themeMode].textPrimary,
-                                    fontSize: isTamil ? wp(2.5) : wp(3)
-                                }
-                            ]}>
-                                {t('employee_name')}
-                            </Text>
+                <SearchInput
+                    searchText={searchText}
+                    setSearchText={setSearchText}
+                    themeMode={themeMode}
+                />
 
-                            <Text style={[
-                                Louis_George_Cafe.bold.h9,
-                                styles.categoryTitle,
-                                {
-                                    // color: THEMECOLORS[themeMode].textPrimary,
-                                    fontSize: isTamil ? wp(2.5) : wp(3), alignSelf: "center", alignItems: "center", paddingHorizontal: wp(2)
-                                }
-                            ]}>
-                                {t('position')}
-                            </Text>
-                        </View>
-                        <FlatList
-                            data={categories}
-                            renderItem={renderItem}
-                            keyExtractor={(item, index) => item.category?._id || index.toString()}
-                            contentContainerStyle={{ paddingBottom: hp(1), flexGrow: 1 }}
-                            onEndReached={loadMore}
-                            onEndReachedThreshold={0.1} // ✅ Lower threshold
-                            refreshControl={
-                                <RefreshControl
-                                    refreshing={refreshing}
-                                    onRefresh={onRefresh}
-                                    tintColor={THEMECOLORS[themeMode].primaryApp}
-                                    colors={["#013CA3"]}
-                                />
-                            }
-                            ListFooterComponent={
-                                loading && !refreshing ? (
-                                    <ActivityIndicator size="small" color={THEMECOLORS[themeMode].primaryApp} />
-                                ) : null
-                            }
-                            ListEmptyComponent={ListEmptyComponent}
-                        />
+                <View style={styles.listContainer}>
+                    <View style={[styles.cardBox, styles.headerRow]}>
+                        <Text style={[Louis_George_Cafe.bold.h9, styles.column, styles.textAlignLeft, { fontSize: isTamil ? wp(2.5) : wp(3) }]}>
+                            {t('employee_name')}
+                        </Text>
+                        <Text style={[Louis_George_Cafe.bold.h9, styles.column, styles.textAlignCenter, { fontSize: isTamil ? wp(2.5) : wp(3) }]}>
+                            {t('id')}
+                        </Text>
+                        <Text style={[Louis_George_Cafe.bold.h9, styles.column, styles.textAlignRight, { fontSize: isTamil ? wp(2.5) : wp(3) }]}>
+                            {t('position')}
+                        </Text>
                     </View>
-                    // :
-                    // <View style={{ paddingTop: hp(10), alignItems: 'center' }}>
-                    //     <Text style={{ color: THEMECOLORS[themeMode].textPrimary, fontSize: wp(4), lineHeight: wp(6) }}>
-                    //         {t('no_data')}
-                    //     </Text>
-                    // </View>
-                }
 
-                {/* <ThemeToggle /> */}
-
+                    <FlatList
+                        data={categories}
+                        renderItem={renderItem}
+                        keyExtractor={(item, index) => item.category?._id || index.toString()}
+                        contentContainerStyle={{ paddingBottom: hp(1), flexGrow: 1 }}
+                        onEndReached={loadMore}
+                        onEndReachedThreshold={0.1}
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                tintColor={THEMECOLORS[themeMode].primaryApp}
+                                colors={["#013CA3"]}
+                            />
+                        }
+                        ListFooterComponent={
+                            loading && !refreshing ? (
+                                <ActivityIndicator size="small" color={THEMECOLORS[themeMode].primaryApp} />
+                            ) : null
+                        }
+                        ListEmptyComponent={ListEmptyComponent}
+                    />
+                </View>
             </View>
-
         </>
     );
 };
@@ -242,13 +202,42 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: wp(3),
     },
+    listContainer: {
+        backgroundColor: "#EDF2FF",
+        justifyContent: "center",
+        borderRadius: wp(2),
+        paddingTop: wp(3),
+        flex: 1,
+    },
     cardBox: {
         borderRadius: wp(2),
-        padding: wp(2.5),
+        paddingVertical: wp(2),
         marginBottom: hp(1),
         flexDirection: 'row',
-        justifyContent: "space-between",
-        alignItems: "center", paddingHorizontal: wp(3)
+        alignItems: 'center',
+        paddingHorizontal: wp(3),
+    },
+    headerRow: {
+        backgroundColor: '#D0DBFF',
+    },
+    column: {
+        flex: 1,
+        paddingHorizontal: wp(1),
+    },
+    textAlignLeft: {
+        textAlign: 'left',
+        textTransform: "capitalize"
+
+    },
+    textAlignCenter: {
+        textAlign: 'center',
+        textTransform: "capitalize"
+
+    },
+    textAlignRight: {
+        textAlign: 'right',
+        textTransform: "capitalize"
+
     },
 });
 

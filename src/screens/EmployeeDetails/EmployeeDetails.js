@@ -18,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../context/ThemeContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { getEmplyeeDetails } from '../../redux/authActions';
-import ThemeToggle from '../../ScreenComponents/HeaderComponent/ThemeToggle';
 import { useAndroidBackHandler } from '../../hooks/useAndroidBackHandler';
 
 const EmplyeeDetails = () => {

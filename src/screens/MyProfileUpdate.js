@@ -3,13 +3,11 @@ import {
     View, Text, TextInput, TouchableOpacity,
     StyleSheet, Image, ScrollView, KeyboardAvoidingView, Platform,
     ToastAndroid,
-    BackHandler
 } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { THEMECOLORS } from '../resources/colors/colors';
 import { hp, wp } from '../resources/dimensions';
 import HeaderComponent from '../components/HeaderComponent';
-import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
 import { useTheme } from '../context/ThemeContext';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +19,7 @@ import { ActivityIndicator } from 'react-native-paper';
 import ProfileScreenLoader from './ProfileLoader';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
+import ProfileUploadPopUp from '../components/ProfileUploadPopUp';
 
 const MyProfileUpdate = () => {
 
@@ -32,6 +31,7 @@ const MyProfileUpdate = () => {
     const dispatch = useDispatch();
     const navigation = useNavigation();
     const [isLoading, setisLoading] = useState(true);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const [fields, setFields] = useState({
         fullname: '',
@@ -78,16 +78,17 @@ const MyProfileUpdate = () => {
             }
         });
     };
+
     const validate = () => {
         const newErrors = {};
         if (!fields.fullname) newErrors.fullname = t('fullnameisrequired');
         if (!fields.username) newErrors.username = t('usernameisrequired');
-        if (!fields.designation) newErrors.designation = t('designationisrequired');
-        if (!fields.dob) newErrors.dob = t('dobisrequired');
-        if (!fields.email) newErrors.email = t('emailisrequired');
-        else if (!/\S+@\S+\.\S+/.test(fields.email)) newErrors.email = t('invalidemail');
-        if (!fields.phone) newErrors.phone = t('phoneisrequired');
-        else if (!/^[0-9]{10}$/.test(fields.phone)) newErrors.phone = t('invalidphonenumber');
+        // if (!fields.designation) newErrors.designation = t('designationisrequired');
+        // // if (!fields.dob) newErrors.dob = t('dobisrequired');
+        // if (!fields.email) newErrors.email = t('emailisrequired');
+        // else if (!/\S+@\S+\.\S+/.test(fields.email)) newErrors.email = t('invalidemail');
+        // if (!fields.phone) newErrors.phone = t('phoneisrequired');
+        // else if (!/^[0-9]{10}$/.test(fields.phone)) newErrors.phone = t('invalidphonenumber');
         return newErrors;
     };
     const handleSubmit = () => {
@@ -104,19 +105,13 @@ const MyProfileUpdate = () => {
         }));
     };
 
-    // handleAlertUser
-    // const handleAlertUser = (eFlag) => {
-    //     alert('kljkljkljkl')
-    //     if (!eFlag) {
-    //         ToastAndroid.show(`You can't edit this field`, ToastAndroid.SHORT);
-    //     }
-    // };
+
 
     const handleChange = (key, value, eFlag) => {
-        if (eFlag) {
-            ToastAndroid.show(`You can't edit this field`, ToastAndroid.SHORT);
-            return
-        }
+        // if (eFlag) {
+        //     // ToastAndroid.show(`You can't edit this field`, ToastAndroid.SHORT);
+        //     return
+        // }
         setFields({ ...fields, [key]: value });
         setErrors({ ...errors, [key]: '' });
     };
@@ -138,9 +133,14 @@ const MyProfileUpdate = () => {
                             style={styles.coverImage}
                         >
                             <View style={styles.profileImageContainer}>
-                                <TouchableOpacity onPress={handleImagePick}>
+                                <TouchableOpacity
+                                    onPress={
+                                        // handleImagePick
+                                        () =>
+                                            setShowDropdown(true)
+                                    }>
                                     <Image
-                                        source={profileImage ? { uri: profileImage } : require('../assets/animations/user_1.png')}
+                                        source={{ uri: userdata?.profileImage }}
                                         style={styles.profileImage}
                                     />
                                     <MaterialCommunityIcons
@@ -182,9 +182,10 @@ const MyProfileUpdate = () => {
                                                 <Text style={[
                                                     isTamil ? Louis_George_Cafe.regular.h8 : Louis_George_Cafe.regular.h6,
                                                     styles.label,
-                                                    { color: THEMECOLORS[themeMode].textPrimary,
-                                                        lineHeight:wp(5)
-                                                     }
+                                                    {
+                                                        color: THEMECOLORS[themeMode].textPrimary,
+                                                        lineHeight: wp(5)
+                                                    }
                                                 ]}>
                                                     {field.label}
                                                 </Text>
@@ -198,6 +199,7 @@ const MyProfileUpdate = () => {
                                                     }}
                                                 >
                                                     <TextInput
+                                                        maxLength={35}
                                                         pointerEvents={field.editable ? 'auto' : 'none'}
                                                         editable={field.editable}
                                                         value={fields[field.key]}
@@ -236,9 +238,6 @@ const MyProfileUpdate = () => {
                                         ))}
 
                                     </View>
-
-
-
                             }
                             {/* <ThemeToggle /> */}
                         </ScrollView>
@@ -263,6 +262,13 @@ const MyProfileUpdate = () => {
                         </TouchableOpacity>
                     </View>
                 </>
+            }
+            {showDropdown &&
+                <ProfileUploadPopUp
+                    option={{}}
+                    isVisible={showDropdown}
+                    onCancel={() => setShowDropdown(false)}
+                />
             }
 
         </View>

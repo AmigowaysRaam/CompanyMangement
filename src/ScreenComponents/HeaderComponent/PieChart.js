@@ -40,7 +40,9 @@ const PieChart = (data) => {
   }, []);
 
   return (
-    <Pressable onPress={()=>navigation.navigate('Projects')} style={[styles.card, {
+    <Pressable 
+    // onPress={()=>navigation.navigate('Projects')}
+     style={[styles.card, {
       backgroundColor: THEMECOLORS[themeMode].cardBackground,
     }]}>
       <Text style={[Louis_George_Cafe.bold.h6, { alignSelf: "flex-start", marginBottom: wp(5) }]}>

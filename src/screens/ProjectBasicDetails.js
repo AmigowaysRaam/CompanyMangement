@@ -23,7 +23,7 @@ import DropdownModal from '../components/DropDownModal';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getProjectDetailById, submitProjectBasicDetails, updateProjectCost } from '../redux/authActions';
 import { useDispatch, useSelector } from 'react-redux';
-import SearchSelectCompany from './SearchSelectCompany copy';
+import SearchSelectCompany from './SearchSelectCompany';
 
 const ProjectBasicDetails = ({ onNext, onSubmitSuccess, onRefresh, projectId, projectDetails }) => {
 
@@ -179,7 +179,10 @@ const ProjectBasicDetails = ({ onNext, onSubmitSuccess, onRefresh, projectId, pr
     const dispatch = useDispatch();
 
     const onSubmit = () => {
-        if (!validateFields()) return;
+        if (!validateFields()) {
+            ToastAndroid.show(`${t('fillAllFields')}`, ToastAndroid.SHORT);
+            return;
+        }
         if (projectId) {
             const formData = {
                 projectName: projectName,
@@ -245,7 +248,7 @@ const ProjectBasicDetails = ({ onNext, onSubmitSuccess, onRefresh, projectId, pr
     const Label = ({ title }) => (
         <Text style={[styles.label, Louis_George_Cafe.bold.h7, {
             color: THEMECOLORS[themeMode].textPrimary, textTransform: "capitalize"
-        }]}>{title}</Text>
+        }]}>{title + "*"}</Text>
     );
 
     return (

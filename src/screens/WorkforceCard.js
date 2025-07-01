@@ -12,8 +12,8 @@ import { wp, hp } from "../resources/dimensions";
 import { Louis_George_Cafe } from "../resources/fonts";
 import { THEMECOLORS } from "../resources/colors/colors";
 import { useTheme } from "../context/ThemeContext";
-const CARD_WIDTH = wp(60);
-const CARD_HEIGHT = hp(12);
+const CARD_WIDTH = wp(45);
+const CARD_HEIGHT = hp(10);
 // Different gradient colors for each card
 const gradients = [
     {
@@ -47,7 +47,7 @@ const WorkforceCard = ({ data }) => {
                     style={styles.card}
                 >
                     <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                        <Text style={[Louis_George_Cafe.bold.h6, styles.cardTitle]}>{item?.label}</Text>
+                        <Text style={[Louis_George_Cafe.bold.h7, styles.cardTitle]}>{item?.label}</Text>
                         {item?.image &&
                             <Image source={item?.image ? item?.image : null} style={styles.cardImage} resizeMode="contain"
                             // Works on iOS only
@@ -101,7 +101,8 @@ const styles = StyleSheet.create({
         height: CARD_HEIGHT,
         padding: wp(4),
         justifyContent: "center",
-        borderRadius: wp(3), // Ensure the LinearGradient respects radius
+        borderRadius: wp(3), 
+        // paddingVertical:wp(5)
     },
 
     cardTitle: {

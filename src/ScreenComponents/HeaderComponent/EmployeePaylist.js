@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Image, Text, StyleSheet, FlatList, Platform, TouchableOpacity } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { wp } from '../../resources/dimensions';
@@ -13,10 +13,13 @@ const dummyData = [
     { id: '5', name: 'Charlie Davis', salary: '$100,000/year', status: 'Issued', profilePic: 'https://i.pravatar.cc/150?img=5' },
 ];
 
-export default function EmployeePaylist() {
+export default function EmployeePaylist({data}) {
     const navigation = useNavigation();
     const { t, i18n } = useTranslation();
     const isTamil = i18n.language === 'ta';
+    useEffect(()=>{
+        alert(JSON.stringify(data))
+    })
 
     const renderItem = ({ item }) => (
         <TouchableOpacity style={styles.rowContainer} onPress={() => navigation.navigate('EmplyeeDetails', { item })}>
@@ -33,7 +36,7 @@ export default function EmployeePaylist() {
             </Text>
             <Text numberOfLines={1} style={[isTamil ? Louis_George_Cafe.regular.h9 :
                 Louis_George_Cafe.regular.h8, styles.rowText, styles.statusColumn]}>
-                {t(item.status.toLowerCase().replace(" ", "_")) || item.status}
+                {/* {t(item.status.toLowerCase().replace(" ", "_")) || item.status} */}
             </Text>
         </TouchableOpacity>
     );
@@ -60,8 +63,8 @@ export default function EmployeePaylist() {
                     </Text>
                 </View>
                 <View style={styles.line} />
-                <FlatList data={dummyData} keyExtractor={(item) => item.id} renderItem={renderItem} />
-                <TouchableOpacity onPress={() => navigation.navigate('PayrollList', { item: dummyData })} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
+                <FlatList data={data} keyExtractor={(item) => item.id} renderItem={renderItem} />
+                <TouchableOpacity onPress={() => navigation.navigate('PayrollList', { item: data })} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
                     <Text style={[Louis_George_Cafe.regular.h9, {
                         lineHeight: wp(5)
                     }]}>{t('viewAll')}</Text>

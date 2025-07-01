@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-    Modal,
-    View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Image,
-    FlatList, ImageBackground, ActivityIndicator,
+    // Modal,
+    View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback,
+    FlatList,
 } from "react-native";
 import { hp, wp } from "../resources/dimensions";
 import { COLORS } from "../resources/Colors";
 import { Louis_George_Cafe } from "../resources/fonts";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import ThemeToggle from "../ScreenComponents/HeaderComponent/ThemeToggle";
 import { THEMECOLORS } from "../resources/colors/colors";
 import { useTheme } from "../context/ThemeContext";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,7 +17,8 @@ import _ from 'lodash';
 import LogoutModal from "../components/LogoutPop";
 import { useTranslation } from "react-i18next";
 import VersionCheck from 'react-native-version-check';
-// import Modal from 'react-native-modal'; 
+import Modal from 'react-native-modal';
+import ProfileHeader from "../components/ModalProfileHeader";
 
 const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     // Track which menus are expanded for submenu
@@ -37,14 +37,17 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
 
     const handleScroll = (event) => {
         const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
-
         const isAtBottom = contentOffset.y + layoutMeasurement.height >= contentSize.height - 20; // 20px buffer
         setShowDownArrow(!isAtBottom);
     };
 
-
+    const flatListRef = useRef(null); // <-- Step 1: Create ref
+    const handleScrollToBottom = () => {
+        if (flatListRef.current) {
+            flatListRef.current.scrollToEnd({ animated: true }); // <-- Step 2: Scroll to end
+        }
+    };
     // Toggle expand/collapse submenu for a menu index
-
     const toggleExpand = (index) => {
         setExpandedMenus((prev) => ({
             ...prev,
@@ -52,26 +55,28 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
         }));
     };
     useEffect(() => {
-        // console.log(userdata?.data?.lastLoginLocation, 'userdata')
-        dispatch(getSideMenus(userdata?.data?.id))
-        setsideMenusList(sideMenusArray?.data)
+        dispatch(getSideMenus(userdata?.data?.id));
+        setsideMenusList(sideMenusArray?.data);
+
         if (_.isEmpty(sideMenusArray?.data)) {
-            setisLoading(true)
-            dispatch(getSideMenus(userdata?.data?.id, (response) => {
+            setisLoading(true);
+            dispatch(getSideMenus({userid:userdata?.data?.id}, (response) => {
                 if (response.success) {
-                    setisLoading(false)
-                    setsideMenusList(response.data)
-                    console.log('test', response.data)
+                    // alert(JSON.stringify(response))
+                    setisLoading(false);
+                    setsideMenusList(response.data);
+                    setExpandedMenus(expandAllMenusWithSubmenus(response.data)); // 👈 auto expand
                 } else {
-                    setsideMenusList(sideMenusArray ? sideMenusArray : [])
-                    setisLoading(true)
+                    setsideMenusList(sideMenusArray ? sideMenusArray : []);
+                    setisLoading(true);
                 }
             }));
+        } else {
+            setExpandedMenus(expandAllMenusWithSubmenus(sideMenusArray?.data)); // 👈 in case it's already available
         }
-    }, [userdata?.data?.id])
+    }, [userdata?.data?.id]);
 
     const handleNavigateScreen = (item) => {
-
         const routes = {
             'My Profile': 'Profile',
             'Notifications': 'Notifications',
@@ -81,19 +86,38 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             'Job Details': 'JobDetails',
             'Client': 'ClientScreen',
             'Files': 'FileManager',
-            'Leaves': 'LeaveManagement',
+            'Leave': 'LeaveManagement',
             'Project': 'Projects',
             'Payroll': 'PayrollDetails',
             'Category Management': 'CategoryManagement',
             'Company Management': 'CompanyManagement',
-            'Task': 'TaskManagement',
+            'Task Management': 'TaskManagement',
             'Social Connect': 'SocialMediaScreen',
-        };
+            'Roles & Privileges': 'RolesandPrevilages',
+            'Chats':'ChatListScreen',
+            'Home':"HomeScreen",
+            'Project Management': 'Projects',
+            'Task':'AssignedTask',
+            'All Employees':"EmployeeList",
+            'Companies': 'CompanyManagement',
 
+
+
+        };
         const route = routes[item];
         if (route) {
             navigation.navigate(route);
         }
+    };
+
+    const expandAllMenusWithSubmenus = (menuData) => {
+        const expandedState = {};
+        menuData.forEach((item, index) => {
+            if (Array.isArray(item.submenus) && item.submenus.length > 0) {
+                expandedState[index] = true;
+            }
+        });
+        return expandedState;
     };
     // Render submenu item
     const renderSubmenuItem = ({ item }) => (
@@ -103,7 +127,9 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                 handleNavigateScreen(item.label)
                 onClose();
             }}
-            style={styles.submenuItem}
+            style={[styles.submenuItem,{
+                backgroundColor:showLogoutModal ? 'grey' :  THEMECOLORS[themeMode].background 
+            }]}
         >
             <Text style={[Louis_George_Cafe.regular.h7, { color: THEMECOLORS[themeMode].textPrimary }]}>
                 {item.label}
@@ -152,9 +178,9 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                     }}
                     style={styles.menuItem}
                 >
-                    <Text style={[Louis_George_Cafe.regular.h7, {
+                    <Text style={[Louis_George_Cafe.regular.h6, {
                         lineHeight: wp(5),
-                        color: THEMECOLORS[themeMode].textPrimary
+                        color: THEMECOLORS[themeMode].textPrimary,textTransform:"capitalize"
                     }]}>{t(item.label)}</Text>
                     <MaterialCommunityIcons
                         name={hasSubmenu ? (isExpanded ? "chevron-up" : "chevron-down") : "chevron-right"}
@@ -177,10 +203,10 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
     };
     return (
         <Modal
+            animationIn="slideInLeft"
+            animationOut="slideOutRight"
             isVisible={visible}
             onBackdropPress={onClose}
-            animationIn="none"
-            animationOut="none"
             backdropTransitionOutTiming={0} // optional: avoids flicker
             useNativeDriver={true}
         >
@@ -189,7 +215,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                     <View style={[{
                         backgroundColor: showLogoutModal ? 'grey' : THEMECOLORS[themeMode].background,
                     }, styles.modalBox]}>
-                        <ImageBackground
+                        {/* <ImageBackground
                             source={require("../../src/assets/animations/profile_bg.png")}
                             resizeMode="stretch"
                             style={{ width: "100%", height: hp(42) }}
@@ -222,15 +248,6 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                     >
                                         {userdata?.data?.full_name}
                                     </Text>
-                                    {/* <Text
-                                        numberOfLines={1}
-                                        style={[
-                                            Louis_George_Cafe.regular.h8,
-                                            { alignSelf: "center", color: THEMECOLORS[themeMode].white, textTransform: "capitalize" },
-                                        ]}
-                                    >
-                                        {userdata?.data?.designation}
-                                    </Text> */}
                                     <Text
                                         numberOfLines={1}
                                         style={[
@@ -257,7 +274,18 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                     </Text>
                                 </View>
                             </View>
-                        </ImageBackground>
+                        </ImageBackground> */}
+
+                        <View>
+                            <ProfileHeader
+                                userdata={userdata}
+                                themeMode={themeMode}
+                                onClose={onClose}
+                                navigation={navigation}
+                            />
+                            {/* other content */}
+                        </View>
+
                         {/* Menu list */}
                         <View style={{ marginVertical: hp(2), flex: 1, paddingHorizontal: wp(2) }}>
                             {
@@ -265,6 +293,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                     renderStaticMapItem()
                                     :
                                     <FlatList
+                                        ref={flatListRef} // <-- Attach ref here
                                         data={sideMenusList}
                                         keyExtractor={(item, index) => index.toString()}
                                         renderItem={renderMenuItem}
@@ -275,7 +304,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                     />
                             }
                         </View>
-                        {showDownArrow && (
+                        {showDownArrow && sideMenusList?.length > 7 &&  (
                             <View style={{
                                 position: 'absolute',
                                 bottom: hp(6), // position just above the bottom padding
@@ -287,6 +316,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
 
                             }}>
                                 <MaterialCommunityIcons
+                                    onPress={handleScrollToBottom}
                                     name="chevron-down"
                                     size={hp(3)}
                                     color={'black'}
@@ -304,10 +334,8 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                             <TouchableOpacity style={[styles.logoutBtn, {
                                 backgroundColor: THEMECOLORS[themeMode].buttonBg
                             }]}
-                                // onPress={() => handleLogout()}
                                 onPress={() => {
                                     setShowLogoutModal(true)
-                                    // onClose()
                                 }
                                 }
                             >
@@ -353,13 +381,14 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
 const styles = StyleSheet.create({
     modalOverlay: {
         flex: 1,
-        backgroundColor: "rgba(0,0,0,0.5)",
         justifyContent: "flex-start",
+        right: wp(5),
+        bottom: wp(6),
+
     },
     logoutBtn: {
         width: wp(30),
         height: wp(9),
-        // backgroundColor: COLORS.button_bg_color,
         alignItems: "center",
         justifyContent: "space-around",
         borderRadius: wp(5),
@@ -373,9 +402,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 4,
         elevation: 5,
-        height: "100%",
+        height: hp(100),
         overflow: "hidden",
         borderTopEndRadius: wp(10),
+        paddingVertical: wp(1)
     },
     menuItem: {
         paddingVertical: wp(5),
@@ -384,11 +414,12 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         paddingHorizontal: wp(4),
+        borderBottomWidth: wp(0.2),
+        borderColor: "#999"
     },
 
     submenuItem: {
-        flexDirection: "row", justifyContent: "space-between",
-        paddingVertical: wp(3),
+        flexDirection: "row", justifyContent: "space-between", paddingVertical: wp(3),
         paddingHorizontal: wp(4),
     },
 });

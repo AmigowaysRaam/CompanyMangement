@@ -29,7 +29,7 @@ const ThemeToggle = () => {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'flex-end',
-        position: "relative", top: hp(4), right: hp(2)
+        position: "relative", top: hp(2), right: hp(3)
     },
     icon: {
         fontSize: wp(6),

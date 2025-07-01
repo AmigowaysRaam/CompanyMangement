@@ -1,12 +1,23 @@
 import React, { useRef, useEffect } from "react";
-import { View, Dimensions, Text } from "react-native";
+import { View, Text, Dimensions } from "react-native";
 import { WebView } from "react-native-webview";
 import { hp, wp } from "../../resources/dimensions";
 import { Louis_George_Cafe } from "../../resources/fonts";
+import { useTranslation } from "react-i18next";
 
 const screenWidth = Dimensions.get("window").width;
 
-const initialHtml = `
+export default function AttendanceChart({ data }) {
+  const webviewRef = useRef(null);
+  const { t, i18n } = useTranslation();
+  const isTamil = i18n.language === "ta";
+
+  const adjustFont = (style, offset) => ({
+    ...style,
+    fontSize: isTamil ? style.fontSize - offset + 1 : style.fontSize,
+  });
+
+  const initialHtml = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -114,26 +125,17 @@ const initialHtml = `
 </html>
 `;
 
-export default function AttendanceChart() {
-
-  const webviewRef = useRef(null);
-  const chartData = {
-    labels: ["January", "February", "March", "April", "May"],
-    data: [60, 75, 50, 65, 55],
-  };
-
   useEffect(() => {
     if (webviewRef.current) {
       const jsToInject = `
-        window.postMessage('${JSON.stringify(chartData)}', '*');
+        window.postMessage('${JSON.stringify(data)}', '*');
         true;
       `;
-      // Small delay to ensure WebView is ready
       setTimeout(() => {
         webviewRef?.current?.injectJavaScript(jsToInject);
       }, 1000);
     }
-  }, [chartData]);
+  }, [data]);
 
   return (
     <View
@@ -149,7 +151,7 @@ export default function AttendanceChart() {
     >
       <Text
         style={[
-          Louis_George_Cafe.bold.h6,
+          adjustFont(Louis_George_Cafe.bold.h6, 2),
           {
             alignSelf: "flex-start",
             marginHorizontal: wp(4),
@@ -157,18 +159,18 @@ export default function AttendanceChart() {
           },
         ]}
       >
-        Attendance Overview
+        {t("attendance_overview") || "Attendance Overview"}
       </Text>
       <Text
         style={[
-          Louis_George_Cafe.regular.h8,
+          adjustFont(Louis_George_Cafe.regular.h8, 2),
           {
             alignSelf: "flex-start",
             marginHorizontal: wp(4),
           },
         ]}
       >
-        Last 5 months
+        {t("last_5_months") || "Last 5 months"}
       </Text>
       <WebView
         originWhitelist={["*"]}
@@ -185,14 +187,13 @@ export default function AttendanceChart() {
         onLoadEnd={() => {
           if (webviewRef.current) {
             const jsToInject = `
-                window.postMessage('${JSON.stringify(chartData)}', '*');
-                true;
+              window.postMessage('${JSON.stringify(data)}', '*');
+              true;
             `;
             webviewRef.current.injectJavaScript(jsToInject);
           }
         }}
       />
-
     </View>
   );
 }

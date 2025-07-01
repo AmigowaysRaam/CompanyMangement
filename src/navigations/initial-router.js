@@ -54,6 +54,8 @@ import GroupChatScren from "../screens/GroupChatDetails.js";
 import GroupChatDetails from "../screens/GroupChatDetails.js";
 import AssignedTask from "../screens/AssignedTask";
 import SocialMediaScreen from "../screens/SocialMediaScreen";
+import RolesManagement from "../screens/RolesManagement";
+import CreateRoleandAccess from "../screens/CreateRoleandAccess";
 
 
 const Stack = createNativeStackNavigator();
@@ -118,6 +120,8 @@ function InitialRouter() {
         <Stack.Screen name="GroupChatScren" component={GroupChatDetails} />
         <Stack.Screen name="AssignedTask" component={AssignedTask} />
         <Stack.Screen name="SocialMediaScreen" component={SocialMediaScreen} />
+        <Stack.Screen name="RolesandPrevilages" component={RolesManagement} />
+        <Stack.Screen name="CreateRoleandAccess" component={CreateRoleandAccess} />
       </Stack.Navigator>
     </NavigationContainer>
   );

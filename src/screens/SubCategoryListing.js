@@ -143,9 +143,9 @@ const SubCategoryListScreen = () => {
         const selectedSubCat = subCategories.find(item =>
             (item.subCategory || item)._id === selectedId
         );
-        if (selectedSubCat) {
+        // if (selectedSubCat) {
             navigation.replace('HomeScreen', { selectedSubCategory: selectedSubCat });
-        }
+        // }
     };
 
     return (

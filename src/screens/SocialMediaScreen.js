@@ -92,7 +92,7 @@ const SocialMediaScreen = () => {
                 {!item.connected &&
                     <TouchableOpacity
                         // disabled={item.connected}
-                        onPress={() => navigation.navigate('AddLeaveForm')} // replace with connect logic
+                        // onPress={() => navigation.navigate('AddLeaveForm')} // replace with connect logic
                         style={[
                             styles.connectBtn,
                             {

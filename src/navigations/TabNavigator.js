@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,12 +10,13 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import { getSiteSettings } from "../redux/authActions";
+import { bottomNavigation } from "../redux/authActions";
 import { useTheme } from "../context/ThemeContext";
 import { THEMECOLORS } from "../resources/colors/colors";
 import { COLORS } from "../resources/Colors";
 import { wp, hp } from "../resources/dimensions";
 import { Louis_George_Cafe } from "../resources/fonts";
+import { useFocusEffect } from "@react-navigation/native";
 
 // Screens
 import HomeScreen from "../screens/HomeScreen/HomeScreen";
@@ -25,8 +26,6 @@ import Employee from "../screens/Employee/Employee";
 import PunchInOut from "../screens/PunchInPuchout";
 
 // Local icon map
-// import iconMap from "../assets/iconMap";
-
 const iconMap = {
   home_filled: require('../assets/animations/home_filled.png'),
   home_outline: require('../assets/animations/home_outline.png'),
@@ -40,59 +39,44 @@ const iconMap = {
 };
 
 const Tab = createBottomTabNavigator();
-
-// Dummy tab config array
-const tabData = [
-  {
-    name: "HomeScreen",
-    label: "Home",
-    iconFilled: "home_filled",
-    iconOutline: "home_outline",
-    component: HomeScreen,
-  },
-  {
-    name: "Employee",
-    label: "Employees",
-    iconFilled: "employee_fill",
-    iconOutline: "employee_outline",
-    component: Employee,
-  },
-  {
-    name: "punchinout",
-    label: "",
-    icon: "punh_nav", // static icon
-    isStatic: true,
-    iconSize: wp(9),
-    component: PunchInOut,
-  },
-  {
-    name: "Attendance",
-    label: "Attendance",
-    iconFilled: "attendance_fill",
-    iconOutline: "attendance_outline",
-    component: Attendance,
-  },
-  {
-    name: "Profile",
-    label: "Profile",
-    iconFilled: "profile_fill",
-    iconOutline: "profile_outline",
-    component: ProfileScreen,
-  },
-];
+// Map backend component strings to actual components
+const componentMap = {
+  HomeScreen: HomeScreen,
+  Employee: Employee,
+  PunchInOut: PunchInOut,
+  Attendance: Attendance,
+  ProfileScreen: ProfileScreen,
+};
 
 const TabNavigator = () => {
-
   const { themeMode } = useTheme();
-  const userId = useSelector((state) => state.auth.user?._id);
+  const userId = useSelector((state) => state.auth.user?.data?.id);
   const dispatch = useDispatch();
   const { t, i18n } = useTranslation();
+  const [bottom, setBottomTab] = useState([]);
 
-  useEffect(() => {
-    if (userId) {
-      dispatch(getSiteSettings(userId));
-    }
-  }, [userId]);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (userId) {
+        dispatch(
+          bottomNavigation(
+            { userId },
+            (response) => {
+              if (response.success) {
+                setBottomTab(response?.data || []);
+              }
+            }
+          )
+        );
+      }
+    }, [userId, dispatch])
+  );
+
+  // Render nothing or a loading indicator until bottom tabs load
+  if (!bottom || bottom.length === 0) {
+    return null;
+    // Or: return <LoadingSpinner /> if you have one
+  }
 
   const CustomTabBarButton = (props) => (
     <TouchableOpacity {...props} activeOpacity={1}>
@@ -103,12 +87,12 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => {
-        const currentTab = tabData.find((tab) => tab.name === route.name);
+        const currentTab = bottom.find((tab) => tab.name === route.name) || {};
         return {
           tabBarButton: (props) => <CustomTabBarButton {...props} />,
           tabBarIcon: ({ focused }) => {
             const isPunchTab = currentTab?.name === "punchinout";
-            const iconSize = isPunchTab ? wp(16) : wp(7);
+            const iconSize = isPunchTab ? wp(18) : wp(7);
             const iconKey = currentTab?.isStatic
               ? currentTab.icon
               : focused
@@ -123,31 +107,27 @@ const TabNavigator = () => {
                   <View
                     style={{
                       backgroundColor: COLORS.button_bg_color,
-                      height: wp(18),
-                      width: wp(18),
-                      borderRadius: wp(20),
+                      height: wp(15),
+                      width: wp(15),
+                      borderRadius: wp(15) / 2,
                       bottom: wp(1),
+                      position: "absolute",
+                      zIndex: -1,
                     }}
                   />
                 )}
-                <View style={{
-                  position: "absolute",
-                  bottom: isPunchTab && focused ? wp(4) : wp(1),
-                }}>
-                  <Image
-                    source={imageSource}
-                    style={{
-                      width: iconSize,
-                      height: iconSize,
-                      tintColor: !isPunchTab ? "#fff" : "",
-                      marginTop: wp(1),
-                      top: isPunchTab ? hp(3) : 0,
-                      // bottom: isPunchTab ? wp(2) : wp(4),
-
-                    }}
-                    resizeMode="contain"
-                  />
-                </View>
+                <Image
+                  source={imageSource}
+                  style={{
+                    width: iconSize,
+                    height: iconSize,
+                    tintColor: !isPunchTab ? "#fff" : undefined,
+                    marginTop: wp(1),
+                    position: "relative",
+                    top: isPunchTab  ? hp(1) : hp(0),
+                  }}
+                  resizeMode="contain"
+                />
               </View>
             );
           },
@@ -170,25 +150,25 @@ const TabNavigator = () => {
               </Text>
             );
           },
-
           headerShown: false,
           tabBarStyle: {
-            height: hp(7),
+            height: hp(8),
             width: "100%",
             borderColor: THEMECOLORS[themeMode].primaryApp,
             backgroundColor: THEMECOLORS[themeMode].primaryApp,
+            paddingTop:wp(1.5)
           },
           tabBarItemStyle: {
-            backgroundColor: THEMECOLORS[themeMode].primaryApp,
+            // backgroundColor: THEMECOLORS[themeMode].primaryApp,
           },
         };
       }}
     >
-      {tabData.map((tab) => (
+      {bottom.map((tab) => (
         <Tab.Screen
           key={tab.name}
           name={tab.name}
-          component={tab.component}
+          component={componentMap[tab.component] || HomeScreen}
         />
       ))}
     </Tab.Navigator>
@@ -200,7 +180,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: wp(8),
-    height: wp(10),
+    height: wp(12),
   },
   tabLabel: {
     marginTop: wp(1),

@@ -143,44 +143,48 @@ const CreateTask = () => {
                         if (response.success) {
                             navigation.goBack();
                         }
-                    }
+                    }   
                 )
             );
         }
-    };
+        setLoading(false);
 
-    const handleSelect = (item) => {
-        setSelectedItem(item);
-        setDropdownVisible(false);
     };
-
 
     useEffect(() => {
-        setLoading(true);
-        const formData = {
-            id: taskId
-        };
-        dispatch(
-            getTaskDeytails(formData, (response) => {
-                setLoading(false);
-                if (response.success) {
-                    const task = response.data[0]; // assuming response.data holds the task object
-                    console.log(task.project)
-                    setTaskTitle(task.title || '');
-                    console.log(task)
-                    setDescription(task.description || '');
-                    setStartDate(task.startDate ? new Date(task.startDate) : new Date());
-                    setEndDate(task.endDate ? new Date(task.endDate) : new Date()); // If you have endDate in your data, else set as needed
-                    setEmployee(task.employee);
-                    setProject(task.project || null);
-                    setClient(task.project?.client || null);
-                    setCompany(task.company || null);
-                    setStatus(task.status || null);
-                    setPriority(task.priority || null);
+        if (taskId) {
+            setLoading(true);
+            const formData = {
+                id: taskId,
+                userid: userdata?.id,
+            };
+            dispatch(
+                getTaskDeytails(formData, (response) => {
+                    setLoading(false);
+                    // alert(JSON.stringify(response))
+                    if (response.success) {
+                        const task = response.data[0]; // assuming response.data holds the task object
+                        console.log(task.project)
+                        setTaskTitle(task.title || '');
+                        console.log(task)
+                        setDescription(task.description || '');
+                        setStartDate(task.startDate ? new Date(task.startDate) : new Date());
+                        setEndDate(task.endDate ? new Date(task.endDate) : new Date()); // If you have endDate in your data, else set as needed
+                        setEmployee(task.employee);
+                        setProject(task.project || null);
+                        setClient(task.project?.client || null);
+                        setCompany(task.company || null);
+                        setStatus(task.status || null);
+                        setPriority(task.priority || null);
 
-                }
-            })
-        );
+                    }
+                    else {
+                        ToastAndroid.show(response.message, ToastAndroid.SHORT);
+
+                    }
+                })
+            );
+        }
     }, [taskId]);
 
 
@@ -447,7 +451,7 @@ const CreateTask = () => {
                                         )}
                                     </TouchableOpacity>
                                 </ScrollView>
-                                
+
                             </>
                     }
                 </>

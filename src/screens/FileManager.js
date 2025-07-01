@@ -202,7 +202,6 @@ const FileManager = () => {
                 useNativeDriver={true}
             >
                 <View style={{ backgroundColor: 'white', padding: wp(4), borderRadius: wp(2), height: hp(32) }}>
-
                     <View>
                         <TouchableOpacity
                             onPress={() =>

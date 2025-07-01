@@ -33,9 +33,9 @@ const SetMpin = () => {
   const [isLoading, setisLoading] = useState(false);
 
   const route = useRoute();
-  const lData = route?.params.response;
+  const lData = route?.params.data;
   useEffect(() => {
-    // alert(JSON.stringify(lData))
+    // alert(JSON.stringify(lData.id))
     if (__DEV__) {
       const devMpin = ['1', '2', '3', '4']; // example dev mpin
       setMpin(devMpin);
@@ -73,17 +73,19 @@ const SetMpin = () => {
     if (isMpinComplete && isConfirmComplete && isMatch) {
       setisLoading(true)
       let params = {
-        userid: lData?.userid,
+        userid: lData?.id,
         mpin: mpin.join(''),
         confirm_mpin: mpin.join(''),
       }
       // alert(JSON.stringify(params))
       dispatch(setMpinCall(params, (response) => {
         if (response.success) {
-        AsyncStorage.setItem('user_data', JSON.stringify(response));
+        // AsyncStorage.setItem('user_data', JSON.stringify(response));
           setisLoading(false)
           setTimeout(() => {
-            navigation.replace('ServiceSelection');
+            // navigation.replace('ServiceSelection');
+            navigation.replace('HomeScreen');
+
           }, 1000);
         ToastAndroid.show(response.message, ToastAndroid.SHORT);
         }

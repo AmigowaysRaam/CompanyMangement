@@ -33,18 +33,16 @@ import { useCurrentLocation } from "../../hooks/location";
 
 
 const LoginScreen = () => {
-
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { dialCode, location } = useCurrentLocation();
   const { themeMode } = useTheme();
   const { language } = useLanguage();
-  const [username, setUsername] = useState(__DEV__ ? "ram@gmail.com" : "");
-  const [password, setPassword] = useState(__DEV__ ? "123456" : "");
+  const [username, setUsername] = useState(__DEV__ ? "admin@gmail.com" : "");
+  const [password, setPassword] = useState(__DEV__ ? "12345" : "");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, lerror } = useSelector((state) => state.auth);
-  const [fcmtoken, setfcmTorkn] = useState(null);
   const [usernameErr, setUsernameErr] = useState("");
   const [passwordErr, setPasswordErr] = useState("");
   const { t } = useTranslation();
@@ -79,14 +77,13 @@ const LoginScreen = () => {
     setIsLoading(true);
     const credentials = {
       email: username, password,
-
       latitude: location?.coords?.latitude,
       longitude: location?.coords?.longitude
     };
     // alert(JSON.stringify(credentials))
     dispatch(loginUser(credentials, (response) => {
       setIsLoading(false);
-      // alert(JSON.stringify(response), null, 2)
+      console.log(JSON.stringify(response), null, 2)
       if (response.success) {
         AsyncStorage.setItem('user_data', JSON.stringify(response));
         Toast.show({

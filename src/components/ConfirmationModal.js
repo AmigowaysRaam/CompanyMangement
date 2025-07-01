@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    Modal,
     View,
     Text,
     TouchableOpacity,
@@ -11,6 +10,8 @@ import { wp, hp } from '../resources/dimensions';
 import { useTheme } from '../context/ThemeContext';
 import { THEMECOLORS } from '../resources/colors/colors';
 import { useTranslation } from 'react-i18next';
+import Modal from 'react-native-modal';
+
 
 const ConfirmationModal = ({ visible, message, onConfirm, onCancel }) => {
 
@@ -19,8 +20,15 @@ const ConfirmationModal = ({ visible, message, onConfirm, onCancel }) => {
     const { t } = useTranslation();
 
     return (
-        
-        <Modal transparent visible={visible} animationType="none">
+
+        <Modal animationIn="slideInUp"
+            animationOut="slideOutDown"
+            isVisible={visible}
+            animationInTiming={100}       // Slower slide in
+            // animationOutTiming={100}
+            backdropTransitionOutTiming={0} // optional: avoids flicker
+            useNativeDriver={true}
+        >
             <TouchableWithoutFeedback onPress={onCancel}>
                 <View style={styles.overlay}>
                     <TouchableWithoutFeedback>
@@ -55,16 +63,19 @@ export default ConfirmationModal;
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.7)',
+        backgroundColor: 'rgba(0,0,0,0)',
         justifyContent: 'center',
         alignItems: 'center',
+        width: wp(100),
+        alignSelf: "center"
+
     },
     container: {
         borderRadius: wp(4),
         padding: wp(5),
-        width: wp(96),
+        width: wp(95),
         position: "absolute",
-        bottom: wp(4),
+        bottom: wp(1),
         alignItems: "center",
         borderWidth: wp(0.3),
     },

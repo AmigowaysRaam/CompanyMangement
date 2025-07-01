@@ -13,7 +13,6 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAttendaceData } from '../../redux/authActions';
 import HomeScreenLoader from '../HomeScreenLoader';
-
 // Static map for local icon references
 const ICON_MAP = {
   '../../assets/animations/presence_icon.png': require('../../assets/animations/presence_icon.png'),
@@ -41,7 +40,6 @@ export default function Attendance() {
       }));
     }, [userdata])
   );
-
   const adjustFont = (style, offset) => ({
     ...style,
     fontSize: isTamil ? style.fontSize - offset : style.fontSize,
@@ -58,7 +56,7 @@ export default function Attendance() {
           <Image source={ICON_MAP[icon]} style={styles.cardIcon} />
           <Text
             numberOfLines={2}
-            style={[adjustFont(Louis_George_Cafe.bold.h7, 2), styles.cardLabel]}
+            style={[adjustFont(Louis_George_Cafe.bold.h8, 2), styles.cardLabel]}
           >
             {t(labelKey)}
           </Text>
@@ -78,11 +76,19 @@ export default function Attendance() {
           <Text style={styles.avatarText}>{item.name.charAt(0)}</Text>
         </View>
       </View>
-      <Text numberOfLines={1} style={[, adjustFont(Louis_George_Cafe.regular.h7, 1), styles.nameColumn]}>
+
+      <Text
+        numberOfLines={1}
+        style={[adjustFont(Louis_George_Cafe.regular.h7, 1), styles.nameColumn]}
+      >
         {item.name}
       </Text>
-      <Text style={[Louis_George_Cafe.regular.h9, styles.performanceChip]}>
-        {Math.floor(Math.random() * 50) + 50}%
+
+      <Text
+        numberOfLines={1}
+        style={[adjustFont(Louis_George_Cafe.regular.h7, 1), styles.idColumn]}
+      >
+        {item?.uId}
       </Text>
     </TouchableOpacity>
   );
@@ -96,36 +102,53 @@ export default function Attendance() {
         <View>
           <FlatList
             data={attendanceData?.attendanceStatsArray || []}
-            numColumns={2}
+            horizontal={true}        // Enable horizontal scroll
             keyExtractor={(_, idx) => idx.toString()}
-            columnWrapperStyle={styles.cardRow}
             renderItem={({ item }) => renderCard(item)}
-            scrollEnabled={false}
-            contentContainerStyle={{ paddingBottom: hp(2) }} // spacing below cards
+            contentContainerStyle={{ paddingHorizontal: wp(2), paddingBottom: hp(2) }} // add horizontal padding
+            showsHorizontalScrollIndicator={false}  // Optional: hide scrollbar for cleaner UI
           />
-
           {attendanceData?.employeeList?.length > 0 && (
             <View style={styles.tableContainer}>
               <View style={styles.tableHeader}>
-                <Text style={[adjustFont(Louis_George_Cafe.bold.h8, 1)]}>{t('employee')}</Text>
-                <Text style={[adjustFont(Louis_George_Cafe.bold.h8, 1)]}>{t('performance')}</Text>
+                <Text style={[adjustFont(Louis_George_Cafe.bold.h8, 1), { flex: 3 }]}>
+                  {t('employee')}
+                </Text>
+                <Text style={[adjustFont(Louis_George_Cafe.bold.h8, 1), { flex: 1 }]}>
+                  {t('Id')}
+                </Text>
+                {/* <Text style={[adjustFont(Louis_George_Cafe.bold.h8, 1), { flex: 1, textAlign: 'center' }]}>
+                  {t('performance')}
+                </Text> */}
               </View>
               <FlatList
                 data={attendanceData.employeeList}
                 keyExtractor={item => item.id.toString()}
                 renderItem={renderEmployee}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingBottom: hp(5) }}
+                contentContainerStyle={{ paddingBottom: hp(5), minHeight: hp(58) }}
                 ListFooterComponent={
-                  <TouchableOpacity onPress={() => navigation.navigate('EmployeeList')} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
-                    <Text style={[Louis_George_Cafe.regular.h9, {
-                      lineHeight: wp(5)
-                    }]}>{t('viewAll')}</Text>
-                  </TouchableOpacity>
+                  attendanceData?.employeeList?.length > 5 && (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('EmployeeList')}
+                      style={{
+                        alignSelf: 'center',
+                        margin: wp(3),
+                        paddingHorizontal: wp(3),
+                        borderWidth: wp(0.3),
+                        borderRadius: wp(5),
+                      }}
+                    >
+                      <Text style={[Louis_George_Cafe.regular.h9, { lineHeight: wp(5) }]}>
+                        {t('viewAll')}
+                      </Text>
+                    </TouchableOpacity>
+                  )
                 }
               />
             </View>
           )}
+
         </View>
       )}
     </View>
@@ -137,43 +160,37 @@ const styles = StyleSheet.create({
     flex: 3,
     padding: wp(1),
   },
-
   cardRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     // marginVertical: hp(1),
-  },
-  card: {
-    width: '46%',
+  }, card: {
+    width: wp(35), // fixed width for horizontal scroll cards
     borderRadius: wp(4),
-    padding: wp(3),
-    // marginVertical: wp(1),
-    marginTop: hp(2)
-  },
-  cardContent: {
+    padding: wp(2),
+    marginRight: wp(3), // space between cards horizontally
+    marginTop: hp(2),
+  }
+  , cardContent: {
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: wp(2),
-  },
-  cardHeader: {
+  }, cardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-  },
-  cardIcon: {
-    width: hp(5),
-    height: hp(5),
+  }, cardIcon: {
+    width: hp(4),
+    height: hp(4),
     marginRight: wp(2),
     resizeMode: 'contain',
-  },
-  cardLabel: {
+  }, cardLabel: {
     flex: 1,
     flexWrap: 'wrap',
     textTransform: 'capitalize',
     lineHeight: wp(4),
-  },
-  tableContainer: {
+  }, tableContainer: {
     marginHorizontal: wp(2),
     marginVertical: wp(1),
     backgroundColor: '#F2E8FF',
@@ -183,21 +200,47 @@ const styles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     marginBottom: hp(1),
-    paddingHorizontal: wp(4),
     borderBottomColor: "#555",
     borderBottomWidth: wp(0.2),
     paddingVertical: wp(2),
+    // backgroundColor:"red",
+    justifyContent: "space-between", paddingHorizontal: wp(4)
   },
   tableCell: {
     fontSize: wp(4),
   },
+  avatarContainer: {
+    marginHorizontal: wp(2),
+  }, avatar: {
+    width: wp(8),
+    height: wp(8),
+    borderRadius: wp(4),
+    backgroundColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }, avatarText: {
+    fontSize: wp(4),
+    color: '#000',
+  },
+  nameColumn: {
+    flex: 2,
+    width: wp(18),
+  }, performanceChip: {
+    backgroundColor: '#1484CD',
+    paddingHorizontal: wp(2),
+    paddingVertical: wp(0.5),
+    marginHorizontal: wp(6),
+    borderRadius: wp(4),
+    color: '#fff',
+  },
+
   tableRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: hp(0.5),
     paddingHorizontal: wp(1),
+    justifyContent: "space-between",
   },
   avatarContainer: {
     marginHorizontal: wp(2),
@@ -214,16 +257,23 @@ const styles = StyleSheet.create({
     fontSize: wp(4),
     color: '#000',
   },
+  // Flex for columns
   nameColumn: {
+    flex: 3,           // flex value to grow
+    marginHorizontal: wp(1),
+  },
+  idColumn: {
     flex: 2,
-    width: wp(18),
+    marginHorizontal: wp(1),
   },
   performanceChip: {
+    flex: 1,
     backgroundColor: '#1484CD',
     paddingHorizontal: wp(2),
     paddingVertical: wp(0.5),
-    marginHorizontal: wp(6),
+    marginHorizontal: wp(1),
     borderRadius: wp(4),
     color: '#fff',
+    textAlign: 'center',
   },
 });

@@ -68,7 +68,7 @@ const PayrollList = () => {
       PAGE_SIZE,
       searchText,
       (response) => {
-        console.log(`Fetching page: ${response}`);
+        // console.log(`Fetching page: ${response}`);
         if (response?.success) {
           const newData = response.employeeList || [];
           if (newData.length < PAGE_SIZE) {

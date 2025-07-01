@@ -12,9 +12,10 @@ import { wp, hp } from '../resources/dimensions';
 import { useTheme } from '../context/ThemeContext';
 import { THEMECOLORS } from '../resources/colors/colors';
 import { Louis_George_Cafe } from '../resources/fonts';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const DropdownModal = ({ visible, items, onSelect, onCancel, title ,selectedValue}) => {
-    
+const DropdownModal = ({ visible, items, onSelect, onCancel, title, selectedValue }) => {
+
     const { themeMode } = useTheme();
     const colors = THEMECOLORS[themeMode];
     const renderItem = ({ item }) => {
@@ -41,17 +42,36 @@ const DropdownModal = ({ visible, items, onSelect, onCancel, title ,selectedValu
             </TouchableOpacity>
         );
     };
-    
+
     return (
         <Modal transparent visible={visible} animationType="fade">
             <TouchableWithoutFeedback onPress={onCancel}>
                 <View style={styles.overlay}>
                     <TouchableWithoutFeedback>
-                        <View style={[styles.container, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                        <View style={[styles.container, { backgroundColor: colors.viewBackground, }]}>
                             {title ? (
-                                <Text style={[Louis_George_Cafe.bold.h5, styles.title, { color: colors.textPrimary }]}>
-                                    {title}
-                                </Text>
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        justifyContent: "space-between",
+                                        alignItems: "center",
+                                        marginHorizontal: wp(4),
+                                        // paddingVertical: hp(1),
+                                    }}
+                                >
+                                    <Text
+                                        style={[
+                                            Louis_George_Cafe.bold.h5,
+                                            { color: colors.textPrimary, flex: 1 }, // ensures title text doesn't push out "x"
+                                        ]}
+                                        numberOfLines={1}
+                                    >
+                                        {title}
+                                    </Text>
+
+                                    <MaterialCommunityIcons onPress={() => onCancel()} name={'close'} size={wp(7)} color={colors.textPrimary} />
+                                </View>
+
                             ) : null}
                             <FlatList
                                 data={items}
@@ -73,18 +93,22 @@ export default DropdownModal;
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.6)',
+        backgroundColor: 'rgba(0,0,0,0.7)',
         justifyContent: 'flex-end',
         alignItems: 'center',
+
     },
     container: {
         width: wp(96),
-        maxHeight: hp(50),
-        backgroundColor: '#fff',
+        maxHeight: hp(80),
+        backgroundColor: '#ccc',
         borderRadius: wp(4),
         paddingVertical: hp(2),
         marginBottom: wp(4),
-        borderWidth: wp(0.4),
+        borderWidth: wp(0.1),
+        borderColor: "#CCC",
+        borderWidth: wp(1),
+        // minHeight:wp(50)
     },
     title: {
         textAlign: 'center',

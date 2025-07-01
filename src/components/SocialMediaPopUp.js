@@ -120,11 +120,11 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
             animationIn="slideInRight"
             animationOut="slideOutRight"
             animationInTiming={500}       // Slower slide in
-            animationOutTiming={800}      // Slower slide out ✅
+            // animationOutTiming={800}      // Slower slide out ✅
             backdropColor="black"
-            backdropOpacity={0.5}
-            backdropTransitionOutTiming={800}  // Fade out timing for backdrop ✅
-            backdropTransitionInTiming={800}   // Optional: also slow fade-in
+            // backdropOpacity={0.5}
+            // backdropTransitionOutTiming={800}  // Fade out timing for backdrop ✅
+            // backdropTransitionInTiming={800}   // Optional: also slow fade-in
             onBackdropPress={!loading ? onCancel : null}
             style={styles.modal}
         >

@@ -108,7 +108,6 @@ export const getSettingMenus = (userdata, callback) => async (dispatch) => {
   }
 };
 
-
 // getCLinetData
 export const getCLinetData = (userdata, callback) => async (dispatch) => {
   try {
@@ -167,8 +166,6 @@ export const changeNoftificationStatus = (userdata, callback) => async (dispatch
 
 // loginUser
 export const loginUser = (credentials, callback) => async (dispatch) => {
-  // alert(JSON.stringify(credentials, null, 2))
-
   dispatch({ type: APP_USER_LOGIN_REQUEST });
   try {
     const endpoint = API_REQUESTS.API_LOGIN_URL;
@@ -465,11 +462,91 @@ export const getCompanyData = (payLoad, callback) => async (dispatch) => {
   }
 };
 
+// getRoleList
+export const getRoleList = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_MODULE_LIST_DATA_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getRoleList:", error.message);
+  }
+};
+// getRoleListArray
+
+// deleteRoleAccess
+export const deleteRoleAccess = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_DELETE_MODULE_ACCESS_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getRoleList:", error.message);
+  }
+};
+
+// getModuleListArray
+export const getModuleListArray = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_MODULE_LIST_ARRAY_DATA_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getModuleListArray:", error.message);
+  }
+};
+
+
+// getModuleAccessByIdArray
+export const getModuleAccessByIdArray = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_MODULE_LIST_BY_ID_DATA_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getModuleListArray:", error.message);
+  }
+};
+
+
+// subMitRoleAccess
+export const subMitRoleAccess = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_SUBMIT_ROLES_ACCESS_DATA_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getModuleListArray:", error.message);
+  }
+};
+
+// updateRoleAccess
+export const updateRoleAccess = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_ROLES_ACCESS_DATA_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getModuleListArray:", error.message);
+  }
+};
+
+
+
+
+
+
 // getChatDetails
 export const getChatDetails = (payLoad, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_GET_GROUPCHAT_DETAILS_URL;
-    const response = await sendRequest(endpoint,payLoad);
+    const response = await sendRequest(endpoint, payLoad);
     if (callback) callback(response);
     return response;
   } catch (error) {
@@ -658,7 +735,7 @@ export const getChatListApi = (payLoad, callback) => async (dispatch) => {
 export const getChatMessages = (payLoad, chatId, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_GET_CHAT_MESSAGES_LIST_URL;
-    const response = await sendRequest(endpoint, { userid: payLoad, chatId: chatId });
+    const response = await sendRequest(endpoint, { senderId: payLoad, chatId: chatId });
     if (callback) callback(response);
     return response;
   } catch (error) {
@@ -856,7 +933,7 @@ export const setMpinCall = (payLoad, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_SET_MPIN;
     const response = await sendRequest(endpoint, payLoad);
-    dispatch({ type: APP_USER_LOGIN_SUCCESS, payload: response });
+    // dispatch({ type: APP_USER_LOGIN_SUCCESS, payload: response });
     if (callback) callback(response);
     return response;
   } catch (error) {
@@ -1246,5 +1323,58 @@ export const getSocialMediasArray = (formFields, callback) => async (dispatch) =
     return response;
   } catch (error) {
     console.error("getSocialMediasArray:", error.message);
+  }
+};
+
+
+export const updatrProfilePic = (formData, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.USER_UPDATE_PRO_PIC.url;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await response.json();
+    if (data.success) {
+      dispatch({ type: APP_USER_LOGIN_SUCCESS, payload: data });
+    }
+
+    if (callback) callback(data);
+    return data;
+  } catch (error) {
+    console.error("updatrProfilePic:", error.message);
+  }
+};
+
+
+
+export const bottomNavigation = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_BTTOM_NAVIGATION_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("bottomNavigation:", error.message);
+  }
+};
+
+
+export const getProjectsListPagination = (uId, page, limit, searchText, callback) => async (dispatch) => {
+  const payLoadParams = {
+    page: searchText ? null : page,
+    limit: searchText ? null : limit,
+    search: searchText,
+    userid: uId,
+  };
+  try {
+    const endpoint = API_REQUESTS.API_GET_PROJECT_STATS_CONTENT_URL;
+    const response = await sendRequest(endpoint, payLoadParams);
+    console.log("dataFetch Success", response)
+    if (callback) callback(response); // ✅ Check if callback exists before calling
+    return response;
+  } catch (error) {
+    console.error("Error fetching getProjectsListPagination:", error.message);
   }
 };

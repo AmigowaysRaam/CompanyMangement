@@ -3,7 +3,6 @@ import {
     View,
     StyleSheet,
     ScrollView,
-    ActivityIndicator,
     TouchableOpacity,
     Text,
 } from 'react-native';
@@ -18,12 +17,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCompaniesList } from '../redux/authActions';
 import CompanyCard from './CompanyCard';
 import { Louis_George_Cafe } from '../resources/fonts';
+import SearchInput from './SearchInput';
 
 const CompanyManagement = () => {
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
     const navigation = useNavigation();
     const isTamil = i18n.language === 'ta';
+    const [searchText, setSearchText] = useState('');
 
     const dispatch = useDispatch();
     const userdata = useSelector((state) => state.auth.user?.data?.id);
@@ -55,9 +56,20 @@ const CompanyManagement = () => {
         }
     });
 
+    const filteredCompanies = companyList.filter((company) => {
+        const name = company.name || '';
+        const email = company.email || '';
+        return (
+            name.toLowerCase().includes(searchText.toLowerCase()) ||
+            email.toLowerCase().includes(searchText.toLowerCase())
+        );
+    });
+
+
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <HeaderComponent showBackArray={true} title={t('companyManagement')} />
+
             <View style={{ marginHorizontal: wp(4) }}>
                 <TouchableOpacity
                     onPress={() => {
@@ -65,7 +77,7 @@ const CompanyManagement = () => {
                     }}
                     style={{
                         flexDirection: 'row',
-                        width: wp(30),
+                        width: wp(40),
                         height: wp(8),
                         alignSelf: 'flex-end',
                         backgroundColor: THEMECOLORS[themeMode].primaryApp,
@@ -83,7 +95,7 @@ const CompanyManagement = () => {
                             {
                                 color: THEMECOLORS[themeMode].white,
                                 lineHeight: wp(5),
-                                fontSize: isTamil ? wp(3.2) : wp(4), // Tamil-specific size
+                                fontSize: isTamil ? wp(3.2) : wp(4),
                             },
                         ]}
                     >
@@ -92,6 +104,13 @@ const CompanyManagement = () => {
                 </TouchableOpacity>
             </View>
 
+            <View style={{ padding: wp(1), paddingHorizontal: hp(3) }}>
+                <SearchInput
+                    searchText={searchText}
+                    setSearchText={setSearchText}
+                    themeMode={themeMode}
+                />
+            </View>
             <ScrollView style={styles.list}>
                 {loading ? (
                     [1, 2, 3].map((company) => (
@@ -108,12 +127,22 @@ const CompanyManagement = () => {
                         />
                     ))
                 ) : (
-                    companyList.map((company) => (
-                        <CompanyCard key={company._id} company={company} isTamil={isTamil} 
-                        />
-                    ))
+                    companyList
+                        .filter((company) =>
+                            company.company_name
+                                ?.toLowerCase()
+                                .includes(searchText.toLowerCase())
+                        )
+                        .map((company) => (
+                            <CompanyCard
+                                key={company._id}
+                                company={company}
+                                isTamil={isTamil}
+                            />
+                        ))
                 )}
             </ScrollView>
+
         </View>
     );
 };

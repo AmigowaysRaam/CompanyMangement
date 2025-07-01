@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, FlatList, TouchableOpacity,
   ToastAndroid,
@@ -15,6 +15,7 @@ import { deleteProjectById, getProjectsStats } from '../../redux/authActions';
 import HomeScreenLoader from '../HomeScreenLoader';
 import { useAndroidBackHandler } from '../../hooks/useAndroidBackHandler';
 import ConfirmationModal from '../../components/ConfirmationModal';
+import SearchInput from '../SearchInput';
 
 export default function Projects() {
 
@@ -28,6 +29,7 @@ export default function Projects() {
   const [selectedProjectId, setSelectedProjectId] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const isTamil = i18n.language === 'ta';
+  const [searchText, setSearchText] = useState('');
 
   useAndroidBackHandler(() => {
     if (navigation.canGoBack()) {
@@ -79,7 +81,6 @@ export default function Projects() {
           status: project.projectStatus || 'Pending',
           completion: project.completion || 0,
           dCounts: project.documentsCount || 0,
-
         }));
 
         setProjectList(projectsMapped);
@@ -172,9 +173,17 @@ export default function Projects() {
               </Text>
             </TouchableOpacity>
           </View>
-
+          <View style={{ padding: wp(1), paddingHorizontal: hp(2) }}>
+            <SearchInput
+              searchText={searchText}
+              setSearchText={setSearchText}
+              themeMode={themeMode}
+            />
+          </View>
           <FlatList
-            data={projectList}
+            data={projectList.filter(project =>
+              project.title?.toLowerCase().includes(searchText.toLowerCase())
+            )}
             keyExtractor={item => item.id}
             renderItem={renderProjectItem}
             contentContainerStyle={{
@@ -184,13 +193,15 @@ export default function Projects() {
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={() => (
               <Text style={[Louis_George_Cafe.regular.h6, {
-                alignSelf: "center", marginTop: hp(20)
-              }]}>{t('no_data')}</Text>
+                alignSelf: "center",
+                marginTop: hp(20),
+              }]}>
+                {t('no_data')}
+              </Text>
             )}
-            refreshing={loading}               // <-- Add this
-            onRefresh={functionGetProjects}    // <-- Add this
+            refreshing={loading}
+            onRefresh={functionGetProjects}
           />
-
         </>
       )}
       <ConfirmationModal
