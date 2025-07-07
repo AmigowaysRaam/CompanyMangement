@@ -2,9 +2,7 @@
 import React, { useEffect, useState } from "react";
 import {
     View,
-    Text,
-    FlatList,
-    TouchableOpacity,
+    Text, FlatList, TouchableOpacity,
     StyleSheet,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -14,8 +12,7 @@ import { Louis_George_Cafe } from "../../resources/fonts";
 import { useTranslation } from "react-i18next";
 import { useNavigation } from "@react-navigation/native";
 
-
-const TaskTable = (tdata) => {
+const EmployeeTaskDashboard = (tdata) => {
 
     const [data, setData] = useState(null);
     const { t, i18n } = useTranslation();
@@ -23,8 +20,7 @@ const TaskTable = (tdata) => {
     const navigation = useNavigation();
 
     useEffect(() => {
-        // alert(JSON.stringify(tdata.tdata))
-        setData(tdata?.tdata?.Taskdata)
+        setData(tdata?.tdata)
     }, [tdata])
 
     const toggleCheckbox = (id) => {
@@ -33,12 +29,11 @@ const TaskTable = (tdata) => {
         );
         setData(updated);
     };
-    
+
     const renderItem = ({ item }) => (
         <View >
             <TouchableOpacity onPress={() => toggleCheckbox(item.id)} style={styles.row}>
                 <MaterialCommunityIcons
-                    // name={item.checked ? "checkbox-marked" : "square-outline"}
                     name={"chevron-right"}
                     size={hp(3.5)}
                     color={"#555"}
@@ -56,22 +51,12 @@ const TaskTable = (tdata) => {
             onPress={() => navigation.navigate('TaskManagement')}
         >
             <Text style={[Louis_George_Cafe.bold.h6, { marginVertical: wp(1) }]}>{t('tasks')}</Text>
-            <Text style={[Louis_George_Cafe.bold.h9]}>
-                {tdata.tdata?.currentDate}
-            </Text>
-            {/* <Text>{}</Text> */}
             <FlatList
                 data={data}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
                 ItemSeparatorComponent={() => <View style={styles.separator} />}
             />
-            <TouchableOpacity
-            // AssignedTask
-            onPress={() => navigation.navigate('AssignedTask')}
-            style={{ alignItems: 'center', padding: wp(0.5), borderWidth: wp(0.3), width: wp(20), alignSelf: "center", borderRadius: wp(4) }}>
-                <Text style={[Louis_George_Cafe.regular.h9]}>{t('viewAll')}</Text>
-            </TouchableOpacity>
         </TouchableOpacity>
     );
 };
@@ -96,8 +81,7 @@ const styles = StyleSheet.create({
     },
     separator: {
         height: 1,
-        // backgroundColor: COLORS.lightGray,
     },
 });
 
-export default TaskTable;
+export default EmployeeTaskDashboard;

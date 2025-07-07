@@ -86,7 +86,6 @@ const LeaveManageMent = () => {
                     </Text>
                 </View>
             </View>
-
             <View style={styles.cardContent}>
                 <Text style={[Louis_George_Cafe.regular.h7, styles.label,
                 { color: THEMECOLORS[themeMode].textPrimary }]}>

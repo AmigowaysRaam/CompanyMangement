@@ -99,7 +99,7 @@ export default function EmployeeTable({ data }) {
         <View style={styles.line} />
 
         <FlatList
-          data={data}
+          data={data.splice(0,5)}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
         />

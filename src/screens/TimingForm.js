@@ -3,10 +3,7 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  Text,
-  TouchableOpacity,
-  ToastAndroid,
-  ActivityIndicator,
+  Text, TouchableOpacity, ToastAndroid, ActivityIndicator,
   TextInput,
 } from 'react-native';
 import { hp, wp } from '../resources/dimensions';
@@ -36,13 +33,11 @@ const TimingForm = ({ onNext, setCurrentStep, currentStep, cId, companyDetails }
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [timePickerTarget, setTimePickerTarget] = useState(null);
   const [timePickerValue, setTimePickerValue] = useState(new Date());
-
   const dispatch = useDispatch();
-  
   useEffect(() => {
     if (companyDetails?.shifts?.length > 0) {
       const shift = companyDetails.shifts[0]; // Assuming only one shift or using the first
-  
+
       setShiftName(shift.shift_name || '');
       setShiftStartTime(new Date(shift.start_time));
       setShiftEndTime(new Date(shift.end_time));
@@ -52,7 +47,7 @@ const TimingForm = ({ onNext, setCurrentStep, currentStep, cId, companyDetails }
       setLunchEndTime(new Date(shift.lunch_break_end));
     }
   }, [companyDetails]);
-  
+
 
   useAndroidBackHandler(() => {
     if (navigation.canGoBack()) {

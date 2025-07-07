@@ -95,59 +95,62 @@ export default function Employee() {
             </LinearGradient>
           </View>
           {/* Gender Chart */}
-          <View style={styles.gendercard}>
-            <Text style={[adjustFont(Louis_George_Cafe.regular.h6, 2), { margin: hp(2) }]}>
-              {t('gender')}
-            </Text>
-
-            <View style={{ margin: wp(1) }}>
-              <Text style={[adjustFont(Louis_George_Cafe.regular.h7, 2), { marginHorizontal: hp(2) }]}>
-                {t('female')}
+          {/* {
+            employeeData?.genderRatio &&
+            <View style={styles.gendercard}>
+              <Text style={[adjustFont(Louis_George_Cafe.regular.h6, 2), { margin: hp(2) }]}>
+                {t('gender')}
               </Text>
-              <View style={styles.progressContainer}>
-                <View style={styles.progressBarBackground}>
-                  <View
-                    style={[
-                      styles.progressBarFill,
-                      { width: `${employeeData?.genderRatio?.female ?? 0}%` },
-                    ]}
-                  />
+
+              <View style={{ margin: wp(1) }}>
+                <Text style={[adjustFont(Louis_George_Cafe.regular.h7, 2), { marginHorizontal: hp(2) }]}>
+                  {t('female')}
+                </Text>
+                <View style={styles.progressContainer}>
+                  <View style={styles.progressBarBackground}>
+                    <View
+                      style={[
+                        styles.progressBarFill,
+                        { width: `${employeeData?.genderRatio?.female ?? 0}%` },
+                      ]}
+                    />
+                  </View>
+                </View>
+              </View>
+
+              <View style={{ margin: wp(1) }}>
+                <Text
+                  style={[
+                    adjustFont(Louis_George_Cafe.regular.h7, 3),
+                    { marginHorizontal: hp(2), lineHeight: wp(5) },
+                  ]}
+                >
+                  {t('male')}
+                </Text>
+                <View style={styles.progressContainer}>
+                  <View style={styles.progressBarBackground}>
+                    <View
+                      style={[
+                        styles.progressBarFill,
+                        { width: `${employeeData?.genderRatio?.male ?? 0}%` },
+                      ]}
+                    />
+                  </View>
                 </View>
               </View>
             </View>
-
-            <View style={{ margin: wp(1) }}>
-              <Text
-                style={[
-                  adjustFont(Louis_George_Cafe.regular.h7, 3),
-                  { marginHorizontal: hp(2), lineHeight: wp(5) },
-                ]}
-              >
-                {t('male')}
-              </Text>
-              <View style={styles.progressContainer}>
-                <View style={styles.progressBarBackground}>
-                  <View
-                    style={[
-                      styles.progressBarFill,
-                      { width: `${employeeData?.genderRatio?.male ?? 0}%` },      
-                    ]}
-                  />
-                </View>
-              </View>
-            </View>
-          </View>
-
+          } */}
           {
             employeeData?.showCreateEmployee &&
             <View>
               <TouchableOpacity
-                onPress={() => navigation.navigate('CreateEmployee')}
+                // onPress={() => navigation.navigate('CreateEmployee')}
+                onPress={() => navigation.navigate('CreateEmployeeFrom')}
                 style={{
                   alignSelf: "flex-end",
                   backgroundColor: THEMECOLORS[themeMode].buttonBg,
                   paddingHorizontal: wp(3),
-                  marginHorizontal: wp(3), borderRadius: wp(1), marginBottom: wp(2)
+                  marginHorizontal: wp(3), borderRadius: wp(1), marginVertical: wp(3)
                 }}>
                 <Text style={[Louis_George_Cafe.bold.h7, {
                   alignSelf: "flex-end",
@@ -159,7 +162,6 @@ export default function Employee() {
               </TouchableOpacity>
             </View>
           }
-
           {/* Employee Table */}
           {employeeData?.employeeList?.length > 0 && (
             <View
@@ -178,7 +180,7 @@ export default function Employee() {
                   {t('employee')}
                 </Text>
                 <Text numberOfLines={1} style={[styles.tableCell, {
-                   textTransform: 'capitalize'
+                  textTransform: 'capitalize'
                 }]}>
                   {t('id')}
                 </Text>
@@ -191,7 +193,7 @@ export default function Employee() {
                 keyExtractor={(item) => item.id.toString()}
                 showsVerticalScrollIndicator={false}
                 ListFooterComponent={
-                  employeeData?.employeeList?.length > 5 &&
+                  // employeeData?.employeeList?.length > 5 &&
                   <TouchableOpacity onPress={() => navigation.navigate('EmployeeList')} style={{ alignSelf: "center", margin: wp(3), paddingHorizontal: wp(3), borderWidth: wp(0.3), borderRadius: wp(5) }}>
                     <Text style={[Louis_George_Cafe.regular.h9, {
                       lineHeight: wp(5)
@@ -199,22 +201,29 @@ export default function Employee() {
                   </TouchableOpacity>
                 }
                 contentContainerStyle={{
-                  paddingBottom: hp(10),
+                  paddingBottom: hp(1),
                   backgroundColor: '#F2E8FF',
                 }}
                 renderItem={({ item: emp }) => (
                   <TouchableOpacity
-                    onPress={() => {
-                      navigation.navigate('EmplyeeDetails', emp);
-                    }}
+                    onPress={() => navigation.navigate('CreateEmployeeFrom', { data: emp?.id })}
+
+                    // onPress={() => {
+                    //   navigation.navigate('EmplyeeDetails', emp);
+
+                    // }}
                     style={styles.tableRow}
                   >
                     <View style={{ marginHorizontal: wp(2) }}>
+
+
                       <View style={styles.avatar}>
                         <Text style={[Louis_George_Cafe.regular.h7, { fontSize: wp(4), color: '#000' }]}>
                           {emp?.name?.charAt(0)}
                         </Text>
                       </View>
+
+
                     </View>
                     <Text
                       numberOfLines={1}
@@ -268,7 +277,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: wp(1),
   },
   card: {
-    flex: 1, height: wp(30), borderRadius: wp(5), marginHorizontal: wp(1),
+    flex: 1, height: wp(22), borderRadius: wp(2), marginHorizontal: wp(1),
     justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.2, shadowOffset: { width: 0, height: 3 }, shadowRadius: 5, elevation: 5,
   },
   gendercard: {

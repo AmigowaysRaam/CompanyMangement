@@ -55,10 +55,10 @@ const MyProfileUpdate = () => {
                     const data = response.data[0];
                     setisLoading(false)
                     setFields({
-                        fullname: data.full_name || '',
-                        username: data.designation, // You can assign if you have a `username` in API
-                        designation: data.designation || '',
-                        dob: __DEV__ ? "TEST" : "",      // Assign if available in API
+                        fullname: data?.full_name || '',
+                        username: data?.designation, // You can assign if you have a `username` in API
+                        designation: data?.designation || '',
+                        dob: __DEV__ ? "TEST" :  data?.dob ,      // Assign if available in API
                         email: data.email || '',
                         phone: data.phone || '',
                     });
@@ -82,7 +82,7 @@ const MyProfileUpdate = () => {
     const validate = () => {
         const newErrors = {};
         if (!fields.fullname) newErrors.fullname = t('fullnameisrequired');
-        if (!fields.username) newErrors.username = t('usernameisrequired');
+        // if (!fields.username) newErrors.username = t('usernameisrequired');
         // if (!fields.designation) newErrors.designation = t('designationisrequired');
         // // if (!fields.dob) newErrors.dob = t('dobisrequired');
         // if (!fields.email) newErrors.email = t('emailisrequired');

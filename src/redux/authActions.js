@@ -262,6 +262,35 @@ export const submitCreateForm = (payLoadParams, callback) => async (dispatch) =>
   }
 };
 
+// submitCreateSalaryStructureForm
+export const submitCreateSalaryStructureForm = (payLoadParams, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_SUBMIT_CREATE_SALARY_COMPANY;
+    const response = await sendRequest(endpoint, payLoadParams);
+    if (callback) callback(response); // ✅ Check if callback exists before calling
+    return response;
+  } catch (error) {
+    console.error("Error submitCreateSalaryStructureForm:", error.message);
+  }
+};
+
+
+// updateCreateSalaryStructureForm
+export const updateCreateSalaryStructureForm = (payLoadParams, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_UPFDATE_SALARY_COMPANY;
+    const response = await sendRequest(endpoint, payLoadParams);
+    if (callback) callback(response); // ✅ Check if callback exists before calling
+    return response;
+  } catch (error) {
+    console.error("Error updateCreateSalaryStructureForm:", error.message);
+  }
+};
+
+
+
+
+
 // updateContactInfo
 export const updateContactInfo = (payLoadParams, callback) => async (dispatch) => {
   try {
@@ -462,6 +491,20 @@ export const getCompanyData = (payLoad, callback) => async (dispatch) => {
   }
 };
 
+// getSalaryTabMenu
+
+export const getSalaryTabMenu = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_SALARYSTRUCTR_TAB_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompanyData:", error.message);
+  }
+};
+
+
 // getRoleList
 export const getRoleList = (payLoad, callback) => async (dispatch) => {
   try {
@@ -473,6 +516,22 @@ export const getRoleList = (payLoad, callback) => async (dispatch) => {
     console.error("getRoleList:", error.message);
   }
 };
+
+
+// getAdminById
+export const getAdminById = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_ADMIN_BY_ID_DATA_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getRoleList:", error.message);
+  }
+};
+
+
+
 // getRoleListArray
 
 // deleteRoleAccess
@@ -634,6 +693,33 @@ export const getClientStepData = (payLoad, callback) => async (dispatch) => {
     console.error("getCompanyData:", error.message);
   }
 };
+
+// getEmplDetailById
+export const getEmplDetailById = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_EMP_DATA_BY_ID_URL;
+    const response = await sendRequest(endpoint, { eId: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompanyData:", error.message);
+  }
+};
+
+// getEmployeeStepData
+export const getEmployeeStepData = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_EMPLOYEE_STEP_DATA_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompanyData:", error.message);
+  }
+};
+
+
+
 // getProjectStepData
 export const getProjectStepData = (payLoad, callback) => async (dispatch) => {
   try {
@@ -693,6 +779,90 @@ export const getCompaniesList = (payLoad, callback) => async (dispatch) => {
     console.error("getCompaniesList:", error.message);
   }
 };
+
+// getSalaryStructureList
+export const getSalaryStructureList = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_SALARYSTUCTURELIST_CONTENT_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getSalaryStructureList:", error.message);
+  }
+};
+
+// createDepartment
+export const createDepartment = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_CREATE_DEPARTMENT_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createDepartment:", error.message);
+  }
+};
+
+// updateDepartment
+export const updateDepartment = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_DEPARTMENT_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("updateDepartment:", error.message);
+  }
+};
+// deleteDepartment
+export const deleteDepartment = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_DELETE_DEPARTMENT_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("updateDepartment:", error.message);
+  }
+};
+
+// getEmplCategoryList
+export const getEmplCategoryList = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_EMPL_LIST_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("updateDepartment:", error.message);
+  }
+};
+
+
+// getDepartMentList
+export const getDepartMentList = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_DEPARTMENTLIST_CONTENT_URL;
+    const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompaniesList:", error.message);
+  }
+};
+// getSalaryStructureById
+export const getSalaryStructureById = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_SALARYSTIURCTURE_BY_ID_CONTENT_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompaniesList:", error.message);
+  }
+};
+
 // getCategoryList
 export const getCategoryListCall = (payLoad, callback) => async (dispatch) => {
   // dispatch({ type: APP_USER_HOMEPAGE_REQUEST });
@@ -769,6 +939,69 @@ export const getLeaveArray = (payLoad, callback) => async (dispatch) => {
   }
 };
 
+// getAdminList
+export const getAdminList = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_ADMIN_ARRAY_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getLeaveArray:", error.message);
+  }
+};
+
+// deleteAdminAction
+export const deleteAdminAction = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_DELETE_ADMIN__URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("deleteAdminAction:", error.message);
+  }
+};
+
+// getHolidayLIstApi
+export const getHolidayLIstApi = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_HOLIDAY_ARRAY_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getLeaveArray:", error.message);
+  }
+};
+// getRequestedLeaveArray
+export const getRequestedLeaveArray = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_REQUESTED_LEAVE_ARRAY_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getLeaveArray:", error.message);
+  }
+};
+
+// updateLeaveStatus
+export const updateLeaveStatus = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_LEAVE_ARRAY_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getLeaveArray:", error.message);
+  }
+};
+
+
+
+
+
 // levaeFormSubmit
 export const levaeFormSubmit = (payLoad, callback) => async (dispatch) => {
   try {
@@ -781,8 +1014,17 @@ export const levaeFormSubmit = (payLoad, callback) => async (dispatch) => {
   }
 };
 
-
-
+// getCompabyBranches
+export const getCompabyBranches = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_BRANHC_BY_COMPANY_SUBMIT_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getCompabyBranches:", error.message);
+  }
+};
 // create-punch
 export const punchInOutApi = (payLoad, type, callback) => async (dispatch) => {
   try {
@@ -1031,6 +1273,7 @@ export const createEmployeeCall = (userId, payLoad, callback) => async (dispatch
     formData.append('dob', payLoad.dob);
     formData.append('email', payLoad.email);
     formData.append('phone', payLoad.phone);
+    formData.append('role', payLoad.role_id);
     formData.append('userid', userId);
     formData.append('password', "password");
     const response = await fetch(endpoint, {
@@ -1224,29 +1467,6 @@ export const updateSubCatgoryForm = (formFields, callback) => async (dispatch) =
   }
 };
 
-// export const updateProjectCost = (formFields, callback) => async (dispatch) => {
-//   try {
-
-//     const endpoint = API_REQUESTS.API_UPDATE_CREATE_PROJECT_URL.url;
-//     const response = await fetch(endpoint, {
-//       method: 'POST',
-//       headers: {
-//         Accept: 'application/json',
-//         // Do NOT set 'Content-Type': 'multipart/form-data' here; fetch sets it automatically with boundary
-//       },
-//       body: formFields,
-//     });
-//     const data = await response.json();
-//     if (callback) callback(data);
-//     return data;
-//   } catch (error) {
-//     console.error("updateProjectCost error:", error.message);
-//     if (callback) callback({ success: false, message: error.message });
-//   }
-// };
-
-
-
 export const updateProjectCost = (formFields, callback) => async (dispatch) => {
   // alert(JSON.stringify(payLoad))
   try {
@@ -1376,5 +1596,144 @@ export const getProjectsListPagination = (uId, page, limit, searchText, callback
     return response;
   } catch (error) {
     console.error("Error fetching getProjectsListPagination:", error.message);
+  }
+};
+
+
+// createNewEmp
+export const createNewEmp = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_GET_CREATE_EMP_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createNewEmp:", error.message);
+  }
+};
+
+
+// createPosition
+export const createPosition = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_CREATE_EMP_POSTION_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createPosition:", error.message);
+  }
+};
+
+// updatePosition
+export const updatePosition = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_EMP_POSTION_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createPosition:", error.message);
+  }
+};
+
+// deletePositionArr
+export const deletePositionArr = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_DELETE_EMP_POSTION_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createPosition:", error.message);
+  }
+};
+
+
+// createHolidayApi
+export const createHolidayApi = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_CREATE_HOLIDAY_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createPosition:", error.message);
+  }
+};
+
+// updateHolidayForm
+export const updateHolidayForm = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_HOLIDAY_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createPosition:", error.message);
+  }
+};
+
+
+// deleteHolidayApi
+export const deleteHolidayApi = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_DELETE_HOLIDAY_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createPosition:", error.message);
+  }
+};
+// genearteOverAllPayroll
+export const genearteOverAllPayroll = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_GET_GENARTRE_PAYROLL_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("createPosition:", error.message);
+  }
+};
+// /
+
+export const createAdminApi = (formData, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_CREATE_ADMIN_URL.url;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await response.json();
+    if (callback) callback(data);
+    return data;
+  } catch (error) {
+    console.error("updatrProfilePic:", error.message);
+  }
+};
+
+// updateAdminDetails
+export const updateAdminDetails = (formData, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_UPDATE_ADMIN_URL.url;
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await response.json();
+    if (callback) callback(data);
+    return data;
+  } catch (error) {
+    console.error("updatrProfilePic:", error.message);
   }
 };

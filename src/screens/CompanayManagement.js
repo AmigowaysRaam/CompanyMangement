@@ -20,6 +20,7 @@ import { Louis_George_Cafe } from '../resources/fonts';
 import SearchInput from './SearchInput';
 
 const CompanyManagement = () => {
+    
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
     const navigation = useNavigation();
@@ -77,10 +78,10 @@ const CompanyManagement = () => {
                     }}
                     style={{
                         flexDirection: 'row',
-                        width: wp(40),
+                        width: wp(30),
                         height: wp(8),
                         alignSelf: 'flex-end',
-                        backgroundColor: THEMECOLORS[themeMode].primaryApp,
+                        backgroundColor: THEMECOLORS[themeMode].buttonBg,
                         borderRadius: wp(2),
                         alignItems: 'center',
                         justifyContent: 'center',
@@ -93,7 +94,7 @@ const CompanyManagement = () => {
                         style={[
                             Louis_George_Cafe.bold.h6,
                             {
-                                color: THEMECOLORS[themeMode].white,
+                                color: THEMECOLORS[themeMode].buttonText,
                                 lineHeight: wp(5),
                                 fontSize: isTamil ? wp(3.2) : wp(4),
                             },

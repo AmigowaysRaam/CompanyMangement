@@ -6,6 +6,8 @@ import {
   BackHandler,
   ScrollView,
   RefreshControl,
+  TouchableOpacity,
+  Text,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -23,20 +25,20 @@ import { getHomePageData } from "../../redux/authActions";
 import { useTranslation } from "react-i18next";
 import HomeScreenLoader from "../HomeScreenLoader";
 import { LoginManager, AccessToken } from "react-native-fbsdk-next";
+import EmployeeTaskDashboard from "../../ScreenComponents/HeaderComponent/EmployeeTaskDashboard";
 
 const HomeScreen = () => {
+
   const dispatch = useDispatch();
   const userdata = useSelector((state) => state.auth.user?.data);
   const { themeMode } = useTheme();
   const { t } = useTranslation();
-
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [homeData, setHomeData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [working, setWorking] = useState(false);
   const [chtCount, setChatCount] = useState(null);
-
   // Optional Facebook login logic (currently unused)
   const facebookLogin = async () => {
     try {
@@ -55,7 +57,6 @@ const HomeScreen = () => {
         console.error("Failed to get access token");
         return;
       }
-
       console.log("Access Token:", data.accessToken.toString());
     } catch (error) {
       console.error("Facebook Login Error: ", error);
@@ -75,11 +76,11 @@ const HomeScreen = () => {
   // Fetch home data function
   const fetchHomeData = () => {
     setLoading(true);
-
     dispatch(
       getHomePageData(userdata?.id, (response) => {
         if (response.success && response.data?.length > 0) {
           setHomeData(response.data[0]);
+          // alert(JSON.stringify(response.data[0]),null,2)
           setWorking(response?.punchedInToday);
           setChatCount(response?.count?.toString() || null);
         }
@@ -96,6 +97,11 @@ const HomeScreen = () => {
     }, [userdata])
   );
 
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //   }, [userdata])
+  // );
+
   // Map of component renderers
   const componentMap = {
     WorkForceCard: (data) => <WorkForceCard data={data} />,
@@ -103,6 +109,7 @@ const HomeScreen = () => {
     TaskTable: (data) => <TaskTable tdata={data} />,
     PieChartWebView: (data) => <PieChartWebView data={data} />,
     PaySlip: (data) => <EmployeeTable data={data} />, // Maps PaySlip key to EmployeeTable
+    Employeetask: (data) => <EmployeeTaskDashboard tdata={data} />,
   };
 
   // Swipe gesture to open modal
@@ -140,11 +147,21 @@ const HomeScreen = () => {
         title={t("home")}
         openModal={handleMenuClick}
       />
+      <TouchableOpacity
+        style={{ backgroundColor: 'red' }}
+        onPress={() =>
+          facebookLogin()
+        }
+      >
+        <Text>test FaceBook</Text>
+      </TouchableOpacity>
+
 
       {loading ? (
         <HomeScreenLoader />
       ) : (
-        <ScrollView 
+        <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContainer}
           refreshControl={
             <RefreshControl

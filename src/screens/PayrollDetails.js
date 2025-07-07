@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
     TouchableOpacity,
     StyleSheet,
     ScrollView,
-    KeyboardAvoidingView, 
+    KeyboardAvoidingView,
     Platform,
     ToastAndroid,
 } from 'react-native';
@@ -16,7 +16,7 @@ import { useTheme } from '../context/ThemeContext';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { generatePayroll } from '../redux/authActions';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import { ActivityIndicator } from 'react-native-paper';
@@ -25,7 +25,7 @@ import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import FileViewer from 'react-native-file-viewer';
 import { WebView } from 'react-native-webview';
-import { Picker } from '@react-native-picker/picker';
+import DropdownModal from '../components/DropDownModal';
 
 const getPayrollHTML = (data) => `
   <html>
@@ -133,6 +133,8 @@ const generatePDF = async (data, t) => {
 
 
 const PayrollDetails = () => {
+
+
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
     const isTamil = i18n.language === 'ta';
@@ -140,9 +142,17 @@ const PayrollDetails = () => {
     const dispatch = useDispatch();
     const navigation = useNavigation();
 
+    const route = useRoute();
+    const itemList = route.params?.item;
+
     const [isLoading, setIsLoading] = useState(false);
     const [payrollData, setPayrollData] = useState(null);
     const [dateChanged, setDateChanged] = useState(false);
+
+    const [isMonthModalVisible, setMonthModalVisible] = useState(false);
+    const [isYearModalVisible, setYearModalVisible] = useState(false);
+
+
 
     const currentYear = new Date().getFullYear();
     const years = [];
@@ -176,6 +186,18 @@ const PayrollDetails = () => {
         year: '',
     });
 
+
+    const monthItems = months.map(month => ({
+        label: t(month.label.toLowerCase()) || month.label,
+        value: month.value,
+    }));
+
+    const yearItems = years.map(year => ({
+        label: year.toString(),
+        value: year.toString(),
+    }));
+
+
     const [errors, setErrors] = useState({});
 
     useAndroidBackHandler(() => {
@@ -206,10 +228,9 @@ const PayrollDetails = () => {
             setErrors(validationErrors);
             return;
         }
-
         setIsLoading(true);
         dispatch(
-            generatePayroll(userdata?.id, fields, (response) => {
+            generatePayroll(itemList.id, fields, (response) => {
                 setIsLoading(false);
                 ToastAndroid.show(response.message, ToastAndroid.SHORT);
                 if (response?.success) {
@@ -221,9 +242,13 @@ const PayrollDetails = () => {
         );
     };
 
+    useEffect(() => {
+        // alert(JSON.stringify(itemList.id))
+    })
+
     return (
         <View style={{ flex: 1, backgroundColor: THEMECOLORS[themeMode].background }}>
-            <HeaderComponent title={t('PayrollDetails')} showBackArray={true} />
+            <HeaderComponent title={`${itemList?.name} - ${itemList?.eId}`} showBackArray={true} />
 
             {isLoading ? (
                 <ActivityIndicator style={{ marginTop: wp(20) }} color="#d9d9d9" />
@@ -243,31 +268,30 @@ const PayrollDetails = () => {
                                 </Text>
                                 <View style={styles.row}>
                                     <View style={[styles.pickerWrapper, { flex: 1, marginRight: wp(2), borderColor: errors.month ? 'red' : THEMECOLORS[themeMode].textPrimary }]}>
-                                        <Picker
-                                            selectedValue={fields.month}
-                                            onValueChange={(itemValue) => handleChange('month', itemValue)}
-                                            style={{ color: THEMECOLORS[themeMode].textPrimary }}
-                                            dropdownIconColor={THEMECOLORS[themeMode].textPrimary}
+                                        <TouchableOpacity
+                                            style={[styles.dropdownInput, { borderColor: errors.month ? 'red' : THEMECOLORS[themeMode].textPrimary }]}
+                                            onPress={() => setMonthModalVisible(true)}
                                         >
-                                            <Picker.Item label={t('month') || 'Month'} value="" />
-                                            {months.map((month) => (
-                                                <Picker.Item key={month.value} label={month.label} value={month.value} />
-                                            ))}
-                                        </Picker>
+                                            <Text style={{ color: fields.month ? THEMECOLORS[themeMode].textPrimary : '#999' }}>
+                                                {fields.month
+                                                    ? monthItems.find(item => item.value === fields.month)?.label
+                                                    : t('month') || 'Month'}
+                                            </Text>
+                                        </TouchableOpacity>
+
                                     </View>
 
                                     <View style={[styles.pickerWrapper, { flex: 1, marginLeft: wp(2), borderColor: errors.year ? 'red' : THEMECOLORS[themeMode].textPrimary }]}>
-                                        <Picker
-                                            selectedValue={fields.year}
-                                            onValueChange={(itemValue) => handleChange('year', itemValue)}
-                                            style={{ color: THEMECOLORS[themeMode].textPrimary }}
-                                            dropdownIconColor={THEMECOLORS[themeMode].textPrimary}
+
+                                        <TouchableOpacity
+                                            style={[styles.dropdownInput, { borderColor: errors.year ? 'red' : THEMECOLORS[themeMode].textPrimary }]}
+                                            onPress={() => setYearModalVisible(true)}
                                         >
-                                            <Picker.Item label={t('year') || 'Year'} value="" />
-                                            {years.map((year) => (
-                                                <Picker.Item key={year} label={year.toString()} value={year.toString()} />
-                                            ))}
-                                        </Picker>
+                                            <Text style={{ color: fields.year ? THEMECOLORS[themeMode].textPrimary : '#999' }}>
+                                                {fields.year || t('year') || 'Year'}
+                                            </Text>
+                                        </TouchableOpacity>
+
                                     </View>
                                 </View>
                                 {(errors.month || errors.year) && (
@@ -317,6 +341,30 @@ const PayrollDetails = () => {
                     </View>
                 </>
             )}
+            <DropdownModal
+                visible={isMonthModalVisible}
+                items={monthItems}
+                title={t('select_month')}
+                selectedValue={fields.month}
+                onSelect={(item) => {
+                    handleChange('month', item.value);
+                    setMonthModalVisible(false);
+                }}
+                onCancel={() => setMonthModalVisible(false)}
+            />
+
+            <DropdownModal
+                visible={isYearModalVisible}
+                items={yearItems}
+                title={t('select_year')}
+                selectedValue={fields.year}
+                onSelect={(item) => {
+                    handleChange('year', item.value);
+                    setYearModalVisible(false);
+                }}
+                onCancel={() => setYearModalVisible(false)}
+            />
+
         </View>
     );
 };
@@ -357,6 +405,14 @@ const styles = StyleSheet.create({
     fixedButtonWrapper: {
         padding: wp(3),
     },
+    dropdownInput: {
+        borderRadius: wp(3),
+        paddingHorizontal: wp(3),
+        // marginBottom: hp(1.5),
+        justifyContent: 'center',
+        height: 50,
+    },
+
     submitButton: {
         padding: wp(2.5),
         borderRadius: wp(2),

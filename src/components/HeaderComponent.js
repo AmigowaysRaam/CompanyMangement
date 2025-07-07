@@ -211,7 +211,7 @@ function HeaderComponent({
                 <TouchableWithoutFeedback onPress={onTitleClick}>
                   {/* <Animated.View style={{ transform: [{ translateX: slideAnim }] }}> */}
                   <View style={{ width: wp(75), alignItems: titleAlign }}>
-                    <Text style={[Louis_George_Cafe.bold.h6, {
+                    <Text numberOfLines={1} style={[Louis_George_Cafe.bold.h6, {
                       justifyContent: "center",
                       alignItems: "center",
                       textTransform: 'capitalize',

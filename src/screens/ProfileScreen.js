@@ -101,15 +101,23 @@ const ProfileScreen = () => {
             'Payroll': 'PayrollDetails',
             'Category Management': 'CategoryManagement',
             'Company Management': 'CompanyManagement',
-            'Task': 'TaskManagement',
             'Social Connect': 'SocialMediaScreen',
-            'Role Settings': 'RolesandPrevilages',
+            'Roles & Privileges': 'RolesandPrevilages',
             'Chats': 'ChatListScreen',
             'Home': "HomeScreen",
+            'Project Management': 'Projects',
+            'Task': 'AssignedTask',
             'All Employees': "EmployeeList",
             'Companies': 'CompanyManagement',
-            'Project Management': 'Projects',
+            'Task Management': 'TaskManagement',
+            'Departments': 'DepartmentManagement',
+            'Leave Request': 'LeaveRequestList',
+            'Holidays': 'HolidayManagement',
             'Client Management': 'ClientScreen',
+            'Employee Catgories': 'EmplyeeCategory',
+            'Salary Structure': "CreateSalartyStructure",
+            'Employee Payroll': 'PayrollDetails',
+
         };
 
         const route = routeMap[label];
@@ -172,7 +180,7 @@ const ProfileScreen = () => {
                         if (item.submenus) {
                             toggleSubmenu(index);
                         } else {
-                            handleFnNavigate(item.label);
+                            handleFnNavigate(item.value);
                         }
                     }}
                 >
@@ -205,7 +213,7 @@ const ProfileScreen = () => {
                             <TouchableOpacity
                                 key={idx}
                                 style={styles.submenuItem}
-                                onPress={() => handleFnNavigate(submenu.label)}
+                                onPress={() => handleFnNavigate(submenu.value)}
                             >
                                 <Text style={[
                                     isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h6,
@@ -255,12 +263,15 @@ const ProfileScreen = () => {
                     end={{ x: 1, y: 1 }}
                     style={styles.coverImage}
                 >
-                    <View style={styles.profileImageContainer}>
+                    <TouchableOpacity style={styles.profileImageContainer} onPress={() => navigation.navigate('MyProfileUpdate')}>
                         <Image
                             source={{ uri: userdata?.data?.profileImage }}
                             style={styles.profileImage}
                         />
-                    </View>
+                        <View style={{ position: "absolute", right: hp(-1) }}>
+                            <MaterialCommunityIcons name='pencil-circle' color={THEMECOLORS[themeMode].primaryApp} size={wp(8)} />
+                        </View>
+                    </TouchableOpacity>
                 </LinearGradient>
                 <View style={styles.infoContainer}>
                     <Text style={[

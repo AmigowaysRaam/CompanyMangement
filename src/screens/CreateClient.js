@@ -127,7 +127,6 @@ const CreateClient = () => {
                 </View>
             ) : (
                 <>
-
                     {/* Step Icons Navigation */}
                     <View style={styles.stepTabs}>
                         {stepData.map((step, index) => (
@@ -139,7 +138,7 @@ const CreateClient = () => {
                                         borderBottomWidth: wp(currentStep === index ? 1 : 0),
                                         borderColor:
                                             currentStep === index
-                                                ? THEMECOLORS[themeMode].primaryApp
+                                                ? themeMode == 'dark' ? THEMECOLORS[themeMode].accent : THEMECOLORS[themeMode].primaryApp
                                                 : THEMECOLORS[themeMode].textPrimary,
                                     },
                                 ]}
@@ -154,7 +153,7 @@ const CreateClient = () => {
                                     size={wp(currentStep === index ? 8 : 7)}
                                     color={
                                         currentStep === index
-                                            ? THEMECOLORS[themeMode].primaryApp
+                                            ? themeMode == 'dark' ? THEMECOLORS[themeMode].accent : THEMECOLORS[themeMode].primaryApp
                                             : THEMECOLORS[themeMode].textPrimary
                                     }
                                 />
@@ -163,7 +162,7 @@ const CreateClient = () => {
                                         style={[
                                             Louis_George_Cafe.regular.h7,
                                             {
-                                                color: THEMECOLORS[themeMode].primaryApp,
+                                                color: themeMode == 'dark' ? THEMECOLORS[themeMode].accent : THEMECOLORS[themeMode].primaryApp,
                                                 paddingHorizontal: wp(2), textTransform: 'capitalize'
                                             },
                                         ]}

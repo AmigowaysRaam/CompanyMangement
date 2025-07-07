@@ -39,7 +39,7 @@ const LoginScreen = () => {
   const { themeMode } = useTheme();
   const { language } = useLanguage();
   const [username, setUsername] = useState(__DEV__ ? "admin@gmail.com" : "");
-  const [password, setPassword] = useState(__DEV__ ? "12345" : "");
+  const [password, setPassword] = useState(__DEV__ ? "1234" : "");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { isAuthenticated, lerror } = useSelector((state) => state.auth);
@@ -83,7 +83,7 @@ const LoginScreen = () => {
     // alert(JSON.stringify(credentials))
     dispatch(loginUser(credentials, (response) => {
       setIsLoading(false);
-      console.log(JSON.stringify(response), null, 2)
+      // console.log(JSON.stringify(response), null, 2)
       if (response.success) {
         AsyncStorage.setItem('user_data', JSON.stringify(response));
         Toast.show({

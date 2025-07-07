@@ -109,7 +109,7 @@ const AddCategoryForm = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
-            <HeaderComponent showBackArray={true} title={t('AddCategoryForm')} />
+            <HeaderComponent showBackArray={true} title={cData?._id ? t('update') : t('add_new')} />
             <ScrollView contentContainerStyle={styles.form}>
                 {/* Category Name */}
                 <Text style={[
@@ -232,7 +232,7 @@ const AddCategoryForm = () => {
                                 fontSize: isTamil ? wp(3) : wp(4.5),
                             }
                         ]}>
-                            {t('create')}
+                            {cData?._id ? t('update') : t('create')}
                         </Text>
                     )}
                 </TouchableOpacity>
@@ -240,7 +240,6 @@ const AddCategoryForm = () => {
         </View>
     );
 };
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,

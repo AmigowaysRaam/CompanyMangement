@@ -99,6 +99,7 @@ const Splash = () => {
 
   const fetchSiteSettings = () => {
     dispatch(getSiteSettingsFrom((response) => {
+      // alert
       if (response?.data) {
         AsyncStorage.setItem('site_settings', JSON.stringify(response.data))
           .then(() => {

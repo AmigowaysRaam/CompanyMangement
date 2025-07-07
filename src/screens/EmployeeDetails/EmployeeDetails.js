@@ -122,7 +122,7 @@ const EmplyeeDetails = () => {
               </Text>
             </View>
             <View style={{ marginVertical: wp(2) }}>
-              <TouchableOpacity onPress={() => navigation.navigate('BankDetails', employeeDetails)} style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
+              {/* <TouchableOpacity onPress={() => navigation.navigate('BankDetails', employeeDetails)} style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
                 <Text style={[Louis_George_Cafe.regular.h7, { color: theme.textPrimary,lineHeight:wp(5) }]}>
                   {t('bankdetails')}
                 </Text>
@@ -132,7 +132,7 @@ const EmplyeeDetails = () => {
                   size={hp(3.5)}
                   color={theme.textPrimary}
                 />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity onPress={() => navigation.navigate('PayrollHistory',employeeDetails)} style={[styles.optionButton, { borderColor: theme.textPrimary }]}>
                 <Text style={[Louis_George_Cafe.regular.h7, { color: theme.textPrimary,lineHeight:wp(5) }]}>
                   {t('payrollhistory')}

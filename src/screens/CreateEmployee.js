@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity,
     StyleSheet, Image, ScrollView, KeyboardAvoidingView, Platform, ToastAndroid
@@ -13,14 +13,15 @@ import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
-import { createEmployeeCall } from '../redux/authActions';
+import { createEmployeeCall, getRoleList } from '../redux/authActions';
 import ProfileScreenLoader from './ProfileLoader';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
+import DropdownModal from '../components/DropDownModal';
 
 const CreateEmployee = () => {
-
+    
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
     const isTamil = i18n.language === 'ta';
@@ -31,18 +32,21 @@ const CreateEmployee = () => {
     const [isLoading, setisLoading] = useState(false);
 
     const [fields, setFields] = useState({
-        fullname: __DEV__ ? 'xccxxvc' : '',
-        username: __DEV__ ? 'xcvcxv' : '',
-        designation: __DEV__ ? 'xcvxcvxcv' : '',
+        fullname: __DEV__ ? 'test' : '',
+        username: __DEV__ ? 'xtestcvcxv' : '',
+        designation: __DEV__ ? 'xcvxcvtestxcv' : '',
         dob: '',
         email: __DEV__ ? 'divyaTest@gmail.com' : '',
         phone: __DEV__ ? '1234567896' : '',
-        password: __DEV__ ? 'test' : '',
+        password: __DEV__ ? '1234' : '',
+        role_id: null
     });
 
     const [errors, setErrors] = useState({});
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [date, setDate] = useState(new Date());
+    const [roleDataList, setRoleDataList] = useState([]);
+    const [showRoleDropdown, setShowRoleDropdown] = useState(false);
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
@@ -51,6 +55,20 @@ const CreateEmployee = () => {
         }
         return false;
     });
+
+    const fetchCompanyData = () => {
+        dispatch(
+            getRoleList(userdata?.id, (response) => {
+                if (response.success) {
+                    setRoleDataList(response?.data);
+                }
+            })
+        );
+    };
+
+    useEffect(() => {
+        fetchCompanyData();
+    }, []);
 
     const handleImagePick = () => {
         launchImageLibrary({ mediaType: 'photo' }, (response) => {
@@ -65,11 +83,11 @@ const CreateEmployee = () => {
         const newErrors = {};
         if (!fields.fullname) newErrors.fullname = t('employeenameisrequired');
         if (!fields.username) newErrors.username = t('usernameisrequired');
-        if (!fields.designation) newErrors.designation = t('designationisrequired');
+        // if (!fields.designation) newErrors.designation = t('designationisrequired');
         if (!fields.dob) newErrors.dob = t('dobisrequired');
         if (!fields.email) newErrors.email = t('emailisrequired');
         if (!fields.password) newErrors.password = t('passwordRequired');
-
+        if (!fields.role_id) newErrors.role_id = t('rolerequired');
         else if (!/\S+@\S+\.\S+/.test(fields.email)) newErrors.email = t('invalidemail');
         if (!fields.phone) newErrors.phone = t('phoneisrequired');
         else if (!/^[0-9]{10}$/.test(fields.phone)) newErrors.phone = t('invalidphonenumber');
@@ -82,14 +100,11 @@ const CreateEmployee = () => {
             setErrors(validationErrors);
             return;
         }
-
+        // alert(fields?.role_id)
         dispatch(createEmployeeCall(userdata?.id, fields, (response) => {
             ToastAndroid.show(response.message, ToastAndroid.SHORT);
             if (response?.success) {
                 navigation?.goBack();
-            }
-            else {
-                ToastAndroid.show(response.message, ToastAndroid.SHORT);
             }
         }));
     };
@@ -143,25 +158,87 @@ const CreateEmployee = () => {
                             </View>
                         </LinearGradient>
                     </View>
+
                     {/* Form */}
                     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+
                         <ScrollView
                             contentContainerStyle={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}
                             keyboardShouldPersistTaps="handled"
                         >
                             <View style={styles.inputContainer}>
+                                {/* Role Dropdown */}
+                                <View style={{ marginBottom: hp(2) }}>
+                                    <Text style={[
+                                        isTamil ? Louis_George_Cafe.regular.h7 : Louis_George_Cafe.regular.h6,
+                                        styles.label,
+                                        { color: THEMECOLORS[themeMode].textPrimary }
+                                    ]}>
+                                        {t('select_role')}
+                                    </Text>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.input,
+                                            {
+                                                backgroundColor: THEMECOLORS[themeMode].viewBackground,
+                                                borderColor: THEMECOLORS[themeMode].textPrimary,
+                                            },
+                                            isTamil && { fontSize: wp(3.5) }
+                                        ]}
+                                        onPress={() => setShowRoleDropdown(true)}
+                                    >
+                                        <Text style={{
+                                            color: fields.role_id ? THEMECOLORS[themeMode].textPrimary : '#888',
+                                            fontSize: wp(4)
+                                        }}>
+                                            {
+                                                fields.role_id
+                                                    ? roleDataList.find(role => role.id === fields.role_id)?.roleName
+                                                    : t('select_role')
+                                            }
+                                        </Text>
+                                    </TouchableOpacity>
+                                    {errors.role_id && (
+                                        <Text style={[Louis_George_Cafe.regular.h8, { color: 'red', margin: wp(2) }]}>
+                                            {errors.role_id}
+                                        </Text>
+                                    )}
+                                </View>
+
+                                {/* Text Inputs */}
                                 {[
-                                    { key: 'fullname', label: t('employee_name'), placeholder: t('enteremployeename') },
-                                    { key: 'designation', label: t('designation'), placeholder: t('enteryourdesignation') },
+                                    {
+                                        key: 'fullname',
+                                        label: t('employee_name'),
+                                        placeholder: t('enteremployeename'),
+                                        maxLength: 50
+                                    },
                                     {
                                         key: 'dob',
                                         label: t('dob'),
                                         placeholder: t('yyyy-mm-dd'),
-                                        isDate: true
+                                        isDate: true,
+                                        maxLength: 10
                                     },
-                                    { key: 'email', label: t('email'), placeholder: t('enteryouremail') },
-                                    { key: 'phone', label: t('phone'), placeholder: t('enteryourphonenumber') },
-                                    { key: 'password', label: t('password'), placeholder: t('enteryourpassword') }
+                                    {
+                                        key: 'email',
+                                        label: t('email'),
+                                        placeholder: t('enteryouremail'),
+                                        maxLength: 100
+                                    },
+                                    {
+                                        key: 'phone',
+                                        label: t('phone'),
+                                        placeholder: t('enteryourphonenumber'),
+                                        maxLength: 10
+                                    },
+                                    {
+                                        key: 'password',
+                                        label: t('password'),
+                                        placeholder: t('enteryourpassword'),
+                                        maxLength: 20,
+                                        secureTextEntry: true
+                                    }
                                 ].map(field => (
                                     <View key={field.key} style={{ marginBottom: hp(2) }}>
                                         <Text style={[
@@ -197,7 +274,8 @@ const CreateEmployee = () => {
                                                             : 'default'
                                                 }
                                                 onChangeText={text => !field.isDate && handleChange(field.key, text)}
-
+                                                maxLength={field.maxLength}
+                                                secureTextEntry={field.secureTextEntry}
                                             />
                                         </TouchableOpacity>
                                         {errors[field.key] && (
@@ -209,6 +287,7 @@ const CreateEmployee = () => {
                                 ))}
                             </View>
                         </ScrollView>
+
                     </KeyboardAvoidingView>
 
                     {/* Submit Button */}
@@ -232,7 +311,7 @@ const CreateEmployee = () => {
                         </TouchableOpacity>
                     </View>
 
-                    {/* Date Picker Modal */}
+                    {/* Date Picker */}
                     {showDatePicker && (
                         <DateTimePicker
                             value={date}
@@ -240,11 +319,24 @@ const CreateEmployee = () => {
                             display="default"
                             maximumDate={new Date()}
                             onChange={handleDateChange}
-                            accentColor="red"  // Change this to your primary color
-
                         />
-
                     )}
+
+                    {/* Role Dropdown Modal */}
+                    <DropdownModal
+                        visible={showRoleDropdown}
+                        onCancel={() => setShowRoleDropdown(false)}
+                        selectedValue={fields.role_id}
+                        title={t('select_role')}
+                        items={roleDataList.map(role => ({
+                            label: role.roleName,
+                            value: role.id
+                        }))}
+                        onSelect={(item) => {
+                            handleChange('role_id', item.value);
+                            setShowRoleDropdown(false);
+                        }}
+                    />
                 </>
             )}
         </View>

@@ -17,59 +17,57 @@ import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCompanyData, getCompanyDetailById } from '../redux/authActions';
-
-// Step form components
-import AddCompanyForm from './CompanyForm';
-import ContactForm from './ContactForm';
-import WebForm from './WebForm';
-import BankForm from './BankForm';
-import TimingsForm from './TimingForm';
-import BranchesForm from './BranchDetailForm';
+import { getClientDetailById, getClientStepData, getEmplDetailById, getEmployeeStepData } from '../redux/authActions';
 import { Louis_George_Cafe } from '../resources/fonts';
-import CompanyShiftForm from './CompanyShiftForm';
+import EmployeeBasicDetails from './EmployeeBasicDetail';
+import EmployeeAddressForm from './EmployeeAddressForm';
+import EmployeeEducationForm from './EmployeeEducationForm';
+import EmployeeJob from './EmployeeJob';
+import EmployeeBankDetailForm from './EmpBankDetailForm';
+
 // Component mapping from string to actual component
 const COMPONENT_MAP = {
-    AddCompanyForm,
-    ContactForm,
-    WebForm,
-    BankForm,
-    // TimingsForm:CompanyShiftForm,
-    BranchesForm,
-    CompanyShiftForm
+    EmployeeBasicDetails,
+    AdressEmployeeForm: EmployeeAddressForm,
+    EmployeeEducationForm,
+    EmployeeJobForm:EmployeeJob,
+    EmployeeBankDetailForm
+    // ClientNotes:EmployeeEducationForm
 };
 
-const CreateCompany = () => {
+const CreateEmployeeFrom = () => {
 
     const { themeMode } = useTheme();
     const { t } = useTranslation();
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const route = useRoute();
-    const companyDetails = route.params?.data;
+    const empDetails = route.params?.data;
     const [currentStep, setCurrentStep] = useState(0);
-    const [companyId, setCompanyId] = useState(companyDetails ? companyDetails : null);
+    const [clientId, setEmpId] = useState(empDetails ? empDetails : null);
     const [loading, setLoading] = useState(true);
     const [stepData, setStepData] = useState([]);
     const [dataObj, setdataObj] = useState({});
-    const [companyDataArr, setcompanyDetails] = useState({});
+    const [companyDataArr, setempDetails] = useState({});
 
     const fetchCompanyData = () => {
-        if (companyId != null) {
+        if (clientId != null) {
             dispatch(
-                getCompanyDetailById(companyId, (response) => {
+                getEmplDetailById(clientId, (response) => {
+                    // alert(JSON.stringify(response))
                     if (response.success) {
+                        // setempDetails(response.data);
                         if (Array.isArray(response.data) && response.data.length > 0) {
-                            setcompanyDetails(response.data[0]);
+                            setempDetails(response.data[0]);
+                            // alert(JSON.stringify(empDetails))
                         } else {
-                            setcompanyDetails(response.data);
+                            setempDetails(response.data);
                         }
                     }
                 })
             );
         }
     };
-
 
     // New state to keep all submitted form data
     const [submittedCompanyData, setSubmittedCompanyData] = useState(null);
@@ -78,7 +76,7 @@ const CreateCompany = () => {
     const fetchHomeData = () => {
         setLoading(true);
         dispatch(
-            getCompanyData(userdata?.id, (response) => {
+            getEmployeeStepData(userdata?.id, (response) => {
                 if (response.success) {
                     setStepData(response.data);
                     setdataObj(response);
@@ -90,6 +88,7 @@ const CreateCompany = () => {
 
     useFocusEffect(
         React.useCallback(() => {
+            // alert(JSON.stringify(empDetails))
             fetchHomeData();
         }, [userdata])
     );
@@ -97,14 +96,14 @@ const CreateCompany = () => {
     useFocusEffect(
         React.useCallback(() => {
             fetchCompanyData();
-        }, [userdata, currentStep, companyId])
+        }, [userdata, currentStep, clientId])
     );
 
     const goToNextStep = () => {
         if (currentStep < stepData.length - 1) {
             setCurrentStep(currentStep + 1);
         } else {
-            console.log('All steps completed. Final formData:', submittedCompanyData);
+            // console.log('All steps completed. Final formData:', submittedCompanyData);
         }
     };
 
@@ -116,16 +115,17 @@ const CreateCompany = () => {
         ? COMPONENT_MAP[stepData[currentStep].component]
         : null;
 
+
     // Callback passed to child form to receive data
     const handleFormSubmitSuccess = (formDataFromChild) => {
-        setCompanyId(formDataFromChild);
+        setEmpId(formDataFromChild);
         fetchCompanyData();
         // alert(`Received Company ID in parent: ${formDataFromChild}`);
     };
 
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
-            <HeaderComponent showBackArray={true} title={companyId != null ? t('updateCompany') : t('CreateCompany')} />
+            <HeaderComponent showBackArray={true} title={clientId != null ? t('updateEmployee') : t('createEmployee')} />
             {loading ? (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={THEMECOLORS[themeMode].primaryApp} />
@@ -143,44 +143,38 @@ const CreateCompany = () => {
                                         borderBottomWidth: wp(currentStep === index ? 1 : 0),
                                         borderColor:
                                             currentStep === index
-                                                ? themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
-                                                    THEMECOLORS[themeMode].accent
+                                                ? themeMode == 'dark' ? THEMECOLORS[themeMode].accent : THEMECOLORS[themeMode].primaryApp
                                                 : THEMECOLORS[themeMode].textPrimary,
-                                        opacity: companyId || index === 0 ? 1 : 0.3,
                                     },
                                 ]}
                                 onPress={() =>
-                                    companyId ?
-                                        setCurrentStep(index) :
+                                    !clientId ?
                                         ToastAndroid.show(t('basic_detail_need'), ToastAndroid.SHORT)
-
-                                }
+                                        :
+                                        setCurrentStep(index)}
                             >
                                 <Icon
                                     name={step.icon}
-                                    size={wp(currentStep === index ? 6 : 5)}
+                                    size={wp(currentStep === index ? 8 : 7)}
                                     color={
                                         currentStep === index
-                                            ? themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
-                                                THEMECOLORS[themeMode].accent
+                                            ? themeMode == 'dark' ? THEMECOLORS[themeMode].accent : THEMECOLORS[themeMode].primaryApp
                                             : THEMECOLORS[themeMode].textPrimary
                                     }
                                 />
                                 {currentStep === index ? (
                                     <Text
                                         style={[
-                                            Louis_George_Cafe.regular.h9,
+                                            Louis_George_Cafe.regular.h7,
                                             {
-                                                color: themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
-                                                    THEMECOLORS[themeMode].accent,
-                                                paddingHorizontal: wp(2),
+                                                color: themeMode == 'dark' ? THEMECOLORS[themeMode].accent : THEMECOLORS[themeMode].primaryApp,
+                                                paddingHorizontal: wp(2), textTransform: 'capitalize'
                                             },
                                         ]}
                                     >
                                         {step?.label}
                                     </Text>
                                 )
-
                                     :
                                     stepData.length != index + 1 ?
                                         <Icon
@@ -188,7 +182,7 @@ const CreateCompany = () => {
                                                 marginLeft: wp(4)
                                             }}
                                             name={'arrow-right'}
-                                            size={wp(5)}
+                                            size={wp(7)}
                                             color={
                                                 currentStep === index
                                                     ? THEMECOLORS[themeMode].primaryApp
@@ -201,21 +195,21 @@ const CreateCompany = () => {
                             </TouchableOpacity>
                         ))}
                     </View>
+
                     {/* Step Form Content */}
                     <ScrollView contentContainerStyle={styles.form}>
                         {stepData.length > 0 && CurrentForm ? (
                             <CurrentForm
-                                key={companyId || 'new'} // Force remount when companyId changes
+                                key={clientId || 'new'} // Force remount when clientId changes
                                 onNext={goToNextStep}
                                 setCurrentStep={setCurrentStep}
                                 currentStep={currentStep}
-                                cId={companyId}
+                                cId={clientId}
                                 dataObj={dataObj}
-                                companyDetails={companyDataArr}
+                                empDetails={companyDataArr}
                                 onSubmitSuccess={handleFormSubmitSuccess}
                                 onRefresh={fetchCompanyData}
                             />
-
                         ) : null}
                     </ScrollView>
                 </>
@@ -245,7 +239,6 @@ const styles = StyleSheet.create({
         marginBottom: wp(4),
         borderColor: '#CCC',
         paddingHorizontal: wp(2),
-
     },
     stepTab: {
         flexDirection: 'row',
@@ -254,4 +247,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CreateCompany;
+export default CreateEmployeeFrom;

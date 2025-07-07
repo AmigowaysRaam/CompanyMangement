@@ -174,7 +174,7 @@ const LoginWithMPIN = () => {
                     textDecorationLine: "underline"
                   } 
                 ]}>
-                  {t('loginwithusername')}
+                  {t('loginwithmailid')}
                 </Text>
               </TouchableOpacity>
 

@@ -9,7 +9,7 @@ import {
     ToastAndroid,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { wp } from '../resources/dimensions';
+import { hp, wp } from '../resources/dimensions';
 import { THEMECOLORS } from '../resources/colors/colors';
 import { useTheme } from '../context/ThemeContext';
 import HeaderComponent from '../components/HeaderComponent';
@@ -17,29 +17,22 @@ import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import { useDispatch, useSelector } from 'react-redux';
-import { getCompanyData, getCompanyDetailById } from '../redux/authActions';
-
-// Step form components
-import AddCompanyForm from './CompanyForm';
-import ContactForm from './ContactForm';
-import WebForm from './WebForm';
-import BankForm from './BankForm';
-import TimingsForm from './TimingForm';
-import BranchesForm from './BranchDetailForm';
+import { getSalaryStructureById, getSalaryStructureList, getSalaryTabMenu } from '../redux/authActions';
 import { Louis_George_Cafe } from '../resources/fonts';
-import CompanyShiftForm from './CompanyShiftForm';
+import CreateSalaryBasicFrom from './CreateSalaryBasicFrom';
+import AdditionalAllowanceForm from './AdditionalAllowanceForm';
+import DeductionAllowanceForm from './DetectionAllowanceForm';
 // Component mapping from string to actual component
 const COMPONENT_MAP = {
-    AddCompanyForm,
-    ContactForm,
-    WebForm,
-    BankForm,
-    // TimingsForm:CompanyShiftForm,
-    BranchesForm,
-    CompanyShiftForm
+    AddCompanyForm: CreateSalaryBasicFrom,
+    ContactForm: AdditionalAllowanceForm,
+    WebForm: DeductionAllowanceForm,
+    // BankForm,
+    // TimingsForm,
+    // BranchesForm,
 };
 
-const CreateCompany = () => {
+const CreateSalarySturctureTab = () => {
 
     const { themeMode } = useTheme();
     const { t } = useTranslation();
@@ -54,10 +47,31 @@ const CreateCompany = () => {
     const [dataObj, setdataObj] = useState({});
     const [companyDataArr, setcompanyDetails] = useState({});
 
+
+
+    // New state to keep all submitted form data
+    const [submittedCompanyData, setSubmittedCompanyData] = useState(null);
+    const userdata = useSelector((state) => state.auth.user?.data);
+
+    const fetchHomeData = () => {
+        setLoading(true);
+        dispatch(
+            getSalaryTabMenu(userdata?.id, (response) => {
+                if (response.success) {
+                    setStepData(response.data);
+                    setdataObj(response);
+                }
+                setLoading(false);
+            })
+        );
+    };
+
+
     const fetchCompanyData = () => {
         if (companyId != null) {
             dispatch(
-                getCompanyDetailById(companyId, (response) => {
+                getSalaryStructureById({ id: companyId, userid: userdata?.id }, (response) => {
+                    // alert(JSON.stringify(response))
                     if (response.success) {
                         if (Array.isArray(response.data) && response.data.length > 0) {
                             setcompanyDetails(response.data[0]);
@@ -68,24 +82,6 @@ const CreateCompany = () => {
                 })
             );
         }
-    };
-
-
-    // New state to keep all submitted form data
-    const [submittedCompanyData, setSubmittedCompanyData] = useState(null);
-    const userdata = useSelector((state) => state.auth.user?.data);
-
-    const fetchHomeData = () => {
-        setLoading(true);
-        dispatch(
-            getCompanyData(userdata?.id, (response) => {
-                if (response.success) {
-                    setStepData(response.data);
-                    setdataObj(response);
-                }
-                setLoading(false);
-            })
-        );
     };
 
     useFocusEffect(
@@ -122,14 +118,32 @@ const CreateCompany = () => {
         fetchCompanyData();
         // alert(`Received Company ID in parent: ${formDataFromChild}`);
     };
+    const staticMapItems = [1, 2, 3, 4];
+    const renderStaticMapItem = () => {
+        return staticMapItems.map((item, index) => (
+            <>
+                <View
+                    key={index}
+                    style={{
+                        backgroundColor: themeMode === 'dark' ? "#222" : "#f1f1f1",
+                        width: wp(90),
+                        height: hp(16),
+                        borderRadius: wp(3),
+                        alignSelf: "center",
+                        marginVertical: wp(5),
+                    }}
+                />
+            </>
+
+        ));
+    };
+
 
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
-            <HeaderComponent showBackArray={true} title={companyId != null ? t('updateCompany') : t('CreateCompany')} />
+            <HeaderComponent showBackArray={true} title={companyId != null ? t('update') : t('add_new')} />
             {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={THEMECOLORS[themeMode].primaryApp} />
-                </View>
+                renderStaticMapItem()
             ) : (
                 <>
                     {/* Step Icons Navigation */}
@@ -169,7 +183,7 @@ const CreateCompany = () => {
                                 {currentStep === index ? (
                                     <Text
                                         style={[
-                                            Louis_George_Cafe.regular.h9,
+                                            Louis_George_Cafe.regular.h6,
                                             {
                                                 color: themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
                                                     THEMECOLORS[themeMode].accent,
@@ -201,6 +215,7 @@ const CreateCompany = () => {
                             </TouchableOpacity>
                         ))}
                     </View>
+
                     {/* Step Form Content */}
                     <ScrollView contentContainerStyle={styles.form}>
                         {stepData.length > 0 && CurrentForm ? (
@@ -212,6 +227,7 @@ const CreateCompany = () => {
                                 cId={companyId}
                                 dataObj={dataObj}
                                 companyDetails={companyDataArr}
+                                salarayStructureDetail={companyDataArr}
                                 onSubmitSuccess={handleFormSubmitSuccess}
                                 onRefresh={fetchCompanyData}
                             />
@@ -254,4 +270,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default CreateCompany;
+export default CreateSalarySturctureTab;

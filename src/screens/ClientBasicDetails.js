@@ -35,18 +35,25 @@ const ClientBasicDetails = ({ onNext, onSubmitSuccess, cId, onRefresh, clientDet
     const [website, setWebsite] = useState('');
     const [industry, setIndustry] = useState('');
     const [companyName, setCompanyName] = useState('');
+    const [password, setPassword] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
 
+    // Helper components
+    const Label = ({ title }) => (
+        <Text style={[styles.label, Louis_George_Cafe.bold.h6, {
+            color: THEMECOLORS[themeMode].textPrimary
+        }]}>{title}</Text>
+    );
+
     // Bind data on mount
     useEffect(() => {
         if (clientDetails) {
-            // console.log(clientDetails?._id, "clientDetails");
             setName(clientDetails?.name || '');
             setEmail(clientDetails?.email || '');
             setPhoneNumber(clientDetails?.officeLocations?.[0]?.phone || '');
-            setAltNumber(''); // Add if alternate number exists
+            setAltNumber('');
             setWebsite(clientDetails?.website || '');
             setIndustry(clientDetails?.industry || '');
             setCompanyName(clientDetails?.companyName || '');
@@ -70,6 +77,12 @@ const ClientBasicDetails = ({ onNext, onSubmitSuccess, cId, onRefresh, clientDet
         if (altNumber.trim() && !isValidPhone(altNumber)) newErrors.altNumber = t('enterValidAltNumber');
         if (!companyName.trim()) newErrors.companyName = t('enterCompanyName');
         if (!industry.trim()) newErrors.industry = t('enterIndustry');
+
+        // Only require password for new client creation
+        if (!clientDetails?._id && !password.trim()) {
+            newErrors.password = t('enterPassword');
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -77,62 +90,42 @@ const ClientBasicDetails = ({ onNext, onSubmitSuccess, cId, onRefresh, clientDet
     const onSubmit = () => {
         if (!validateFields()) return;
 
-        // clientDetails?._id
-        if (clientDetails?._id) {
-            const formData = {
-                luserid: userdata?.id,
-                name,
-                email,
-                phone_number: phoneNumber,
-                alternate_number: altNumber,
-                website,
-                industry,
-                clientId: clientDetails?._id,
-                companyName
-            };
+        const formData = {
+            luserid: userdata?.id,
+            name,
+            email,
+            phone_number: phoneNumber,
+            alternate_number: altNumber,
+            website,
+            industry,
+            companyName,
+        };
 
-            setLoading(true);
-            dispatch(
-                updateClientDetails(formData, (response) => {
-                    setLoading(false);
-                    if (response.success) {
-                        onRefresh();
-                        const newClientId = response?.data?._id;
-                        onSubmitSuccess(newClientId);
-                        onNext();
-                        ToastAndroid.show(response.message, ToastAndroid.SHORT);
-                    } else {
-                        ToastAndroid.show(t('submissionFailed'), ToastAndroid.SHORT);
-                    }
-                })
-            );
+        // Only add password for new clients
+        if (!clientDetails?._id && password) {
+            formData.password = password;
         }
-        else {
-            const formData = {
-                luserid: userdata?.id,
-                name,
-                email,
-                phone_number: phoneNumber,
-                alternate_number: altNumber,
-                website,
-                industry,
-                companyName
-            };
-            setLoading(true);
-            dispatch(
-                createNewClient(formData, (response) => {
-                    setLoading(false);
-                    if (response.success) {
-                        onRefresh();
-                        const newClientId = response?.data?._id;
-                        onSubmitSuccess(newClientId);
-                        onNext();
-                        ToastAndroid.show(response.message, ToastAndroid.SHORT);
-                    } else {
-                        ToastAndroid.show(t('submissionFailed'), ToastAndroid.SHORT);
-                    }
-                })
-            );
+
+        setLoading(true);
+
+        const callback = (response) => {
+            setLoading(false);
+            if (response.success) {
+                onRefresh();
+                const newClientId = response?.data?._id;
+                onSubmitSuccess(newClientId);
+                onNext();
+                ToastAndroid.show(response.message, ToastAndroid.SHORT);
+            } else {
+                ToastAndroid.show(t('submissionFailed'), ToastAndroid.SHORT);
+            }
+        };
+
+        if (clientDetails?._id) {
+            formData.clientId = clientDetails._id;
+            dispatch(updateClientDetails(formData, callback));
+        } else {
+            dispatch(createNewClient(formData, callback));
         }
     };
 
@@ -153,38 +146,42 @@ const ClientBasicDetails = ({ onNext, onSubmitSuccess, cId, onRefresh, clientDet
             </Text>
 
             <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
-                {/* Name */}
                 <Label title={t('name')} />
                 <Input value={name} onChange={setName} error={errors.name} placeholder={t('enterName')} />
 
-
-                {/* Company Name */}
                 <Label title={t('companyName')} />
                 <Input value={companyName} onChange={setCompanyName} error={errors.companyName} placeholder={t('enterCompanyName')} />
 
-
-                {/* Email */}
                 <Label title={t('email')} />
                 <Input value={email} onChange={setEmail} error={errors.email} placeholder={t('enterEmail')} keyboardType="email-address" />
 
-                {/* Phone Number */}
                 <Label title={t('phoneNumber')} />
-                <Input value={phoneNumber} onChange={setPhoneNumber} error={errors.phoneNumber} placeholder={t('enterPhoneNumber')} keyboardType="phone-pad"  maxLength={10} />
+                <Input value={phoneNumber} onChange={setPhoneNumber} error={errors.phoneNumber} placeholder={t('enterPhoneNumber')} keyboardType="phone-pad" maxLength={10} />
 
-                {/* Alternate Number */}
                 <Label title={t('alternateNumber')} />
                 <Input value={altNumber} onChange={setAltNumber} error={errors.altNumber} placeholder={t('enterAlternateNumber')} keyboardType="phone-pad" />
 
-                {/* Website */}
                 <Label title={t('website')} />
                 <Input value={website} onChange={setWebsite} placeholder={t('enterWebsite')} autoCapitalize="none" />
 
-                {/* Industry */}
                 <Label title={t('industry')} />
                 <Input value={industry} onChange={setIndustry} error={errors.industry} placeholder={t('enterIndustry')} />
 
+                {/* Password Field - Only shown when creating */}
+                {!clientDetails?._id && (
+                    <>
+                        <Label title={t('password')} />
+                        <Input
+                            value={password}
+                            onChange={setPassword}
+                            error={errors.password}
+                            placeholder={t('enterPassword')}
+                            secureTextEntry={true}
+                            autoCapitalize="none"
+                        />
+                    </>
+                )}
 
-                {/* Submit Button */}
                 <TouchableOpacity
                     style={[styles.button, { backgroundColor: THEMECOLORS[themeMode].buttonBg }]}
                     onPress={onSubmit}
@@ -203,20 +200,17 @@ const ClientBasicDetails = ({ onNext, onSubmitSuccess, cId, onRefresh, clientDet
     );
 };
 
-// Helper components
-const Label = ({ title }) => (
-    <Text style={[styles.label, Louis_George_Cafe.bold.h6]}>{title}</Text>
-);
-const Input = ({ value, onChange, error, placeholder, maxLength,keyboardType = 'default', autoCapitalize = 'sentences' }) => (
+const Input = ({ value, onChange, error, placeholder, maxLength, keyboardType = 'default', autoCapitalize = 'sentences', secureTextEntry = false }) => (
     <>
         <TextInput
-        maxLength={maxLength??maxLength}
+            maxLength={maxLength}
             style={styles.textInput}
             value={value}
             onChangeText={(text) => onChange(text)}
             placeholder={placeholder}
             keyboardType={keyboardType}
             autoCapitalize={autoCapitalize}
+            secureTextEntry={secureTextEntry}
         />
         {error && <Text style={styles.errorText}>{error}</Text>}
     </>
@@ -227,7 +221,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     form: {
-        padding: wp(3),
+        padding: wp(4),
     },
     label: {
         marginBottom: 8,

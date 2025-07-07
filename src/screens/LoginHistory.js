@@ -4,11 +4,10 @@ import {
     Text,
     StyleSheet,
     FlatList,
-    TouchableOpacity,
     ActivityIndicator,
     RefreshControl,
+    TouchableOpacity
 } from 'react-native';
-
 import { wp, hp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -20,10 +19,11 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import HeaderComponent from '../components/HeaderComponent';
 import SearchInput from './SearchInput';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
-import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons'; // if using expo/
+import moment from 'moment';
+
 
 const PAGE_SIZE = 13;
-
 const LoginHistory = () => {
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
@@ -31,22 +31,21 @@ const LoginHistory = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const userdata = useSelector((state) => state.auth.user?.data);
-
-    const [categories, setCategories] = useState([]);
+    const [categories, setRecords] = useState([]);
     const [page, setPage] = useState(1);
     const [isEndReached, setIsEndReached] = useState(false);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const [searchText, setSearchText] = useState('');
-
     const loadingRef = useRef(false);
     const endReachedRef = useRef(false);
+    const [expandedIndex, setExpandedIndex] = useState(null);
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) navigation.goBack();
     });
 
-    const fetchCategories = useCallback((currentPage = 1, isRefresh = false) => {
+    const fetchLoginRecords = useCallback((currentPage = 1, isRefresh = false) => {
 
         if (loadingRef.current || (endReachedRef.current && !isRefresh)) return;
 
@@ -67,16 +66,17 @@ const LoginHistory = () => {
             searchText,
             (response) => {
                 const newData = response?.data || [];
+                // console.log(JSON.stringify(newData))
                 if (newData.length < PAGE_SIZE) {
                     setIsEndReached(true);
                     endReachedRef.current = true;
                 }
 
                 if (isRefresh) {
-                    setCategories(newData);
+                    setRecords(newData);
                     setPage(2);
                 } else {
-                    setCategories(prev => [...prev, ...newData]);
+                    setRecords(prev => [...prev, ...newData]);
                     setPage(currentPage + 1);
                 }
                 setLoading(false);
@@ -87,33 +87,76 @@ const LoginHistory = () => {
     }, [dispatch, searchText, userdata?.id]);
 
     useEffect(() => {
-        fetchCategories(1, true);
-    }, [fetchCategories]);
+        fetchLoginRecords(1, true);
+    }, [fetchLoginRecords]);
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
-            fetchCategories(1, true);
+            fetchLoginRecords(1, true);
         }, 500);
         return () => clearTimeout(debounceTimer);
     }, [searchText]);
 
-    const onRefresh = () => fetchCategories(1, true);
+    const onRefresh = () => fetchLoginRecords(1, true);
     const loadMore = () => {
         if (!loadingRef.current && !endReachedRef.current) {
-            fetchCategories(page);
+            fetchLoginRecords(page);
         }
     };
 
-    const renderItem = ({ item,index }) => {
+    const renderItem = ({ item, index }) => {
+        const isExpanded = expandedIndex === index;
         const category = item.category || item;
+
+        const calculateDuration = (start, end) => {
+            if (!start || !end) return '';
+            const format = 'hh:mm A';
+            const startDate = moment(start, format);
+            const endDate = moment(end, format);
+            const duration = moment.duration(endDate.diff(startDate));
+            const minutes = duration.asMinutes();
+            return `(${Math.round(minutes)} min)`;
+        };
+
         return (
-            <View style={[styles.cardItem,{
-                backgroundColor: index%2 == 0 ? "#f1f1f1":'#f8f8f8'
-            }]}>
-                <Text style={styles.cell}>{category?.date || '-'}</Text>
-                <Text style={styles.cell}>{category?.punchInTime || '-'}</Text>
-                <Text style={styles.cell}>{category?.punchOutTime || '-'}</Text>
-                <Text style={styles.cell}>{`${category?.totalWorkedHours} hr` || '-'}</Text>
+            <View>
+                <TouchableOpacity
+                    style={[
+                        styles.cardItem,
+                        { backgroundColor: index % 2 === 0 ? '#f1f1f1' : '#f8f8f8' },
+                    ]}
+                    onPress={() => setExpandedIndex(isExpanded ? null : index)}
+                >
+                    <Text style={styles.cell}>{category?.date || '-'}</Text>
+                    <Text style={styles.cell}>{category?.punchInTime || '-'}</Text>
+                    <Text style={styles.cell}>{category?.punchOutTime || '-'}</Text>
+                    <Text style={styles.cell}>{`${category?.totalWorkedHours} hr` || '-'}</Text>
+                    <MaterialCommunityIcons style={{ marginRight: wp(2) }} name={isExpanded ? 'chevron-up' : 'chevron-down'} size={wp(4)} color="#333" />
+                </TouchableOpacity>
+
+                {isExpanded && (
+                    <View style={styles.expandContainer}>
+                        {/* 🍽 Lunch */}
+                        {category?.lunch?.start && category?.lunch?.end && (
+                            <View style={styles.detailRow}>
+                                <MaterialCommunityIcons name="food" size={wp(6)} color="#333" />
+                                <Text style={styles.detailText}>
+                                    {`${t('lunch')} :`} {category.lunch.start} - {category.lunch.end} {calculateDuration(category.lunch.start, category.lunch.end)}
+                                </Text>
+                            </View>
+                        )}
+
+                        {/* ⏸ Breaks */}
+                        {category?.breaks?.length > 0 && category.breaks.map((brk, i) => (
+                            <View style={styles.detailRow} key={i}>
+                                <AntDesign name="pausecircle" size={wp(6)} color="#666" />
+                                <Text style={styles.detailText}>
+                                    {`${t('break')} ${i + 1}:`} {brk.start} - {brk.end} {calculateDuration(brk.start, brk.end)}
+                                </Text>
+                            </View>
+                        ))}
+                    </View>
+                )}
             </View>
         );
     };
@@ -136,8 +179,8 @@ const LoginHistory = () => {
                     themeMode={themeMode}
                 />
                 {/* <ThemeToggle/> */}
-                <View style={[styles.listContainer,{
-                    backgroundColor:THEMECOLORS[themeMode].cardBackground
+                <View style={[styles.listContainer, {
+                    backgroundColor: THEMECOLORS[themeMode].cardBackground
                 }]}>
                     <View style={styles.headerRow}>
                         <Text style={styles.headerText}>{t('date')}</Text>
@@ -199,7 +242,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: wp(3),
         fontFamily: Louis_George_Cafe.regular.h9.fontFamily,
-        color: '#333',
+        color: '#000',
     },
     cardItem: {
         flexDirection: 'row',
@@ -208,16 +251,35 @@ const styles = StyleSheet.create({
         // backgroundColor: '#fff',
         borderRadius: wp(2),
         marginBottom: hp(0.5),
-        paddingHorizontal: wp(1),
-        paddingVertical:wp(4)
+        // paddingHorizontal: wp(1),
+        paddingVertical: wp(4)
     },
+    expandContainer: {
+        paddingVertical: hp(1),
+        paddingHorizontal: wp(4),
+        backgroundColor: '#eaeaea',
+        borderBottomLeftRadius: wp(2),
+        borderBottomRightRadius: wp(2),
+        marginBottom: hp(0.5),
+    },
+    detailRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: hp(0.5),
+    },
+    detailText: {
+        marginLeft: wp(2),
+        fontSize: wp(2.8),
+        color: '#444',
+    },
+
 
     cell: {
         flex: 1,
         textAlign: 'center',
         fontSize: wp(2.8),
         fontFamily: Louis_George_Cafe.regular.h9.fontFamily,
-        color: '#333',
+        color: '#000',
     },
     emptyContainer: {
         paddingTop: hp(5),

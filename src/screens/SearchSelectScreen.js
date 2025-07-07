@@ -56,7 +56,7 @@ const SearchSelectScreen = ({ onClose, selectedEIds }) => {
         dispatch(getEmployeeList(userdata?.id,
             // employId?.employeeID,
             currentPage,
-            PAGE_SIZE,
+                PAGE_SIZE,
             searchText, (response) => {
                 console.log('Fetching page:', response.employeeList);
                 if (response?.success) {

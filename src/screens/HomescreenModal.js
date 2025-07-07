@@ -60,7 +60,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
 
         if (_.isEmpty(sideMenusArray?.data)) {
             setisLoading(true);
-            dispatch(getSideMenus({userid:userdata?.data?.id}, (response) => {
+            dispatch(getSideMenus({ userid: userdata?.data?.id }, (response) => {
                 if (response.success) {
                     // alert(JSON.stringify(response))
                     setisLoading(false);
@@ -75,7 +75,6 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             setExpandedMenus(expandAllMenusWithSubmenus(sideMenusArray?.data)); // 👈 in case it's already available
         }
     }, [userdata?.data?.id]);
-
     const handleNavigateScreen = (item) => {
         const routes = {
             'My Profile': 'Profile',
@@ -91,22 +90,34 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             'Payroll': 'PayrollDetails',
             'Category Management': 'CategoryManagement',
             'Company Management': 'CompanyManagement',
-            'Task Management': 'TaskManagement',
             'Social Connect': 'SocialMediaScreen',
             'Roles & Privileges': 'RolesandPrevilages',
-            'Chats':'ChatListScreen',
-            'Home':"HomeScreen",
+            'Chats': 'ChatListScreen',
+            'Home': "HomeScreen",
             'Project Management': 'Projects',
-            'Task':'AssignedTask',
-            'All Employees':"EmployeeList",
+            'Task': 'AssignedTask',
+            'All Employees': "EmployeeList",
             'Companies': 'CompanyManagement',
-
-
+            'Task Management': 'TaskManagement',
+            'Departments': 'DepartmentManagement',
+            'Leave Request': 'LeaveRequestList',
+            'Holidays': 'HolidayManagement',
+            'Client Management': 'ClientScreen',
+            'Employee Catgories': 'EmplyeeCategory',
+            'Salary Structure': "CreateSalartyStructure",
+            'Employee Payroll': 'PayrollDetails',
+            'Admin': 'AdminManagement',
+            "Payroll Settings": "PayrollSettings"
 
         };
+
         const route = routes[item];
+        // alert(item)
         if (route) {
             navigation.navigate(route);
+        }
+        else {
+            console.log(item)
         }
     };
 
@@ -124,11 +135,11 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
         <TouchableOpacity
             onPress={() => {
                 // item.onPress();
-                handleNavigateScreen(item.label)
+                handleNavigateScreen(item.value)
                 onClose();
             }}
-            style={[styles.submenuItem,{
-                backgroundColor:showLogoutModal ? 'grey' :  THEMECOLORS[themeMode].background 
+            style={[styles.submenuItem, {
+                backgroundColor: showLogoutModal ? 'grey' : THEMECOLORS[themeMode].background
             }]}
         >
             <Text style={[Louis_George_Cafe.regular.h7, { color: THEMECOLORS[themeMode].textPrimary }]}>
@@ -142,7 +153,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
         </TouchableOpacity>
     );
 
-    const staticMapItems = [1, 2, 3, 4, 5, 6,];
+    const staticMapItems = [1, 2, 3, 4, 5, 6, 7, 8];
     const renderStaticMapItem = () => {
         return staticMapItems.map((item, index) => (
             <View
@@ -173,14 +184,14 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                             toggleExpand(index);
                         } else {
                             onClose(),
-                                handleNavigateScreen(item.label)
+                                handleNavigateScreen(item.value)
                         }
                     }}
                     style={styles.menuItem}
                 >
                     <Text style={[Louis_George_Cafe.regular.h6, {
                         lineHeight: wp(5),
-                        color: THEMECOLORS[themeMode].textPrimary,textTransform:"capitalize"
+                        color: THEMECOLORS[themeMode].textPrimary, textTransform: "capitalize"
                     }]}>{t(item.label)}</Text>
                     <MaterialCommunityIcons
                         name={hasSubmenu ? (isExpanded ? "chevron-up" : "chevron-down") : "chevron-right"}
@@ -304,7 +315,7 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                     />
                             }
                         </View>
-                        {showDownArrow && sideMenusList?.length > 7 &&  (
+                        {showDownArrow && sideMenusList?.length > 7 && (
                             <View style={{
                                 position: 'absolute',
                                 bottom: hp(6), // position just above the bottom padding

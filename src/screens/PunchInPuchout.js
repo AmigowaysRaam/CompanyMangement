@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View, Text, StyleSheet, TouchableOpacity,
     Animated, Easing, ToastAndroid, ActivityIndicator,
@@ -20,6 +20,8 @@ import {
 } from '../redux/authActions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { THEMECOLORS } from '../resources/colors/colors';
+import { Louis_George_Cafe } from '../resources/fonts';
 
 const STATIC_COLORS = {
     text: '#333',
@@ -152,7 +154,6 @@ const PunchInOut = () => {
             return () => clearInterval(interval);
         }, [isPunchedIn, punchTime])
     );
-
     useFocusEffect(
         React.useCallback(() => {
             let interval;
@@ -170,6 +171,11 @@ const PunchInOut = () => {
 
     useFocusEffect(
         React.useCallback(() => {
+            dispatch(getPunchinOutHistory(userdata?.id, (res) => {
+                if (res.success) {
+                    setHistory(res.data);
+                }
+            }));
             let interval;
             if (isOnLunch && lunchStart) {
                 interval = setInterval(() => {
@@ -183,7 +189,6 @@ const PunchInOut = () => {
         }, [isOnLunch, lunchStart])
     );
 
-
     const fnGetAllowLogin = () => {
         setInitialLoading(true);
         dispatch(getPunchinOut(userdata?.id, (response) => {
@@ -195,7 +200,11 @@ const PunchInOut = () => {
         }));
     };
 
+
     const handlePunchToggle = async () => {
+
+
+
         Animated.sequence([
             Animated.timing(scaleAnim, {
                 toValue: 0.8,
@@ -222,7 +231,15 @@ const PunchInOut = () => {
             setIsPunchedIn(true);
             dispatch(punchInOutApi(userdata?.id, "in", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
+                // 🔁 Fetch history immediately after punch-in
+                dispatch(getPunchinOutHistory(userdata?.id, (res) => {
+                    if (res.success) {
+                        setHistory(res.data);
+                        fnGetAllowLogin();
+                    }
+                }));
             }));
+
         } else {
             fnGetAllowLogin();
             await AsyncStorage.multiRemove(['punchInTime', 'breakStart', 'lunchStart', 'isOnBreak', 'isOnLunch', 'punchUserId']);
@@ -254,6 +271,13 @@ const PunchInOut = () => {
             dispatch(punchInOutApi(userdata?.id, "break_out", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
             }));
+
+            dispatch(getPunchinOutHistory(userdata?.id, (res) => {
+                if (res.success) {
+                    setHistory(res.data);
+                    fnGetAllowLogin();
+                }
+            }));
         } else {
             const now = Date.now();
             await AsyncStorage.setItem('breakStart', now.toString());
@@ -263,7 +287,14 @@ const PunchInOut = () => {
             dispatch(punchInOutApi(userdata?.id, "break_in", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
             }));
+            dispatch(getPunchinOutHistory(userdata?.id, (res) => {
+                if (res.success) {
+                    setHistory(res.data);
+                    fnGetAllowLogin();
+                }
+            }));
         }
+
     };
 
     const toggleLunch = async () => {
@@ -274,6 +305,12 @@ const PunchInOut = () => {
             dispatch(punchInOutApi(userdata?.id, "lunch_out", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
             }));
+            dispatch(getPunchinOutHistory(userdata?.id, (res) => {
+                if (res.success) {
+                    setHistory(res.data);
+                    fnGetAllowLogin();
+                }
+            }));
         } else {
             const now = Date.now();
             await AsyncStorage.setItem('lunchStart', now.toString());
@@ -283,11 +320,18 @@ const PunchInOut = () => {
             dispatch(punchInOutApi(userdata?.id, "lunch_in", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
             }));
+            dispatch(getPunchinOutHistory(userdata?.id, (res) => {
+                if (res.success) {
+                    setHistory(res.data);
+                    fnGetAllowLogin();
+                }
+            }));
         }
+
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: themeMode?.background || '#fff' }]}>
+        <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <HeaderComponent showBackArray={false} title={t('punchInOut')} />
             <View style={styles.content}>
                 {!isPunchedToday ? (
@@ -295,18 +339,17 @@ const PunchInOut = () => {
                         <ActivityIndicator size="large" color={themeMode === 'dark' ? "#555" : '#000'} />
                     ) : (
                         <>
-                            <Text style={[{ color: STATIC_COLORS.text }]}>
+                            <Text style={[Louis_George_Cafe.regular.h7, { color: THEMECOLORS[themeMode].textPrimary }]}>
                                 {isPunchedIn ? t('youArePunchedIn') : t('youArePunchedOut')}
                             </Text>
                             <View style={{ flexDirection: "row" }}>
                                 {isPunchedIn &&
                                     <MaterialCommunityIcons name={'radiobox-marked'} size={hp(2.8)} color={'red'} />
                                 }
-                                <Text style={[styles.timestamp, { color: STATIC_COLORS.textSecondary }]}>
+                                <Text style={[Louis_George_Cafe.bold.h7, styles.timestamp, { color: THEMECOLORS[themeMode].textPrimary }]}>
                                     {t('duration')}: {elapsed}
                                 </Text>
                             </View>
-
                             <View style={{ flexDirection: "row", width: wp(95), justifyContent: "space-around" }}>
                                 <View>
                                     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>

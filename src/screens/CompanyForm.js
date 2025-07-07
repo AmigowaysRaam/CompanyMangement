@@ -20,6 +20,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { useDispatch, useSelector } from 'react-redux';
 import { getCategoryList, getSubcategoryApiiCall, submitCreateForm, updateContactInfo } from '../redux/authActions';
+import DropdownModal from '../components/DropDownModal';
 
 const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmitSuccess, cId, companyDetails, onRefresh }) => {
 
@@ -40,6 +41,8 @@ const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmit
     const [subCatArr, setsubCatArr] = useState([]);
     const [loading, setLoading] = useState(false);
     const [catloading, setcatloading] = useState(false);
+    const [subCategoryModal, setsubCategoryModal] = useState(false);
+
     // Validation states
     const [errors, setErrors] = useState({});
     useAndroidBackHandler(() => {
@@ -322,7 +325,7 @@ const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmit
                             {t('subCategory')}
                         </Text>
                         <View style={styles.pickerWrapper}>
-                            <RNPickerSelect
+                            {/* <RNPickerSelect
                                 onValueChange={setSubCategoryId}
                                 items={subCatArr}
                                 placeholder={{ label: t('selectSubCategory'), value: null }}
@@ -331,8 +334,21 @@ const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmit
                                     inputIOS: { fontSize: isTamil ? wp(3.5) : wp(4) },
                                     inputAndroid: { fontSize: isTamil ? wp(3.5) : wp(4) },
                                 }}
-                            />
+                            /> */}
+                            <TouchableOpacity onPress={() => setsubCategoryModal(true)}>
+                                <Text>
+                                    {subcategoryId && subCatArr?.find(item => item?.value === subcategoryId)
+                                        ? subCatArr.find(item => item?.value === subcategoryId).label // or .value if you want
+                                        : t('selectSubCategory')}
+                                </Text>
+
+
+
+
+                            </TouchableOpacity>
                         </View>
+
+
                     </>
                 )}
 
@@ -360,6 +376,18 @@ const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmit
                     )}
                 </TouchableOpacity>
             </ScrollView>
+            <DropdownModal
+                visible={subCategoryModal}
+                title={t('select_month')}
+                items={subCatArr}
+                selectedValue={subcategoryId}
+                onCancel={() => setsubCategoryModal(false)}
+                onSelect={(item) => {
+                    // alert(JSON?.stringify(item))
+                    setSubCategoryId(item.value);
+                    setsubCategoryModal(false);
+                }}
+            />
         </View>
     );
 };

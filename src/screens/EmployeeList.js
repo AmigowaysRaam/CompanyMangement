@@ -8,7 +8,6 @@ import {
     ActivityIndicator,
     RefreshControl,
 } from 'react-native';
-
 import { wp, hp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -49,7 +48,7 @@ const EmployeeList = () => {
         }
     });
 
-    const fetchCategories = useCallback((currentPage = 1, isRefresh = false) => {
+    const fetchEmployee = useCallback((currentPage = 1, isRefresh = false) => {
         if (loadingRef.current || (endReachedRef.current && !isRefresh)) return;
 
         if (isRefresh) {
@@ -93,26 +92,26 @@ const EmployeeList = () => {
     }, [dispatch, searchText]);
 
     useEffect(() => {
-        fetchCategories(1, true);
-    }, [fetchCategories]);
+        fetchEmployee(1, true);
+    }, [fetchEmployee]);
 
     const onRefresh = () => {
-        fetchCategories(1, true);
+        fetchEmployee(1, true);
     };
 
     const loadMore = () => {
         if (!loadingRef.current && !endReachedRef.current) {
-            fetchCategories(page);
+            fetchEmployee(page);
         }
     };
 
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
-            fetchCategories(1, true);
+            fetchEmployee(1, true);
         }, 500);
 
         return () => clearTimeout(debounceTimer);
-    }, [searchText, fetchCategories]);
+    }, [searchText, fetchEmployee]);
 
     const renderItem = ({ item, index }) => {
         const category = item.category || item;
@@ -122,13 +121,13 @@ const EmployeeList = () => {
                     navigation.navigate('EmplyeeDetails', item)
                 }
             >
-                <Text style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignLeft, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
+                <Text numberOfLines={1} style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignLeft, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
                     {`${index + 1}. ${category.name}`}
                 </Text>
                 <Text style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignCenter, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
                     {category?.eId || '-'}
                 </Text>
-                <Text style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignRight, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
+                <Text  numberOfLines={1} style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignRight, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
                     {category?.position}
                 </Text>
             </TouchableOpacity>
@@ -155,9 +154,8 @@ const EmployeeList = () => {
                     setSearchText={setSearchText}
                     themeMode={themeMode}
                 />
-
                 <View style={styles.listContainer}>
-                    <View style={[styles.cardBox, styles.headerRow]}>
+                    <View style={[styles.cardBo, styles.headerRow]}>
                         <Text style={[Louis_George_Cafe.bold.h9, styles.column, styles.textAlignLeft, { fontSize: isTamil ? wp(2.5) : wp(3) }]}>
                             {t('employee_name')}
                         </Text>
@@ -168,7 +166,6 @@ const EmployeeList = () => {
                             {t('position')}
                         </Text>
                     </View>
-
                     <FlatList
                         data={categories}
                         renderItem={renderItem}
@@ -219,6 +216,11 @@ const styles = StyleSheet.create({
     },
     headerRow: {
         backgroundColor: '#D0DBFF',
+        paddingVertical: wp(3),
+        marginBottom: hp(1),
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: wp(3),
     },
     column: {
         flex: 1,
@@ -227,12 +229,10 @@ const styles = StyleSheet.create({
     textAlignLeft: {
         textAlign: 'left',
         textTransform: "capitalize"
-
     },
     textAlignCenter: {
         textAlign: 'center',
         textTransform: "capitalize"
-
     },
     textAlignRight: {
         textAlign: 'right',
@@ -240,5 +240,4 @@ const styles = StyleSheet.create({
 
     },
 });
-
 export default EmployeeList;

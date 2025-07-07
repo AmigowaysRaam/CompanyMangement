@@ -85,7 +85,7 @@ const SearchSelectCompany = ({ onClose, selectedEIds }) => {
             setRefreshing(false);
             if (res.success) {
                 const clients = res.data.map(client => ({
-                    name: client._id,
+                    name: client.company_name,
                     id: client._id
                 }));
                 setAllClients(clients);
@@ -193,12 +193,11 @@ const SearchSelectCompany = ({ onClose, selectedEIds }) => {
                 }
                 ListEmptyComponent={ListEmptyComponent}
             />
-
             <TouchableOpacity
                 style={[styles.doneButton, { backgroundColor: THEMECOLORS[themeMode].primaryApp }]}
                 onPress={() => onClose(selectedEmployee)}
             >
-                <Text style={[styles.doneText, { color: THEMECOLORS[themeMode].buttonText, textTransform: "capitalize" }]}>
+                <Text style={[styles.doneText, { color: THEMECOLORS[themeMode].white, textTransform: "capitalize" }]}>
                     {t('done')}
                 </Text>
             </TouchableOpacity>

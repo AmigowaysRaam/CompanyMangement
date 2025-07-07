@@ -56,6 +56,17 @@ import AssignedTask from "../screens/AssignedTask";
 import SocialMediaScreen from "../screens/SocialMediaScreen";
 import RolesManagement from "../screens/RolesManagement";
 import CreateRoleandAccess from "../screens/CreateRoleandAccess";
+import DepartmentManagement from "../screens/DepartmentManagement";
+import LeaveRequestList from "../screens/LeaveRequestList";
+import HolidayManagement from "../screens/HolidayManagement";
+import HolidayForm from "../screens/HolidayForm";
+import CreateEmployeeFrom from "../screens/CreateEmployeeFrom";
+import EmplyeeCategory from "../screens/EmployeeCategoryM";
+import CreateSalartyStructure from "../screens/CreateSalartyStructure";
+import CreateSalarySturctureTab from "../screens/CreateSalarySturctureTab";
+import AdminManagement from "../screens/AdminManagement";
+import AdminCreating from "../screens/AdminCreating";
+import PayrollSettings from "../screens/PayrollSettings";
 
 
 const Stack = createNativeStackNavigator();
@@ -122,7 +133,19 @@ function InitialRouter() {
         <Stack.Screen name="SocialMediaScreen" component={SocialMediaScreen} />
         <Stack.Screen name="RolesandPrevilages" component={RolesManagement} />
         <Stack.Screen name="CreateRoleandAccess" component={CreateRoleandAccess} />
+        <Stack.Screen name="DepartmentManagement" component={DepartmentManagement} />
+        <Stack.Screen name="LeaveRequestList" component={LeaveRequestList} />
+        <Stack.Screen name="HolidayManagement" component={HolidayManagement} />
+        <Stack.Screen name="HolidayForm" component={HolidayForm} />
+        <Stack.Screen name="CreateEmployeeFrom" component={CreateEmployeeFrom} />
+        <Stack.Screen name="EmplyeeCategory" component={EmplyeeCategory} />
+        <Stack.Screen name="CreateSalartyStructure" component={CreateSalartyStructure} />
+        <Stack.Screen name="CreateSalarySturctureTab" component={CreateSalarySturctureTab} />
+        <Stack.Screen name="AdminManagement" component={AdminManagement} />
+        <Stack.Screen name="AdminCreating" component={AdminCreating} />
+        <Stack.Screen name="PayrollSettings" component={PayrollSettings} />
       </Stack.Navigator>
+
     </NavigationContainer>
   );
 }
