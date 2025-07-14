@@ -64,7 +64,7 @@ const TaskTable = (tdata) => {
                 data={data}
                 keyExtractor={(item) => item.id}
                 renderItem={renderItem}
-                ItemSeparatorComponent={() => <View style={styles.separator} />}
+                // ItemSeparatorComponent={() => <View style={styles.separator} />}
             />
             <TouchableOpacity
             // AssignedTask

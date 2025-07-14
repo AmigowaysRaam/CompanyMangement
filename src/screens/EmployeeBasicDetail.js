@@ -146,7 +146,7 @@ const EmployeeBasicDetails = ({ onNext, onSubmitSuccess, empDetails, dataObj }) 
 
 
     // Find selected role label for display
-    const selectedRoleLabel = dataObj?.roles.find(r => r.value === role)?.label || '';
+    const selectedRoleLabel = dataObj?.roles.find(r => r?.value === role)?.label || '';
 
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>

@@ -123,12 +123,49 @@ const CreateCompany = () => {
         // alert(`Received Company ID in parent: ${formDataFromChild}`);
     };
 
+    const loadingContainerComp = () => {
+        return (
+            <>
+                {[...Array(7)].map((_, index) => (
+                    <View>
+
+                        <View
+                            key={index}
+                            style={{
+                                backgroundColor: THEMECOLORS[themeMode].tabInActive,
+                                width: wp(25),
+                                height: wp(5),
+                                // alignSelf: "center",
+                                borderRadius: wp(2),
+                                marginBottom: wp(2), marginVertical: wp(4),
+                                marginHorizontal: wp(6), marginTop: wp(6)
+                            }}
+                        />
+                        <View
+                            key={index}
+                            style={{
+                                backgroundColor: THEMECOLORS[themeMode].tabInActive,
+                                width: wp(90),
+                                height: wp(10),
+                                alignSelf: "center",
+                                borderRadius: wp(4),
+                                marginBottom: wp(4),
+                                //  marginVertical: wp(4)
+                            }}
+                        />
+                    </View>
+                ))}
+            </>
+        );
+    };
+
+
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <HeaderComponent showBackArray={true} title={companyId != null ? t('updateCompany') : t('CreateCompany')} />
             {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={THEMECOLORS[themeMode].primaryApp} />
+                <View style={styles.loadingContaier}>
+                    {loadingContainerComp()}
                 </View>
             ) : (
                 <>
@@ -158,7 +195,7 @@ const CreateCompany = () => {
                             >
                                 <Icon
                                     name={step.icon}
-                                    size={wp(currentStep === index ? 6 : 5)}
+                                    size={wp(currentStep === index ? 5 : 4)}
                                     color={
                                         currentStep === index
                                             ? themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
@@ -169,7 +206,7 @@ const CreateCompany = () => {
                                 {currentStep === index ? (
                                     <Text
                                         style={[
-                                            Louis_George_Cafe.regular.h9,
+                                            Louis_George_Cafe.regular.h8,
                                             {
                                                 color: themeMode == 'light' ? THEMECOLORS[themeMode].primaryApp :
                                                     THEMECOLORS[themeMode].accent,
@@ -180,7 +217,6 @@ const CreateCompany = () => {
                                         {step?.label}
                                     </Text>
                                 )
-
                                     :
                                     stepData.length != index + 1 ?
                                         <Icon

@@ -1,14 +1,7 @@
 import React, { useState } from 'react';
 import {
-    View,
-    StyleSheet,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    Platform,
-    ToastAndroid,
-    ActivityIndicator
+    View, StyleSheet, ScrollView, Text, TextInput, TouchableOpacity,
+    Platform, ToastAndroid, ActivityIndicator, Switch
 } from 'react-native';
 import { hp, wp } from '../resources/dimensions';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -22,10 +15,8 @@ import RNPickerSelect from 'react-native-picker-select';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { levaeFormSubmit } from '../redux/authActions';
-import ThemeToggle from '../ScreenComponents/HeaderComponent/ThemeToggle';
 
 const AddLeaveForm = () => {
-    
     const { themeMode } = useTheme();
     const { t } = useTranslation();
     const navigation = useNavigation();
@@ -39,6 +30,7 @@ const AddLeaveForm = () => {
     const [showEndPicker, setShowEndPicker] = useState(false);
     const [reason, setReason] = useState('');
     const [loading, setLoading] = useState(false);
+    const [isOneDay, setIsOneDay] = useState(false); // Toggle state
 
     const leaveTypes = [
         { label: t('sick'), value: 'Sick' },
@@ -70,11 +62,12 @@ const AddLeaveForm = () => {
 
         const formData = {
             leaveType,
-            startDate: startDate,
-            endDate: endDate,
+            startDate,
+            endDate: isOneDay ? startDate : endDate,
             employeeId: userdata?.id,
-            reason
+            reason,
         };
+
         setLoading(true);
         dispatch(
             levaeFormSubmit(formData, (response) => {
@@ -91,13 +84,12 @@ const AddLeaveForm = () => {
         <View style={[styles.container, {
             backgroundColor: THEMECOLORS[themeMode].background
         }]}>
-            <HeaderComponent showBackArray={true} title={t('addLeave')} />
-            {/* <ThemeToggle /> */}
+            <HeaderComponent showBackArray title={t('addLeave')} />
 
             <ScrollView contentContainerStyle={styles.form}>
+                {/* Leave Type */}
                 <Text style={[Louis_George_Cafe.bold.h6, styles.label, {
                     color: THEMECOLORS[themeMode].textPrimary
-
                 }]}>{t('leaveType')}</Text>
                 <View style={styles.pickerWrapper}>
                     <RNPickerSelect
@@ -109,6 +101,7 @@ const AddLeaveForm = () => {
                     />
                 </View>
 
+                {/* Start Date */}
                 <Text style={[Louis_George_Cafe.bold.h6, styles.label, {
                     color: THEMECOLORS[themeMode].textPrimary
                 }]}>{t('startDate')}</Text>
@@ -121,34 +114,59 @@ const AddLeaveForm = () => {
                         mode="date"
                         display="default"
                         onChange={(event, selectedDate) => {
-                            setShowStartPicker(Platform.OS === 'ios');
+                            setShowStartPicker(false);
                             if (selectedDate) setStartDate(selectedDate);
                         }}
                     />
                 )}
 
-                <Text style={[Louis_George_Cafe.bold.h6, styles.label, {
-                    color: THEMECOLORS[themeMode].textPrimary
-
-                }]}>{t('endDate')}</Text>
-                <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.dateInput}>
-                    <Text>{formatDate(endDate)}</Text>
-                </TouchableOpacity>
-                {showEndPicker && (
-                    <DateTimePicker
-                        value={endDate}
-                        mode="date"
-                        display="default"
-                        onChange={(event, selectedDate) => {
-                            setShowEndPicker(Platform.OS === 'ios');
-                            if (selectedDate) setEndDate(selectedDate);
+                {/* One Day Toggle */}
+                {/* <View style={styles.switchRow}>
+                    <Text style={[Louis_George_Cafe.bold.h6, {
+                        color: THEMECOLORS[themeMode].textPrimary,
+                        marginRight: wp(2)
+                    }]}>
+                        {t('oneDayLeave') || 'One Day Leave'}
+                    </Text>
+                    <Switch
+                        value={isOneDay}
+                        onValueChange={(val) => setIsOneDay(val)}
+                        thumbColor={isOneDay ? themeMode == 'light' ? THEMECOLORS[themeMode].primary : THEMECOLORS[themeMode].accent : THEMECOLORS[themeMode].thumbInactive
+                        }
+                        trackColor={{
+                            false: "red",
+                            true: THEMECOLORS[themeMode].textPrimary,
                         }}
                     />
+
+                </View> */}
+
+                {/* End Date - hidden when isOneDay is true */}
+                {!isOneDay && (
+                    <>
+                        <Text style={[Louis_George_Cafe.bold.h6, styles.label, {
+                            color: THEMECOLORS[themeMode].textPrimary
+                        }]}>{t('endDate')}</Text>
+                        <TouchableOpacity onPress={() => setShowEndPicker(true)} style={styles.dateInput}>
+                            <Text>{formatDate(endDate)}</Text>
+                        </TouchableOpacity>
+                        {showEndPicker && (
+                            <DateTimePicker
+                                value={endDate}
+                                mode="date"
+                                display="default"
+                                onChange={(event, selectedDate) => {
+                                    setShowEndPicker(false);
+                                    if (selectedDate) setEndDate(selectedDate);
+                                }}
+                            />
+                        )}
+                    </>
                 )}
 
+                {/* Reason */}
                 <Text style={[Louis_George_Cafe.bold.h6, styles.label, {
                     color: THEMECOLORS[themeMode].textPrimary
-
                 }]}>{t('reason')}</Text>
                 <TextInput
                     style={styles.textInput}
@@ -159,6 +177,7 @@ const AddLeaveForm = () => {
                     numberOfLines={4}
                 />
 
+                {/* Submit Button */}
                 <TouchableOpacity
                     style={[styles.button, { backgroundColor: THEMECOLORS[themeMode].buttonBg }]}
                     onPress={onSubmit}
@@ -180,12 +199,8 @@ const AddLeaveForm = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    form: {
-        padding: wp(5),
-    },
+    container: { flex: 1 },
+    form: { padding: wp(5) },
     label: {
         fontSize: 16,
         fontWeight: '600',
@@ -223,9 +238,14 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         height: hp(6),
         justifyContent: "center",
-
+    },
+    switchRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: wp(4),
     },
 });
+
 const pickerStyles = {
     inputIOS: {
         fontSize: 16,

@@ -72,6 +72,8 @@ const PunchInOut = () => {
 
     const [isPunchedToday, setisPunchedToday] = useState(false);
     const [isLunchCompleted, setisLunchCompleted] = useState(false);
+    const [breaksMaxCount, setMaxBreaksCount] = useState(0);
+    const [breaksCount, setBreaksCount] = useState(0);
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
@@ -133,11 +135,12 @@ const PunchInOut = () => {
             setIsloading(true);
             dispatch(getPunchinOutHistory(uid, (response) => {
                 if (response.success) {
+                    // alert(JSON.stringify(response.data))
                     setHistory(response.data);
                 }
                 setIsloading(false);
             }));
-        }, [isOnBreak, breakStart, isOnLunch, lunchStart, isPunchedIn, punchTime, storedUserId])
+        }, [isOnBreak, breakStart, isOnLunch, lunchStart, isPunchedIn, punchTime, storedUserId, breaksCount])
     );
 
     useFocusEffect(
@@ -192,19 +195,18 @@ const PunchInOut = () => {
     const fnGetAllowLogin = () => {
         setInitialLoading(true);
         dispatch(getPunchinOut(userdata?.id, (response) => {
+            console.log(JSON.stringify(response), "Allow or Not");
             if (response.success) {
-                setisPunchedToday(response.isPunchedCompleted);
-                setisLunchCompleted(response.isLunchCompleted);
-                setInitialLoading(false);
+                setisPunchedToday(response?.isPunchedCompleted);
+                setisLunchCompleted(response?.isLunchCompleted);
+                setMaxBreaksCount(response?.breaksCount); // ← Add this line
             }
+            setInitialLoading(false);
         }));
     };
 
-
     const handlePunchToggle = async () => {
-
-
-
+        setBreaksCount(0)
         Animated.sequence([
             Animated.timing(scaleAnim, {
                 toValue: 0.8,
@@ -219,7 +221,6 @@ const PunchInOut = () => {
                 easing: Easing.out(Easing.ease),
             }),
         ]).start();
-
         if (!isPunchedIn) {
             const now = Date.now();
             await AsyncStorage.setItem('punchInTime', now.toString());
@@ -229,8 +230,10 @@ const PunchInOut = () => {
             }
             setPunchTime(now);
             setIsPunchedIn(true);
+            // setBreaksCount(0);
             dispatch(punchInOutApi(userdata?.id, "in", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
+                fnGetAllowLogin();
                 // 🔁 Fetch history immediately after punch-in
                 dispatch(getPunchinOutHistory(userdata?.id, (res) => {
                     if (res.success) {
@@ -253,30 +256,40 @@ const PunchInOut = () => {
             setLunchDuration('00:00:00');
             dispatch(punchInOutApi(userdata?.id || storedUserId, "out", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
+                fnGetAllowLogin();
                 dispatch(getPunchinOutHistory(userdata?.id, (res) => {
                     if (res.success) {
                         setHistory(res.data);
                     }
                 }));
             }));
-            fnGetAllowLogin();
         }
     };
 
     const toggleBreak = async () => {
+        // Check if breaksCount is at or above max allowed breaks
+        if (!isOnBreak && breaksCount >= breaksMaxCount) {
+            ToastAndroid.show(`Maximum breaks limit reached (${breaksMaxCount})`, ToastAndroid.SHORT);
+            return;  // Stop further execution, don't start a new break
+        }
+
+        // Increment the breaks count on every toggle (only increment when starting a break)
+        if (!isOnBreak) {
+            setBreaksCount(prev => prev + 1);
+        }
+
         if (isOnBreak) {
             await AsyncStorage.multiRemove(['breakStart', 'isOnBreak']);
             setIsOnBreak(false);
             setBreakStart(null);
             dispatch(punchInOutApi(userdata?.id, "break_out", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
-            }));
-
-            dispatch(getPunchinOutHistory(userdata?.id, (res) => {
-                if (res.success) {
-                    setHistory(res.data);
-                    fnGetAllowLogin();
-                }
+                dispatch(getPunchinOutHistory(userdata?.id, (res) => {
+                    if (res.success) {
+                        setHistory(res.data);
+                        fnGetAllowLogin();
+                    }
+                }));
             }));
         } else {
             const now = Date.now();
@@ -286,16 +299,18 @@ const PunchInOut = () => {
             setBreakStart(now);
             dispatch(punchInOutApi(userdata?.id, "break_in", (response) => {
                 ToastAndroid.show(`${response.message}`, ToastAndroid.SHORT);
+                dispatch(getPunchinOutHistory(userdata?.id, (res) => {
+                    if (res.success) {
+                        setHistory(res.data);
+                        fnGetAllowLogin();
+                    }
+                }));
             }));
-            dispatch(getPunchinOutHistory(userdata?.id, (res) => {
-                if (res.success) {
-                    setHistory(res.data);
-                    fnGetAllowLogin();
-                }
-            }));
-        }
 
+        }
     };
+
+
 
     const toggleLunch = async () => {
         if (isOnLunch) {
@@ -342,12 +357,17 @@ const PunchInOut = () => {
                             <Text style={[Louis_George_Cafe.regular.h7, { color: THEMECOLORS[themeMode].textPrimary }]}>
                                 {isPunchedIn ? t('youArePunchedIn') : t('youArePunchedOut')}
                             </Text>
+                            {/* <Text style={[Louis_George_Cafe.regular.h7, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                                {breaksCount}
+                            </Text> */}
                             <View style={{ flexDirection: "row" }}>
                                 {isPunchedIn &&
                                     <MaterialCommunityIcons name={'radiobox-marked'} size={hp(2.8)} color={'red'} />
                                 }
                                 <Text style={[Louis_George_Cafe.bold.h7, styles.timestamp, { color: THEMECOLORS[themeMode].textPrimary }]}>
                                     {t('duration')}: {elapsed}
+                                </Text>
+                                <Text style={[Louis_George_Cafe.bold.h7, styles.timestamp, { color: THEMECOLORS[themeMode].textPrimary }]}>
                                 </Text>
                             </View>
                             <View style={{ flexDirection: "row", width: wp(95), justifyContent: "space-around" }}>
@@ -381,23 +401,28 @@ const PunchInOut = () => {
                                         </TouchableOpacity>
                                     </Animated.View>
                                 </View>
-
                                 {isPunchedIn && (
                                     <View>
                                         {!isOnLunch && (
                                             <TouchableOpacity
-                                                style={[styles.subButton, { backgroundColor: STATIC_COLORS.break }]}
+                                                style={[
+                                                    styles.subButton,
+                                                    { backgroundColor: STATIC_COLORS.break },
+                                                    (!isOnBreak && breaksCount >= breaksMaxCount) && { opacity: 0.5 }
+                                                ]}
                                                 onPress={() =>
                                                     showConfirmation(
                                                         isOnBreak ? t('confirmEndBreak') : t('confirmStartBreak'),
                                                         toggleBreak
                                                     )
                                                 }
+                                                disabled={!isOnBreak && breaksCount >= breaksMaxCount}
                                             >
                                                 <Text style={styles.subButtonText}>
                                                     {isOnBreak ? t('endBreak') : t('startBreak')}
                                                 </Text>
                                             </TouchableOpacity>
+
                                         )}
 
                                         {!isOnBreak && (

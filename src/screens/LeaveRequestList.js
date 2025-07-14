@@ -21,6 +21,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import DropdownModal from '../components/DropDownModal';
 import ConfirmationModal from '../components/ConfirmationModal';
+import SearchInput from './SearchInput';
 
 const LeaveRequestList = () => {
     const { themeMode } = useTheme();
@@ -40,6 +41,7 @@ const LeaveRequestList = () => {
     const [pendingStatusChange, setPendingStatusChange] = useState(null);
     const [filterStatus, setFilterStatus] = useState('All'); // For filtering
     const [filterDropdownVisible, setFilterDropdownVisible] = useState(false);
+    const [searchText, setSearchText] = useState('');
 
     const colors = THEMECOLORS[themeMode];
 
@@ -106,15 +108,31 @@ const LeaveRequestList = () => {
         setDropdownVisible(true);
     };
 
-    const filteredLeaveData = filterStatus === 'All'
-        ? leaveData
-        : leaveData.filter(item => item.status === filterStatus);
+
+    const filteredLeaveData = leaveData.filter(item => {
+        const matchesStatus = filterStatus === 'All' || item.status === filterStatus;
+        const search = searchText.toLowerCase();
+
+        const fullName = item?.employeeId?.full_name?.toLowerCase() || '';
+        const reason = item?.reason?.toLowerCase() || '';
+        const leaveType = item?.leaveType?.toLowerCase() || '';
+
+        const matchesSearch =
+            fullName.includes(search) ||
+            reason.includes(search) ||
+            leaveType.includes(search);
+
+        return matchesStatus && matchesSearch;
+    });
+
 
     const renderItem = ({ item }) => (
         <View style={[styles.card, { backgroundColor: colors.card }]}>
+
             <View style={styles.cardHeader}>
                 <Text style={[Louis_George_Cafe.bold.h5, { color: colors.textPrimary }]}>
                     {item.leaveType}
+                    {/* {JSON.stringify()} */}
                 </Text>
                 <TouchableOpacity
                     onPress={() => item.status === 'Pending' && handleShowDropDown(item._id, item.status)}
@@ -132,6 +150,10 @@ const LeaveRequestList = () => {
                 </TouchableOpacity>
             </View>
             <View style={styles.cardContent}>
+                {/* item.employeeId?.full_name */}
+                <Text style={[Louis_George_Cafe.regular.h7, styles.label, { color: colors.textPrimary }]}>
+                    {t('applicant')}: <Text style={styles.value}>{item?.employeeId?.full_name}</Text>
+                </Text>
                 <Text style={[Louis_George_Cafe.regular.h7, styles.label, { color: colors.textPrimary }]}>
                     {t('startDate')}: <Text style={styles.value}>{formatDate(item.startDate)}</Text>
                 </Text>
@@ -148,6 +170,15 @@ const LeaveRequestList = () => {
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <HeaderComponent showBackArray={true} title={t('LeaveManagement')} />
+            <View style={{ marginTop: wp(3), marginHorizontal: wp(3) }}>
+                {
+                    <SearchInput
+                        searchText={searchText}
+                        setSearchText={setSearchText}
+                        themeMode={themeMode}
+                    />
+                }
+            </View>
 
             {/* Filter Dropdown Trigger */}
             <TouchableOpacity

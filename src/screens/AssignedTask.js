@@ -71,6 +71,7 @@ const AssignedTask = () => {
     setLoading(true);
     dispatch(getTaskAssignedArray({ userid: userdata?.id }, (res) => {
       if (res.success) {
+        // console.log(res.data)
         setTaskList(res.data || []);
         setFilteredList((res.data || []).sort((a, b) =>
           isDateAscending ? new Date(a.startDate) - new Date(b.startDate) : new Date(b.startDate) - new Date(a.startDate)
@@ -191,10 +192,16 @@ const AssignedTask = () => {
       </TouchableOpacity>
       <View style={styles.cardContent}>
         <Text style={[Louis_George_Cafe.regular.h7, styles.itemText, { color: THEMECOLORS[themeMode].textPrimary }]}>
+          {t('project')}: <Text style={styles.value}>{item?.project?.projectName}</Text>
+        </Text>
+        <Text style={[Louis_George_Cafe.regular.h7, styles.itemText, { color: THEMECOLORS[themeMode].textPrimary }]}>
           {t('description')}: <Text style={styles.value}>{item.description}</Text>
         </Text>
         <Text style={[Louis_George_Cafe.regular.h7, styles.itemText, { color: THEMECOLORS[themeMode].textPrimary }]}>
           {t('startDate')}: <Text style={styles.value}>{formatDate(item.startDate)}</Text>
+        </Text>
+        <Text style={[Louis_George_Cafe.regular.h7, styles.itemText, { color: THEMECOLORS[themeMode].textPrimary }]}>
+          {t('endDate')}: <Text style={styles.value}>{formatDate(item.endDate)}</Text>
         </Text>
         <Text style={[Louis_George_Cafe.regular.h7, styles.itemText, { color: THEMECOLORS[themeMode].textPrimary }]}>
           {t('priority')}: <Text style={styles.value}>{item.priority}</Text>
@@ -215,6 +222,9 @@ const AssignedTask = () => {
             <MaterialIcons name='edit' size={wp(6)} color={THEMECOLORS[themeMode].black} />
           </TouchableOpacity>
         </View>
+        {/* <Text style={{
+          color:"#fff"
+        }}>{JSON.stringify(item)}</Text> */}
       </View>
     </View>
   );
@@ -233,6 +243,22 @@ const AssignedTask = () => {
     )
   }
 
+  useEffect(() => {
+    if (searchText.trim() === '') {
+      setFilteredList(taskList);
+    } else {
+      const lowerSearch = searchText.toLowerCase();
+      const filtered = taskList.filter(task =>
+        task.title.toLowerCase().includes(lowerSearch) ||
+        task.description?.toLowerCase().includes(lowerSearch) ||
+        task.project?.projectName?.toLowerCase().includes(lowerSearch)
+      );
+      setFilteredList(filtered);
+    }
+  }, [searchText, taskList]);
+  
+
+
   return (
     <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
       <HeaderComponent showBackArray title={t('AssignedTask')} />
@@ -248,8 +274,6 @@ const AssignedTask = () => {
           () => handleShowProjectsList()
         ]}
       />
-
-
       <View style={{ flexDirection: "row", flexWrap: "wrap", paddingHorizontal: wp(4), marginBottom: hp(1) }}>
         {selectedProject && selectedProject != null && (
           <View style={styles.filterChip}>
@@ -300,9 +324,6 @@ const AssignedTask = () => {
           </View>
         )}
       </View>
-
-
-
       <TouchableOpacity
         onPress={() => {
           const newOrder = !isDateAscending;
@@ -370,7 +391,7 @@ const AssignedTask = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  listContainer: { paddingBottom: hp(10) },
+  listContainer: { paddingBottom: hp(10),padding:wp(2) },
   card: {
     borderRadius: wp(3), padding: wp(2), borderWidth: 1, borderColor: '#ccc',
     marginHorizontal: wp(2), marginVertical: wp(1.5),

@@ -25,14 +25,14 @@ import SearchSelectScreen from './SearchSelectScreen';
 import SearchSelectProjectScreen from './SearchSelectProjectScreen';
 import DropdownModal from '../components/DropDownModal';
 
-const CreateTask = () => {
+const CreateTaskByCompany = () => {
     const { themeMode } = useTheme();
     const { t } = useTranslation();
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const userdata = useSelector((state) => state.auth.user?.data);
     const route = useRoute();
-    const { taskId } = route.params || {};  // safely access taskId
+    const { taskId,data } = route.params || {};  // safely access taskId
 
     // Modal DropDown
     const [statusDropdownVisible, setStatusDropdownVisible] = useState(false);
@@ -87,9 +87,6 @@ const CreateTask = () => {
         if (!startDate) newErrors.startDate = t('startDateRequired');
         if (!endDate) newErrors.endDate = t('endDateRequired');
         if (!employee || employee.length === 0) newErrors.employee = t('employeeRequired');
-        if (!project) newErrors.project = t('projectRequired');
-        if (!project?.client?._id) newErrors.client = t('clientRequired');
-        if (!project?.company?._id) newErrors.company = t('companyRequired');
         if (!status) newErrors.status = t('statusRequired');
         if (!priority) newErrors.priority = t('priorityRequired');
         setErrors(newErrors);
@@ -97,7 +94,7 @@ const CreateTask = () => {
     };
 
     useEffect(() => {
-        // alert(taskId)
+        // alert(JSON.stringify(data))
         setErrors({})
     }, [taskTitle, description, startDate, endDate, employee, project, status, priority])
 
@@ -109,14 +106,14 @@ const CreateTask = () => {
             startDate,
             endDate,
             employee: employee.id,  // single employee ID
-            project: project?._id,
-            client: project?.client?._id,
-            companyId: project?.company?._id,
+            project: data?._id,
+            client: data?.client?._id,
+            companyId: data?.company?._id,
             status,
             priority,
             luser: userdata?.id,
         };
-        // alert(JSON.stringify(baseData?.employee))
+        // alert(JSON.stringify(baseData))
         setLoading(true);
         if (taskId) {
             dispatch(
@@ -313,56 +310,8 @@ const CreateTask = () => {
                                     <TouchableOpacity onPress={() => setselectDropDown(true)} style={styles.pickerWrapper}>
                                         <Text style={{ fontSize: 16 }}>{employee.length != 0 ? `${employee?.name != '' || '' ? employee?.name : ''}` : t('selectEmployee')}</Text>
                                     </TouchableOpacity>
-                                    {/* {employee.length > 0 && (
-                                    <View style={{ flexDirection: 'row', flexWrap: 'wrap', margin: 10 }}>
-                                        {employee.map((emp) => (
-                                            <View key={emp.id} style={styles.selectedItemContainer}>
-                                                <Text style={Louis_George_Cafe.regular.h9}>{emp.name}</Text>
-                                                <TouchableOpacity onPress={() => setEmployee(prev => prev.filter(e => e.id !== emp.id))}>
-                                                    <Text style={styles.removeIcon}>✕</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        ))}
-                                    </View>
-                                )} */}
                                     {errors.employee && <Text style={styles.errorText}>{errors.employee}</Text>}
-                                    {/* Project Selection */}
-                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                        {t('project')}
-                                    </Text>
-                                    <TouchableOpacity onPress={() => setSelectProjectDropDown(true)} style={styles.pickerWrapper}>
-                                        <Text style={{ fontSize: 16 }}>
-                                            {project ? `${project.name} (${project.clientName || ''})` : t('selectProject')}
-                                        </Text>
-                                    </TouchableOpacity>
-                                    {errors.project && <Text style={styles.errorText}>{errors.project}</Text>}
-                                    {/* Client */}
-                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                        {t('client')}
-                                    </Text>
-                                    <View style={[styles.pickerWrapper, { backgroundColor: '#f9f9f9' }]}>
-                                        <Text style={{ fontSize: 16 }}>
-                                            {project?.client?.name || t('selectProjectFirst')}
-                                        </Text>
-                                    </View>
-                                    {errors.client && <Text style={styles.errorText}>{errors.client}</Text>}
-                                    {/* <Text>{JSON.stringify(project?.company?.company_name )}</Text> */}
-
-                                    {/* Company */}
-                                    <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
-                                        {t('company')}
-                                    </Text>
-                                    <View style={[styles.pickerWrapper, { backgroundColor: '#f9f9f9' }]}>
-                                        <Text style={{ fontSize: 16 }}>
-                                            {project?.company?.company_name || t('selectProjectFirst')}
-                                        </Text>
-                                    </View>
-                                    {/* <Text style={{ fontSize: 16 }}>
-                                        {JSON.stringify(project)}
-                                    </Text> */}
-                                    {errors.company && <Text style={styles.errorText}>{errors.company}</Text>}
                                     {/* Status */}
-
                                     <Text style={[Louis_George_Cafe.bold.h6, styles.label, { color: THEMECOLORS[themeMode].textPrimary }]}>
                                         {t('status')}
                                     </Text>
@@ -539,4 +488,4 @@ const styles = StyleSheet.create({
 
 
 
-export default CreateTask;
+export default CreateTaskByCompany;

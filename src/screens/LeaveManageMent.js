@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -7,7 +7,6 @@ import {
     RefreshControl,
     TouchableOpacity,
     ActivityIndicator,
-    
 } from 'react-native';
 import { wp, hp } from '../resources/dimensions';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -20,6 +19,7 @@ import { getLeaveArray } from '../redux/authActions';
 import HeaderComponent from '../components/HeaderComponent';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
+import SearchInput from './SearchInput';
 
 const LeaveManageMent = () => {
     const { themeMode } = useTheme();
@@ -27,6 +27,7 @@ const LeaveManageMent = () => {
     const navigation = useNavigation();
     const userdata = useSelector((state) => state.auth.user?.data);
     const dispatch = useDispatch();
+    const [searchText, setSearchText] = useState('');
 
     const [leaveData, setLeaveData] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
@@ -59,7 +60,7 @@ const LeaveManageMent = () => {
 
     const onRefresh = () => {
         setRefreshing(true);
-        fetchLeaveData(); // `setRefreshing(false)` handled inside `fetchLeaveData`
+        fetchLeaveData();
     };
 
     const formatDate = (dateStr) => {
@@ -70,9 +71,27 @@ const LeaveManageMent = () => {
         return `${day}-${month}-${year}`;
     };
 
+    const filteredLeaveData = useMemo(() => {
+        if (!searchText) return leaveData;
+        const lowerSearch = searchText.toLowerCase();
+
+        return leaveData.filter(item => {
+            const startDateFormatted = formatDate(item.startDate); // e.g. "10-07-2025"
+            const endDateFormatted = formatDate(item.endDate);
+
+            return (
+                item.leaveType?.toLowerCase().includes(lowerSearch) ||
+                item.reason?.toLowerCase().includes(lowerSearch) ||
+                item.status?.toLowerCase().includes(lowerSearch) ||
+                startDateFormatted.toLowerCase().includes(lowerSearch) ||
+                endDateFormatted.toLowerCase().includes(lowerSearch)
+            );
+        });
+    }, [leaveData, searchText]);
+
+
     const renderItem = ({ item }) => (
         <View style={[styles.card, { backgroundColor: THEMECOLORS[themeMode].card }]}>
-
             <View style={styles.cardHeader}>
                 <Text style={[Louis_George_Cafe.bold.h5, { color: THEMECOLORS[themeMode].textPrimary }]}>
                     {item.leaveType}
@@ -106,6 +125,13 @@ const LeaveManageMent = () => {
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <HeaderComponent showBackArray={true} title={t('LeaveManagement')} />
+            <View style={{ padding: wp(1), paddingHorizontal: hp(2), marginTop: wp(2) }}>
+                <SearchInput
+                    searchText={searchText}
+                    setSearchText={setSearchText}
+                    themeMode={themeMode}
+                />
+            </View>
             <TouchableOpacity
                 onPress={() => navigation.navigate('AddLeaveForm')}
                 style={{
@@ -114,8 +140,12 @@ const LeaveManageMent = () => {
                     padding: wp(2), backgroundColor: THEMECOLORS[themeMode].buttonBg,
                     borderRadius: wp(5)
                 }}>
-                <Text style={[Louis_George_Cafe.bold.h7, { color: THEMECOLORS[themeMode].buttonText, textTransform: "capitalize", lineHeight: wp(4) }]}>
-                    {t('apply_leave')}
+                <Text style={[Louis_George_Cafe.bold.h7, {
+                    color: THEMECOLORS[themeMode].buttonText,
+                    textTransform: "capitalize",
+                    lineHeight: wp(4)
+                }]}>
+                    {t('request_leave')}
                 </Text>
                 <MaterialCommunityIcons
                     name={'plus-circle'}
@@ -132,7 +162,7 @@ const LeaveManageMent = () => {
                 />
             ) : (
                 <FlatList
-                    data={leaveData}
+                    data={filteredLeaveData}
                     renderItem={renderItem}
                     keyExtractor={(item, index) => `${item.id}_${index}`}
                     contentContainerStyle={styles.listContainer}

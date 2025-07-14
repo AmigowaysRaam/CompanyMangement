@@ -16,6 +16,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import SocialMediaPopUp from '../components/SocialMediaPopUp';
 import { useTheme } from '../context/ThemeContext';
+import { LoginManager, AccessToken } from "react-native-fbsdk-next";
 
 const ChatListScreen = () => {
 
@@ -138,6 +139,7 @@ const ChatListScreen = () => {
         setSocialMediaPopup(true);
     }
 
+      
     return (
         <>
             <HeaderComponent title={t('Chats')} showBackArray={true} rightSideArr={'forum'} rIconFunction={() => handleOpenDropDown()} />

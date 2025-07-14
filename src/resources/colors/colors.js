@@ -16,11 +16,14 @@ export const THEMECOLORS = {
   inputBackground: '#E2E2E2',
     validation: '#ff5733',
     modalBg: 'rgba(255,255,255,0.3)',
-    white:"#FFFFFF"
+    white:"#FFFFFF",
+    gradientStart: '#6a11cb',
+    gradientEnd: '#2575fc',
+
   },
   dark: {
     background: '#000000',
-    cardBackground: '#C4C4C2',
+    cardBackground: '#f9f9f9',
     viewBackground: '#121212',
     primary: '#fff',
     accent: '#FFDC12',
@@ -35,6 +38,8 @@ export const THEMECOLORS = {
     buttonText: '#013CA3',
     white:"#FFFFFF",
     primaryApp: '#013CA3',
+    gradientStart: '#3e3e3e',
+    gradientEnd: '#3d3d3d',
 
 
   },

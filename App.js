@@ -1,3 +1,9 @@
+// import { LogBox } from 'react-native';
+// LogBox.ignoreAllLogs(false); // Make sure no logs are hidden
+// ErrorUtils.setGlobalHandler((error, isFatal) => {
+//   console.log('Global error:', error, isFatal);
+// });
+// 
 import React, { useEffect, useState } from 'react';
 import { Platform, SafeAreaView, StyleSheet, Text } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -18,15 +24,12 @@ import LinearGradient from 'react-native-linear-gradient';
 import { hp, wp } from './src/resources/dimensions';
 import { Louis_George_Cafe } from './src/resources/fonts';
 import { Settings } from 'react-native-fbsdk-next';
-
-
 if (Platform.OS === 'ios') {
   VersionCheck.setAppID('1234567890'); // Replace with your actual App Store ID
 }
 
 export default function App() {
   const [isOffline, setIsOffline] = useState(false);
-
   const [fontsLoaded] = useFonts({
     Louis_George_Cafe: require('./assets/fonts/Louis_George_Cafe.ttf'),
     Louis_George_Cafe_Bold: require('./assets/fonts/Louis_George_Cafe_Bold.ttf'),
@@ -43,8 +46,6 @@ export default function App() {
     return () => unsubscribe(); // cleanup listener on unmount
   }, []);
 
-
-
   return fontsLoaded ? (
     <PaperProvider>
       <I18nextProvider i18n={i18n}>
@@ -54,7 +55,6 @@ export default function App() {
               <ThemeProvider>
                 <SafeAreaProvider>
                   <SafeAreaView style={{ flex: 1, backgroundColor: '#000000' }}>
-
                     <InitialRouter />
                     {isOffline &&
                       <LinearGradient
@@ -69,7 +69,6 @@ export default function App() {
                       </LinearGradient>
                     }
                     <Toast ref={(ref) => Toast.setRef(ref)} />
-
                   </SafeAreaView>
                 </SafeAreaProvider>
               </ThemeProvider>
@@ -82,7 +81,6 @@ export default function App() {
     <Text>Loading Fonts...</Text>
   );
 }
-
 const styles = StyleSheet.create({
   coverImage: {
     alignItems: "center",

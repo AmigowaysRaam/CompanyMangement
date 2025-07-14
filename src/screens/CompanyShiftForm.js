@@ -333,7 +333,7 @@ const CompanyShiftForm = ({ onNext, cId ,companyDetails}) => {
       {shifts.length > 0 &&
         <TouchableOpacity
           style={[styles.submitBtn, {
-            backgroundColor: THEMECOLORS[themeMode].primaryApp
+            backgroundColor: THEMECOLORS[themeMode].buttonBg
           }]}
           onPress={onSubmit}
           disabled={loading}
@@ -346,8 +346,6 @@ const CompanyShiftForm = ({ onNext, cId ,companyDetails}) => {
             }]}>{t('submit')}</Text>
           )}
         </TouchableOpacity>}
-
-
       {showPicker && (
         <DateTimePicker
           value={pickerValue}

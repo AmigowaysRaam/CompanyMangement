@@ -9,18 +9,15 @@ import { COLORS } from '../resources/Colors';
 import ProfileUploadPopUp from './ProfileUploadPopUp';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const ProfileHeader = ({ userdata, themeMode, onClose, navigation }) => {
-
-
+const ProfileHeader = ({ userdata, themeMode,}) => {
   const [showDropdown, setShowDropdown] = useState(false);
-
   const getInitials = (name = '') => {
     const parts = name.trim().split(' ');
     if (parts.length === 0) return '';
     if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
     return (parts[0][0] + parts[1][0]).toUpperCase();
   };
-
+  // console.log(userdata.data.profileImage)
   return (
     <ImageBackground
       source={require('../../src/assets/animations/profile_bg.png')}
@@ -43,6 +40,13 @@ const ProfileHeader = ({ userdata, themeMode, onClose, navigation }) => {
         {/* Avatar Section */}
         <View style={{ position: 'relative' }}>
           <TouchableOpacity
+            style={{
+              borderWidth: wp(0.3),
+              borderColor: '#fff',
+              width: wp(18),
+              height: wp(18),
+              borderRadius: wp(9),
+            }}
             onPress={() => {
               setShowDropdown(true);
             }}
@@ -127,23 +131,6 @@ const ProfileHeader = ({ userdata, themeMode, onClose, navigation }) => {
                 {userdata?.data?.lastLoginLocation}
               </Text>
             </View>}
-
-          {/* {
-            userdata?.data?.lastLoginLocation &&
-            <Text
-              numberOfLines={1}
-              style={[
-                Louis_George_Cafe.bold.h8,
-                {
-                  color: THEMECOLORS[themeMode].white,
-                  textTransform: 'capitalize',
-                  lineHeight: wp(7),
-                },
-              ]}
-            >
-              {`📍${userdata?.data?.lastLoginLocation}`}
-            </Text>
-          } */}
         </View>
       </View>
       {showDropdown &&

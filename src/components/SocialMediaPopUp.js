@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
     TouchableOpacity,
     StyleSheet,
-    ActivityIndicator,
-    RefreshControl,
-    FlatList, Image
+    ActivityIndicator, RefreshControl, FlatList, Image
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,14 +17,15 @@ import { THEMECOLORS } from '../resources/colors/colors';
 import { useTheme } from '../context/ThemeContext';
 import { getSocialMediasArray } from '../redux/authActions';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
+import { LoginManager, AccessToken, Settings, AppEventsLogger, LoginButton } from "react-native-fbsdk-next";
+// import * as AuthSession from 'expo-auth-session';
+
 
 const SocialMediaPopUp = ({ isVisible, onCancel }) => {
 
     const navigation = useNavigation();
     const dispatch = useDispatch();
     const { t } = useTranslation();
-
-
     const { themeMode } = useTheme();
     const [refreshing, setRefreshing] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -39,23 +38,65 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
         }, [userdata])
     );
 
+
+    useEffect(() => {
+        Settings.setAdvertiserTrackingEnabled(true);
+        AppEventsLogger.logEvent('TestEvent');
+        console.log("📣 Sent TestEvent to Facebook App Events");
+    }, []);
+
+
+    // const facebookLogin = async () => {
+
+    //     try {
+    //         console.log("Calling Facebook LoginManager...");
+    //         const result = await LoginManager.logInWithPermissions(["email", 'public_profile'], 'limited');
+    //         console.log("LoginManager result received");
+    //         // LoginManager.setLoginBehavior('web_only'); // 👈 this line sets web-only login
+
+    //         if (result.isCancelled) {
+    //             console.log("User cancelled login");
+    //             // alert("Login was cancelled.");
+    //             return;
+    //         }
+    //         console.log("✅ Granted:", result.grantedPermissions?.toString());
+    //         console.log("❌ Declined:", result.declinedPermissions?.toString());
+    //     } catch (loginError) {
+    //         console.error("LoginManager threw error:", loginError);
+    //         alert("Facebook login failed: " + loginError.message);
+    //     }
+
+    // };
+
+    const facebookLogin = async () => {
+        const data = await AccessToken.getCurrentAccessToken();
+        if (data) {
+          console.log('Facebook token:', data.accessToken.toString());
+        } else {
+          console.log('No token found');
+        }
+      };
+
+
     const renderItem = ({ item }) => (
-        <View style={[styles.card, { backgroundColor: THEMECOLORS[themeMode].card }]}>
+        <TouchableOpacity
+            onPress={() => facebookLogin()} // replace with connect logic
+            style={[styles.card, { backgroundColor: THEMECOLORS[themeMode].card }]}>
             <View style={styles.cardHeader}>
-                <View style={styles.leftSection}>
+                <View style={styles.leftection}>
                     <Image
                         source={{ uri: item?.icon }}
                         style={styles.icon}
                         resizeMode="contain"
                     />
-                    <Text style={[Louis_George_Cafe.bold.h5, { color: THEMECOLORS[themeMode].black }]}>
+                    {/* <Text style={[Louis_George_Cafe.bold.h5, { color: THEMECOLORS[themeMode].black }]}>
                         {item.name}
-                    </Text>
+                    </Text> */}
                 </View>
-                {!item.connected &&
+                {/* {!item.connected &&
                     <TouchableOpacity
                         // disabled={item.connected}
-                        onPress={() => navigation.navigate('AddLeaveForm')} // replace with connect logic
+                        onPress={() => facebookLogin()} // replace with connect logic
                         style={[
                             styles.connectBtn,
                             {
@@ -81,11 +122,10 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
                             style={{ paddingHorizontal: wp(1) }}
                         />
                     </TouchableOpacity>
-                }
+                } */}
             </View>
-        </View>
+        </TouchableOpacity>
     );
-
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
@@ -101,7 +141,7 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
             getSocialMediasArray(userdata?.id, (response) => {
                 if (response.success) {
                     setSocialMeddia(response.data || []);
-                    console.log(response.data)
+                    // console.log(response.data)
                 }
                 setLoading(false);
                 setRefreshing(false);
@@ -120,11 +160,8 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
             animationIn="slideInRight"
             animationOut="slideOutRight"
             animationInTiming={500}       // Slower slide in
-            // animationOutTiming={800}      // Slower slide out ✅
+            animationOutTiming={500}      // Slower slide out ✅
             backdropColor="black"
-            // backdropOpacity={0.5}
-            // backdropTransitionOutTiming={800}  // Fade out timing for backdrop ✅
-            // backdropTransitionInTiming={800}   // Optional: also slow fade-in
             onBackdropPress={!loading ? onCancel : null}
             style={styles.modal}
         >
@@ -135,14 +172,17 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
                         name={"close"}
                         size={hp(4)}
                         color={THEMECOLORS[themeMode].primaryApp}
-                        style={{ marginVertical: wp(2), alignSelf: "flex-end" }}
+                        style={{
+                            marginVertical: wp(2),
+                            //  alignSelf: "flex-end"
+                        }}
                     />
                     {
                         loading ?
-                            <ActivityIndicator style={{alignSelf:"center",marginTop:wp(10)}} />
+                            <ActivityIndicator style={{ alignSelf: "center", marginTop: wp(10) }} />
                             :
                             <FlatList
-                            showsHorizontalScrollIndicator={false}
+                                showsHorizontalScrollIndicator={false}
                                 data={socialMedias}
                                 renderItem={renderItem}
                                 keyExtractor={(item, index) => `${item.platform}_${index}`}
@@ -162,9 +202,7 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
                                 }
                             />
                     }
-
                 </>
-
             </View>
         </Modal>
     );
@@ -180,15 +218,16 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         backgroundColor: '#f9f9f9',
-        width: '100%',
+        width: wp(20),
         // padding: wp(6),
         paddingHorizontal: wp(4),
         borderTopLeftRadius: wp(4),
         borderBottomLeftRadius: wp(4),
         position: "absolute",
-        left: wp(6),
+        right: wp(-2),
         top: hp(-1),
-        minHeight:hp(52)
+        minHeight: hp(52),
+        alignItems: "center"
     },
     title: {
         // fontSize: wp(4),
@@ -242,7 +281,7 @@ const styles = StyleSheet.create({
     icon: {
         width: wp(8),
         height: wp(8),
-        marginRight: wp(3),
+        // marginRight: wp(3),
         borderRadius: wp(2),
     },
     connectBtn: {

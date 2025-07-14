@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
-    View,
-    StyleSheet,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    ToastAndroid,
-    ActivityIndicator
+    View,StyleSheet,ScrollView,Text,TextInput,
+    TouchableOpacity,ToastAndroid, ActivityIndicator
 } from 'react-native';
 import { hp, wp } from '../resources/dimensions';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -38,6 +32,7 @@ const ContactStep = ({ onNext, setCurrentStep, currentStep, cId, companyDetails,
     const [state, setState] = useState('');
     const [country, setCountry] = useState('');
     const [loading, setLoading] = useState(false);
+
 
     // Error states
     const [phoneError, setPhoneError] = useState('');

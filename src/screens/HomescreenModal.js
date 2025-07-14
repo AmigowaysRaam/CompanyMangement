@@ -54,10 +54,10 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             [index]: !prev[index],
         }));
     };
+    
     useEffect(() => {
         dispatch(getSideMenus(userdata?.data?.id));
         setsideMenusList(sideMenusArray?.data);
-
         if (_.isEmpty(sideMenusArray?.data)) {
             setisLoading(true);
             dispatch(getSideMenus({ userid: userdata?.data?.id }, (response) => {
@@ -68,13 +68,14 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                     setExpandedMenus(expandAllMenusWithSubmenus(response.data)); // 👈 auto expand
                 } else {
                     setsideMenusList(sideMenusArray ? sideMenusArray : []);
-                    setisLoading(true);
+                    setisLoading(false);
                 }
             }));
         } else {
             setExpandedMenus(expandAllMenusWithSubmenus(sideMenusArray?.data)); // 👈 in case it's already available
         }
     }, [userdata?.data?.id]);
+
     const handleNavigateScreen = (item) => {
         const routes = {
             'My Profile': 'Profile',
@@ -107,10 +108,9 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
             'Salary Structure': "CreateSalartyStructure",
             'Employee Payroll': 'PayrollDetails',
             'Admin': 'AdminManagement',
-            "Payroll Settings": "PayrollSettings"
-
+            "Payroll Settings": "PayrollSettings",
+            "Shifts": "ShiftsManagement"
         };
-
         const route = routes[item];
         // alert(item)
         if (route) {
@@ -226,66 +226,6 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                     <View style={[{
                         backgroundColor: showLogoutModal ? 'grey' : THEMECOLORS[themeMode].background,
                     }, styles.modalBox]}>
-                        {/* <ImageBackground
-                            source={require("../../src/assets/animations/profile_bg.png")}
-                            resizeMode="stretch"
-                            style={{ width: "100%", height: hp(42) }}
-                        >
-                            <ThemeToggle />
-                            <View style={{ width: "100%", height: hp(32), alignItems: "center" }}>
-                                <TouchableOpacity style={{ marginVertical: hp(4) }} onPress={() => {
-                                    onClose()
-                                    navigation.navigate('MyProfileUpdate')
-                                }
-                                } >
-                                    <Image
-                                        source={require("../assets/animations/user_1.png")}
-                                        style={{ width: wp(26), height: wp(26), borderRadius: wp(25) }}
-                                    />
-                                    <MaterialCommunityIcons
-                                        name="pencil-outline"
-                                        size={wp(6)}
-                                        color={COLORS.button_bg_color}
-                                        style={{ alignSelf: "flex-end", position: "relative", bottom: hp(3), right: hp(2), backgroundColor: THEMECOLORS[themeMode].white, borderRadius: wp(5), padding: wp(0.5) }}
-                                    />
-                                </TouchableOpacity>
-                                <View style={{ position: "relative", bottom: wp(9) }} >
-                                    <Text
-                                        numberOfLines={1}
-                                        style={[
-                                            Louis_George_Cafe.bold.h6,
-                                            { alignSelf: "center", maxWidth: wp(60), color: THEMECOLORS[themeMode].white, alignSelf: "center", lineHeight: wp(7) }
-                                        ]}
-                                    >
-                                        {userdata?.data?.full_name}
-                                    </Text>
-                                    <Text
-                                        numberOfLines={1}
-                                        style={[
-                                            Louis_George_Cafe.bold.h8,
-                                            {
-                                                alignSelf: "center", color: THEMECOLORS[themeMode].white, textTransform: "capitalize",
-                                                lineHeight: wp(7)
-                                            },
-                                        ]}
-                                    >
-                                        {`#${userdata?.data?.id}`}
-                                    </Text>
-                                    <Text
-                                        numberOfLines={1}
-                                        style={[
-                                            Louis_George_Cafe.bold.h8,
-                                            {
-                                                alignSelf: "center", color: THEMECOLORS[themeMode].white, textTransform: "capitalize",
-                                                lineHeight: wp(7)
-                                            },
-                                        ]}
-                                    >
-                                        {`📍${userdata?.data?.lastLoginLocation}`}
-                                    </Text>
-                                </View>
-                            </View>
-                        </ImageBackground> */}
 
                         <View>
                             <ProfileHeader
@@ -312,6 +252,11 @@ const HomeScreenModal = ({ visible, onClose, children, title, }) => {
                                         showsVerticalScrollIndicator={false}
                                         onScroll={handleScroll}
                                         scrollEventThrottle={16}
+                                        ListEmptyComponent={<>
+                                            <Text
+                                                style={[Louis_George_Cafe.regular.h4, { color: THEMECOLORS[themeMode].textPrimary, alignSelf: "center", marginTop: hp(10) }]}
+                                            >{t('no_menu')}</Text>
+                                        </>}
                                     />
                             }
                         </View>
@@ -416,7 +361,9 @@ const styles = StyleSheet.create({
         height: hp(100),
         overflow: "hidden",
         borderTopEndRadius: wp(10),
-        paddingVertical: wp(1)
+        paddingVertical: wp(1), borderEndWidth: wp(0.1),
+        borderColor: "#999"
+
     },
     menuItem: {
         paddingVertical: wp(5),

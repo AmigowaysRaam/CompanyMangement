@@ -24,6 +24,7 @@ const NotificationList = () => {
     const { themeMode } = useTheme();
     const { t } = useTranslation();
     const navigation = useNavigation();
+    
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) {
             navigation.goBack();

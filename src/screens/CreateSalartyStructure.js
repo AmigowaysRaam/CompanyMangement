@@ -109,11 +109,12 @@ const CreateSalartyStructure = () => {
                                 flexDirection: 'row',
                                 marginRight: wp(4),
                                 marginBottom: hp(0.5),
-                                backgroundColor: themeMode === 'dark' ? '#899' : '#f0f0f0',
+                                backgroundColor: themeMode === 'dark' ? '#f0f0f0' : '#f0f0f0',
                                 paddingVertical: hp(0.5),
                                 paddingHorizontal: wp(2),
-                                borderRadius: wp(0.5),
+                                borderRadius: wp(2),
                                 alignItems: 'center',
+
                             }}
                         >
                             <Text
@@ -132,12 +133,11 @@ const CreateSalartyStructure = () => {
                                     fontSize: wp(3.5),
                                 }}
                             >
-                                {val.value}
+                                {val.value.toFixed(2)}
                             </Text>
                         </View>
                     ))}
                 </View>
-
             </TouchableOpacity>
         );
     };

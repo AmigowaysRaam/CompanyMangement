@@ -25,8 +25,8 @@ const GroupChatScreen = ({ route }) => {
     const [messages, setMessages] = useState([]);
     const { chatId, projectName } = route.params;
 
-    const currentUserEmail = 'ram@gmail.com'; // Replace this with dynamic user data in production
-    const userId =userdata?.id;
+    const userId = userdata?.id;
+    const userEmail = userdata?.email;
 
     useAndroidBackHandler(() => {
         if (navigation.canGoBack()) navigation.goBack();
@@ -40,19 +40,26 @@ const GroupChatScreen = ({ route }) => {
                     const bTime = new Date(b.timestamp).getTime();
                     return bTime - aTime; // newest first
                 });
-                setMessages(sortedMessages);
+
+                const mapped = sortedMessages.map(msg => ({
+                    ...msg,
+                    position: msg.sender === userEmail ? 'right' : 'left'
+                }));
+                setMessages(mapped);
             }
         }));
     };
 
     const handleSend = () => {
         if (!message.trim()) return;
-        // alert(JSON.stringify(userdata))
+
         const tempMessage = {
             id: Date.now().toString(),
             sender: userdata.email,
             content: message,
             timestamp: new Date().toISOString(),
+            name: userdata.full_name,
+            profilePic: userdata.profilePic || '',
             position: 'right',
         };
 
@@ -77,13 +84,12 @@ const GroupChatScreen = ({ route }) => {
     );
 
     const handleNavigatSettings = () => {
-        navigation.navigate('GroupChatScren', {
-            chatId, projectName
-        })
-    }
+        navigation.navigate('GroupChatScren', { chatId, projectName });
+    };
 
     const renderItem = ({ item }) => {
         const isOwnMessage = item.position === 'right';
+
         return (
             <View style={styles.chatItemContainer}>
                 <View style={[
@@ -92,16 +98,12 @@ const GroupChatScreen = ({ route }) => {
                 ]}>
                     <View style={styles.messageContent}>
                         {!isOwnMessage && (
-                            <View style={{ flexDirection: 'row' }}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: hp(0.5) }}>
                                 <Image source={{ uri: item.profilePic }} style={styles.avatar} />
                                 <Text style={[
                                     Louis_George_Cafe.regular.h7,
                                     styles.senderName,
-                                    {
-                                        // color: THEMECOLORS[themeMode].validation,
-                                        marginLeft: wp(1),
-                                        //   marginTop: wp(1) 
-                                    }
+                                    { color: THEMECOLORS[themeMode].textPrimary }
                                 ]}>
                                     {item.name}
                                 </Text>
@@ -125,12 +127,7 @@ const GroupChatScreen = ({ route }) => {
                             ]}>
                                 {item.content}
                             </Text>
-                            <View style={{
-                                flexDirection:"row",
-                                alignItems:"center",
-                                alignSelf:"flex-end",
-                                justifyContent:"space-between"
-                            }}>
+                            <View style={styles.timestampRow}>
                                 <Text style={[
                                     styles.timestamp,
                                     {
@@ -143,14 +140,13 @@ const GroupChatScreen = ({ route }) => {
                                         hour: '2-digit',
                                         minute: '2-digit'
                                     })}
-
                                 </Text>
                                 {isOwnMessage &&
                                     <MaterialCommunityIcons
                                         name="check"
                                         size={hp(1.8)}
                                         color={THEMECOLORS[themeMode].white}
-                                        style={{marginLeft:wp(2)}}
+                                        style={{ marginLeft: wp(2) }}
                                     />
                                 }
                             </View>
@@ -166,10 +162,7 @@ const GroupChatScreen = ({ route }) => {
             <HeaderComponent
                 title={projectName}
                 showBackArray={true}
-                onTitleClick={() =>
-                    // alert(chatId)
-                    handleNavigatSettings()
-                }
+                onTitleClick={handleNavigatSettings}
             />
             <KeyboardAvoidingView
                 style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}
@@ -193,11 +186,8 @@ const GroupChatScreen = ({ route }) => {
                         value={message}
                         onChangeText={setMessage}
                         placeholder={t('type_a_message')}
-                        style={[styles.input, {
-                            // color: THEMECOLORS[themeMode].textPrimary,
-                            // backgroundColor: 'red'
-                        }]}
-                    placeholderTextColor={THEMECOLORS[themeMode].primaryApp}
+                        style={styles.input}
+                        placeholderTextColor={THEMECOLORS[themeMode].primaryApp}
                     />
                     <TouchableOpacity onPress={handleSend}>
                         <MaterialCommunityIcons
@@ -229,44 +219,45 @@ const styles = StyleSheet.create({
         marginHorizontal: wp(2),
     },
     senderName: {
-        marginBottom: hp(0.3),
+        marginLeft: wp(2),
         fontWeight: '600',
-        fontFamily: Louis_George_Cafe.regular?.h9.fontFamily,
     },
     messageContainer: {
-        padding: wp(2),
+        padding: wp(2.5),
         borderRadius: wp(4),
     },
     messageText: {
         fontSize: wp(3.5),
-        fontFamily: Louis_George_Cafe.regular?.h9.fontFamily,
+    },
+    timestampRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        alignSelf: "flex-end",
+        justifyContent: "space-between",
+        marginTop: hp(0.5),
     },
     timestamp: {
-        fontSize: wp(1.8),
+        fontSize: wp(2.8),
         textAlign: 'right',
-        marginTop: hp(0.5),
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         paddingHorizontal: wp(3),
         paddingVertical: hp(1.4),
-        marginHorizontal: wp(1),
         borderRadius: wp(2),
         marginHorizontal: wp(3),
-        marginVertical: wp(1),
+        marginBottom: wp(2),
     },
     input: {
         flex: 1,
         fontSize: wp(3.5),
-        fontFamily: Louis_George_Cafe.regular?.h9.fontFamily,
         marginRight: wp(2),
     },
     avatar: {
-        width: wp(5),
-        height: wp(5),
-        borderRadius: wp(4),
-        marginTop: hp(0.5),
+        width: wp(6),
+        height: wp(6),
+        borderRadius: wp(3),
     },
 });
 

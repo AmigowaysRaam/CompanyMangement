@@ -242,7 +242,6 @@ const DepartmentManagement = () => {
                         ))
                 )}
             </ScrollView>
-
             {/* Delete Confirmation Modal */}
             <ConfirmationModal
                 visible={modalVisible}
@@ -250,7 +249,6 @@ const DepartmentManagement = () => {
                 onConfirm={handleDeleteConfirm}
                 onCancel={() => setModalVisible(false)}
             />
-
             {/* Create/Edit Department Modal as child */}
             <DepartmentModal
                 visible={editModalVisible}

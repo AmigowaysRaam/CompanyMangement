@@ -70,6 +70,7 @@ const EmployeeList = () => {
             (response) => {
                 if (response?.success) {
                     const newData = response.employeeList || [];
+                    alert(JSON.stringify(newData, null, 2))
                     if (newData.length < PAGE_SIZE) {
                         setIsEndReached(true);
                         endReachedRef.current = true;
@@ -127,7 +128,7 @@ const EmployeeList = () => {
                 <Text style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignCenter, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
                     {category?.eId || '-'}
                 </Text>
-                <Text  numberOfLines={1} style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignRight, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
+                <Text numberOfLines={1} style={[Louis_George_Cafe.regular.h9, styles.column, styles.textAlignRight, { fontSize: isTamil ? wp(2.5) : wp(3.2) }]}>
                     {category?.position}
                 </Text>
             </TouchableOpacity>

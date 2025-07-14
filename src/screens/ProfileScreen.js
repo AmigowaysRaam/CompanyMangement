@@ -8,7 +8,6 @@ import {
     Image,
     Animated, Easing
 } from 'react-native';
-
 import { wp, hp } from '../resources/dimensions';
 import { Louis_George_Cafe } from '../resources/fonts';
 import { THEMECOLORS } from '../resources/colors/colors';
@@ -22,7 +21,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import _ from 'lodash';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import LogoutModal from '../components/LogoutPop';
-import { ActivityIndicator } from 'react-native-paper';
 
 const ProfileScreen = () => {
     const { themeMode } = useTheme();
@@ -40,18 +38,19 @@ const ProfileScreen = () => {
     const [hideText, setHideText] = useState(false);
 
     const lockPosition = useRef(new Animated.Value(0)).current;
-    const [isAnimating, setIsAnimating] = useState(false);
 
     const animateLockToCenter = () => {
         setHideText(true); // hide the text
-        Animated.timing(lockPosition, {
-            toValue: 1,
-            duration: 500,
-            easing: Easing.out(Easing.exp),
-            useNativeDriver: true,
-        }).start(() => {
-            setShowLogoutModal(true); // or any follow-up logic
-        });
+        setShowLogoutModal(true); // or any follow-up logic
+
+        // Animated.timing(lockPosition, {
+        //     toValue: 1,
+        //     duration: 1,
+        //     easing: Easing.out(Easing.exp),
+        //     useNativeDriver: true,
+        // }).start(() => {
+        //     setShowLogoutModal(true); // or any follow-up logic
+        // });
     };
 
     const translateX = lockPosition.interpolate({
@@ -83,8 +82,6 @@ const ProfileScreen = () => {
             flatListRef.current.scrollToEnd({ animated: true }); // <-- Step 2: Scroll to end
         }
     };
-
-
     const handleFnNavigate = (label) => {
         // console.log(label);
         const routeMap = {
@@ -117,6 +114,8 @@ const ProfileScreen = () => {
             'Employee Catgories': 'EmplyeeCategory',
             'Salary Structure': "CreateSalartyStructure",
             'Employee Payroll': 'PayrollDetails',
+            "Shifts": "ShiftsManagement",
+            'Admin': 'AdminManagement',
 
         };
 
@@ -140,7 +139,7 @@ const ProfileScreen = () => {
                         setsideMenusList(response.data);
                     } else {
                         setsideMenusList(sideMenusArray ? sideMenusArray : []);
-                        setisLoading(true);
+                        setisLoading(false);
                     }
                 }));
             } else {
@@ -155,19 +154,21 @@ const ProfileScreen = () => {
         setShowDownArrow(!isAtBottom);
     };
 
-
     useEffect(() => {
         const userId = userdata?.data?.id;
         setisLoading(true);
         dispatch(getSideMenus({ userid: userdata?.data?.id }, (response) => {
+            // alert(JSON.stringify(response))
             if (response?.success) {
+                setisLoading(false);
                 setsideMenusList(response.data);
-                setisLoading(false);
             } else {
-                setsideMenusList([]);
                 setisLoading(false);
+                setsideMenusList(null);
+
             }
         }));
+        // setisLoading(false);
     }, [userdata?.data?.id]);
 
     const renderItem = ({ item, index }) => {
@@ -229,7 +230,7 @@ const ProfileScreen = () => {
         );
     };
 
-    const staticMapItems = [1, 2, 3, 4, 5];
+    const staticMapItems = [1, 2, 3, 4, 5, 6, 7];
     const renderStaticMapItem = () => {
         return (
             staticMapItems.map((item, index) => (
@@ -299,9 +300,13 @@ const ProfileScreen = () => {
                         data={sideMenusList}
                         renderItem={renderItem}
                         keyExtractor={(item, index) => index.toString()}
+                        ListEmptyComponent={<>
+                            <Text
+                                style={[Louis_George_Cafe.regular.h4, { color: THEMECOLORS[themeMode].textPrimary, alignSelf: "center", marginTop: hp(10) }]}
+                            >{t('no_menu')}</Text>
+                        </>}
                         contentContainerStyle={{
                             paddingHorizontal: wp(5),
-                            // backgroundColor: "red",
                             minHeight: hp(20), // or whatever minimum height you want
                         }}
 
@@ -335,27 +340,29 @@ const ProfileScreen = () => {
                     )}
 
 
-                    <TouchableOpacity onPress={() => animateLockToCenter()} style={{
-                        marginTop: hp(3)
-                    }}>
-                        <LinearGradient
-                            colors={['#013CA3', `${'#013CA3'}`]}
-                            start={{ x: 1, y: 0 }}
-                            end={{ x: 0, y: 1 }}
-                            style={{
-                                flexDirection: "row",
-                                justifyContent: "space-between",
-                                paddingVertical: wp(1),    // reduce vertical padding
-                                width: wp(50),               // reduce width
-                                backgroundColor: '#D6DCE7',
-                                borderRadius: wp(10),         // smaller border radius
-                                paddingHorizontal: wp(2),    // reduce horizontal padding
-                                // marginVertical: wp(2),       // reduce margin
-                                alignSelf: "center",
-                                alignItems: "center",
-                            }}
-                        >
-                            {/* <Animated.View
+                </>
+            }
+            <TouchableOpacity onPress={() => animateLockToCenter()} style={{
+                marginTop: hp(3)
+            }}>
+                <LinearGradient
+                    colors={['#013CA3', `${'#013CA3'}`]}
+                    start={{ x: 1, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        paddingVertical: wp(1),    // reduce vertical padding
+                        width: wp(50),               // reduce width
+                        backgroundColor: '#D6DCE7',
+                        borderRadius: wp(10),         // smaller border radius
+                        paddingHorizontal: wp(2),    // reduce horizontal padding
+                        // marginVertical: wp(2),       // reduce margin
+                        alignSelf: "center",
+                        alignItems: "center",
+                    }}
+                >
+                    {/* <Animated.View
                                 style={{
                                     backgroundColor: "#D6DCE7",
                                     alignItems: "center",
@@ -366,28 +373,27 @@ const ProfileScreen = () => {
                                     transform: [{ translateX }],
                                 }}
                             > */}
-                            <MaterialCommunityIcons
-                                name={'logout'}
-                                size={hp(5)}               // smaller icon size
-                                color={'#fff'}
-                            />
-                            {/* </Animated.View> */}
+                    <MaterialCommunityIcons
+                        name={'logout'}
+                        size={hp(5)}               // smaller icon size
+                        color={'#fff'}
+                    />
+                    {/* </Animated.View> */}
+                    {
+                        // !hideText && (
+                        <Text
+                            style={[
+                                isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h5,  // smaller font size styles
 
-                            {!hideText && (
-                                <Text
-                                    style={[
-                                        isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h5,  // smaller font size styles
-
-                                        { color: "#FFF", lineHeight: wp(4), marginRight: hp(1), lineHeight: wp(6) }
-                                    ]}
-                                >
-                                    {t('log_out')}
-                                </Text>
-                            )}
-                        </LinearGradient>
-                    </TouchableOpacity>
-                </>
-            }
+                                { color: "#FFF", lineHeight: wp(4), marginRight: hp(1), lineHeight: wp(6) }
+                            ]}
+                        >
+                            {t('log_out')}
+                        </Text>
+                        // )
+                    }
+                </LinearGradient>
+            </TouchableOpacity>
 
             {showLogoutModal &&
                 <LogoutModal
@@ -428,14 +434,18 @@ const styles = StyleSheet.create({
         alignSelf: "center",
         position: "relative",
         top: hp(1),
+        borderWidth: wp(0.5),
+        borderColor: '#fff',
+        width: wp(30),
+        height: wp(30),
+        borderRadius: wp(15),
     },
 
     profileImage: {
         width: wp(30),
         height: wp(30),
         borderRadius: wp(15),
-        borderWidth: 3,
-        borderColor: '#fff'
+
     },
 
     infoContainer: {

@@ -43,8 +43,6 @@ const SetMpin = () => {
     }
   }, []);
 
-
-
   const mpinRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const confirmRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
   const dispatch = useDispatch();
@@ -192,7 +190,7 @@ const SetMpin = () => {
             {/* Set MPIN button */}
             {
               isLoading ?
-                <ActivityIndicator size={wp(10)} />
+                <ActivityIndicator size={wp(10)} color={THEMECOLORS[themeMode].primary} />
                 :
                 <TouchableOpacity
                   style={[styles.continueButton, { backgroundColor: !isMpinComplete || !isConfirmComplete || !isMatch ? COLORS.input_background : COLORS.button_bg_color }]}

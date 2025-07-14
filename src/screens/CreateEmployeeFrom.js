@@ -30,7 +30,7 @@ const COMPONENT_MAP = {
     EmployeeBasicDetails,
     AdressEmployeeForm: EmployeeAddressForm,
     EmployeeEducationForm,
-    EmployeeJobForm:EmployeeJob,
+    EmployeeJobForm: EmployeeJob,
     EmployeeBankDetailForm
     // ClientNotes:EmployeeEducationForm
 };
@@ -123,12 +123,49 @@ const CreateEmployeeFrom = () => {
         // alert(`Received Company ID in parent: ${formDataFromChild}`);
     };
 
+    const loadingContainerComp = () => {
+        return (
+            <>
+                {[...Array(7)].map((_, index) => (
+                    <View>
+
+                        <View
+                            key={index}
+                            style={{
+                                backgroundColor: THEMECOLORS[themeMode].tabInActive,
+                                width: wp(25),
+                                height: wp(5),
+                                // alignSelf: "center",
+                                borderRadius: wp(2),
+                                marginBottom: wp(2), marginVertical: wp(4),
+                                marginHorizontal:wp(6),marginTop:wp(6)
+                            }}
+                        />
+                        <View
+                            key={index}
+                            style={{
+                                backgroundColor: THEMECOLORS[themeMode].tabInActive,
+                                width: wp(90),
+                                height: wp(10),
+                                alignSelf: "center",
+                                borderRadius: wp(4),
+                                marginBottom: wp(4),
+                                //  marginVertical: wp(4)
+                            }}
+                        />
+                    </View>
+                ))}
+            </>
+        );
+    };
+
+
     return (
         <View style={[styles.container, { backgroundColor: THEMECOLORS[themeMode].background }]}>
             <HeaderComponent showBackArray={true} title={clientId != null ? t('updateEmployee') : t('createEmployee')} />
             {loading ? (
-                <View style={styles.loadingContainer}>
-                    <ActivityIndicator size="large" color={THEMECOLORS[themeMode].primaryApp} />
+                <View style={styles.loadingContaine}>
+                    {loadingContainerComp()}
                 </View>
             ) : (
                 <>

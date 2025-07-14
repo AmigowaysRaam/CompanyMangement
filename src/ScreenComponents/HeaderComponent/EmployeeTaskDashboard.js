@@ -32,7 +32,10 @@ const EmployeeTaskDashboard = (tdata) => {
 
     const renderItem = ({ item }) => (
         <View >
-            <TouchableOpacity onPress={() => toggleCheckbox(item.id)} style={styles.row}>
+            <TouchableOpacity 
+            // onPress={() => toggleCheckbox(item.id)}
+            onPress={() => navigation.navigate('AssignedTask')}
+             style={styles.row}>
                 <MaterialCommunityIcons
                     name={"chevron-right"}
                     size={hp(3.5)}
@@ -40,7 +43,7 @@ const EmployeeTaskDashboard = (tdata) => {
                 />
                 <View>
                     <Text style={[isTamil ? Louis_George_Cafe.bold.h9 : Louis_George_Cafe.bold.h7, styles.title]}>{item.title}</Text>
-                    <Text style={[isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h8, styles.title]}>{item.deadline}</Text>
+                    <Text style={[isTamil ? Louis_George_Cafe.regular.h9 : Louis_George_Cafe.regular.h8, styles.title]}>{`${t('endDate')} :  ${item?.deadline}`}</Text>
                 </View>
             </TouchableOpacity>
         </View>
@@ -48,7 +51,7 @@ const EmployeeTaskDashboard = (tdata) => {
 
     return (
         <TouchableOpacity style={styles.container}
-            onPress={() => navigation.navigate('TaskManagement')}
+            onPress={() => navigation.navigate('AssignedTask')}
         >
             <Text style={[Louis_George_Cafe.bold.h6, { marginVertical: wp(1) }]}>{t('tasks')}</Text>
             <FlatList

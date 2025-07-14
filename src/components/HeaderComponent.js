@@ -3,7 +3,6 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  Image,
   ToastAndroid,
   BackHandler,
   ActivityIndicator,
@@ -14,7 +13,7 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { wp, hp } from "../resources/dimensions";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Text, Menu } from "react-native-paper";
-import { Louis_George_Cafe, width } from "../resources/fonts";
+import { Louis_George_Cafe,  } from "../resources/fonts";
 import { THEMECOLORS } from "../resources/colors/colors";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from 'react-i18next';
@@ -134,7 +133,7 @@ function HeaderComponent({
                   <MaterialCommunityIcons name="menu" size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>
                 {/* <TouchableOpacity onPress={() => navigation.navigate('Profile')} > */}
-                  {/* <Image
+                {/* <Image
                     source={require('../assets/animations/logo_hrms.png')}
                     style={{ width: hp(3.5), height: hp(3.5), borderRadius: hp(3.5 / 2) }}
                   /> */}
@@ -188,7 +187,7 @@ function HeaderComponent({
                     <MaterialCommunityIcons name="chat-outline" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                   </View>
                   {
-                  chatCount && chatCount != '0' &&
+                    chatCount && chatCount != '0' &&
                     <View style={{ width: wp(5), justifyContent: "center", backgroundColor: '#ff0000', height: wp(5), borderRadius: wp(2.5), alignItems: "center", position: "absolute", left: wp(5.5), bottom: wp(3) }}>
                       <Text style={[Louis_George_Cafe.bold.h9, { fontWeight: "500", color: "#FFF" }]}>{chatCount > 99 ? '99+' : chatCount}</Text>
                     </View>
@@ -207,7 +206,7 @@ function HeaderComponent({
                     </Text>
                   </TouchableOpacity>
                 }
-                
+
                 <TouchableWithoutFeedback onPress={onTitleClick}>
                   {/* <Animated.View style={{ transform: [{ translateX: slideAnim }] }}> */}
                   <View style={{ width: wp(75), alignItems: titleAlign }}>
@@ -217,7 +216,7 @@ function HeaderComponent({
                       textTransform: 'capitalize',
                       margin: wp(1),
                       marginHorizontal: wp(2),
-                      lineHeight: hp(3),
+                      lineHeight: hp(4),
                       color: THEMECOLORS[themeMode].primary
                     }]}>
                       {title}
@@ -228,8 +227,8 @@ function HeaderComponent({
                 {/* onTitleClick */}
 
                 {rightSideArr != '' &&
-                  <TouchableOpacity style={[styles.iconButton,{
-                    marginHorizontal:wp(-1)
+                  <TouchableOpacity style={[styles.iconButton, {
+                    marginHorizontal: wp(-1)
                   }]} onPress={rIconFunction}>
                     <MaterialCommunityIcons name={rightSideArr} size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                   </TouchableOpacity>
@@ -246,18 +245,18 @@ function HeaderComponent({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: wp(4),
-    paddingVertical: hp(1.5),
+    paddingVertical: hp(1),
     borderBottomWidth: wp(0.2),
     borderColor: "#CCC",
     marginBottom: wp(0.1), width: wp(100)
   },
   headerRow: {
     flexDirection: "row",
-    alignItems: "center", justifyContent: "space-between", height: wp(9),
+    alignItems: "center", justifyContent: "space-between", height: wp(10),
   },
   iconButton: {
     marginHorizontal: hp(0.5),
-    marginTop:wp(2)
+    marginTop: wp(2)
   },
 });
 

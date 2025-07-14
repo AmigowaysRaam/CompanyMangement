@@ -22,7 +22,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCategoryList, getSubcategoryApiiCall, submitCreateForm, updateContactInfo } from '../redux/authActions';
 import DropdownModal from '../components/DropDownModal';
 
-const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmitSuccess, cId, companyDetails, onRefresh }) => {
+const AddCompanyForm = ({ onNext, dataObj, onSubmitSuccess, cId, companyDetails, onRefresh }) => {
 
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
@@ -42,6 +42,9 @@ const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmit
     const [loading, setLoading] = useState(false);
     const [catloading, setcatloading] = useState(false);
     const [subCategoryModal, setsubCategoryModal] = useState(false);
+    const [email, setemail] = useState('');
+    const [password, setpassword] = useState('');
+
 
     // Validation states
     const [errors, setErrors] = useState({});
@@ -142,12 +145,28 @@ const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmit
     }, [category, categoryArr]);
 
 
+
+    // / ✅ Updated validateFields function:
     const validateFields = () => {
         const newErrors = {};
         if (!companyType) newErrors.companyType = t('selectCompanyType');
         if (!companyName.trim()) newErrors.companyName = t('enterCompanyName');
         if (!registerNumber.trim()) newErrors.registerNumber = t('enterRegistrationNumber');
         if (!category) newErrors.category = t('selectCategory');
+
+        // ✅ Email validation
+        if (!email.trim()) {
+            newErrors.email = t('enterEmail');
+        } else if (!/^\S+@\S+\.\S+$/.test(email)) {
+            newErrors.email = t('enterValidEmail');
+        }
+
+        // ✅ Password validation
+        if (!password  && !cId) {
+            newErrors.password = t('enterPassword');
+        } else if (password.length < 6) {
+            newErrors.password = t('passwordMinLength');
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -167,6 +186,7 @@ const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmit
                 registration_number: registerNumber,
                 selected_category_name: category,
                 selected_sub_category_name: subcategoryId,
+                email,
                 _id: cId
             };
             setLoading(true);
@@ -194,6 +214,7 @@ const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmit
                 registration_number: registerNumber,
                 selected_category_name: category,
                 selected_sub_category_name: subcategoryId,
+                email, password
             };
             setLoading(true);
             dispatch(
@@ -325,32 +346,54 @@ const AddCompanyForm = ({ onNext, setCurrentStep, currentStep, dataObj, onSubmit
                             {t('subCategory')}
                         </Text>
                         <View style={styles.pickerWrapper}>
-                            {/* <RNPickerSelect
-                                onValueChange={setSubCategoryId}
-                                items={subCatArr}
-                                placeholder={{ label: t('selectSubCategory'), value: null }}
-                                value={subcategoryId}
-                                style={{
-                                    inputIOS: { fontSize: isTamil ? wp(3.5) : wp(4) },
-                                    inputAndroid: { fontSize: isTamil ? wp(3.5) : wp(4) },
-                                }}
-                            /> */}
+
                             <TouchableOpacity onPress={() => setsubCategoryModal(true)}>
                                 <Text>
                                     {subcategoryId && subCatArr?.find(item => item?.value === subcategoryId)
                                         ? subCatArr.find(item => item?.value === subcategoryId).label // or .value if you want
                                         : t('selectSubCategory')}
                                 </Text>
-
-
-
-
                             </TouchableOpacity>
                         </View>
-
-
                     </>
                 )}
+
+                {/* Email */}
+                <Text style={[styles.label, Louis_George_Cafe.bold.h6, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                    {t('email')}
+                </Text>
+                <TextInput
+                    style={styles.textInput}
+                    placeholder={t('enterEmail')}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    value={email}
+                    onChangeText={(text) => {
+                        setemail(text);
+                        if (text) setErrors((prev) => ({ ...prev, email: null }));
+                    }}
+                />
+                {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+                {/* Password */}
+                { !companyDetails?._id  &&
+                    <>
+                        <Text style={[styles.label, Louis_George_Cafe.bold.h6, { color: THEMECOLORS[themeMode].textPrimary }]}>
+                            {t('password')}
+                        </Text>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder={t('enterPassword')}
+                            secureTextEntry={true}
+                            autoCapitalize="none"
+                            value={password}
+                            onChangeText={(text) => {
+                                setpassword(text);
+                                if (text) setErrors((prev) => ({ ...prev, password: null }));
+                            }}
+                        />
+                        {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+                    </>}
+
 
                 {/* Submit Button */}
                 <TouchableOpacity

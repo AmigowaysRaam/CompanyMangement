@@ -92,7 +92,6 @@ const ChooseLanguage = () => {
           console.warn('Translation response is invalid or missing data.');
         }
       }));
-
     } catch (e) {
       console.error('Failed to set language', e);
     }
@@ -146,11 +145,6 @@ const ChooseLanguage = () => {
           {language}
         </Text>
       </View>
-      <View style={{margin:wp(2)}}>
-      <ThemeToggle />
-
-      </View>
-
       <View style={styles.imageContainer}>
         <Image
           resizeMode="contain"

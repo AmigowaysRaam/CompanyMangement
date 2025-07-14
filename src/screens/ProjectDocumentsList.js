@@ -49,10 +49,11 @@ const ProjectDocumentsList = () => {
     };
 
     const fetchHomeData = () => {
+        // alert(JSON.stringify(projectData))
         setLoading(true);
         let payload = {
             userid: userdata?.id,
-            projectId: projectData?.id
+            projectId: projectData?.id || projectData?._id
         };
         dispatch(
             getProjectDosc(payload, (response) => {

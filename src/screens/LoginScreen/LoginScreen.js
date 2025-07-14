@@ -20,7 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { hp, wp } from "../../resources/dimensions";
 import { Louis_George_Cafe } from "../../resources/fonts";
 import { COLORS } from "../../resources/Colors";
-import TextInputComponent from "../../components/TextInput/TextInput";
+// import TextInputComponent from "../../components/TextInput/TextInput";
 import Icon from "react-native-vector-icons/Ionicons";
 import Toast from "react-native-toast-message";
 import { THEMECOLORS } from "../../resources/colors/colors";
@@ -38,7 +38,7 @@ const LoginScreen = () => {
   const { dialCode, location } = useCurrentLocation();
   const { themeMode } = useTheme();
   const { language } = useLanguage();
-  const [username, setUsername] = useState(__DEV__ ? "admin@gmail.com" : "");
+  const [username, setUsername] = useState(__DEV__ ? "company@amigoways.com" : "");
   const [password, setPassword] = useState(__DEV__ ? "1234" : "");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +47,7 @@ const LoginScreen = () => {
   const [passwordErr, setPasswordErr] = useState("");
   const { t } = useTranslation();
   const isTamil = i18n.language === 'ta';
+
   const scaleFont = (style) => ({
     ...style,
     fontSize: style?.fontSize ? style.fontSize * (isTamil ? 0.65 : 1) : undefined,
@@ -77,15 +78,16 @@ const LoginScreen = () => {
     setIsLoading(true);
     const credentials = {
       email: username, password,
-      latitude: location?.coords?.latitude,
-      longitude: location?.coords?.longitude
+      latitude: location?.coords?.latitude || '',
+      longitude: location?.coords?.longitude || ''
     };
     // alert(JSON.stringify(credentials))
     dispatch(loginUser(credentials, (response) => {
       setIsLoading(false);
-      // console.log(JSON.stringify(response), null, 2)
+    //  alert(JSON.stringify(response), null, 2)
       if (response.success) {
-        AsyncStorage.setItem('user_data', JSON.stringify(response));
+        AsyncStorage.setItem('user_data', JSON.stringify(
+          response));
         Toast.show({
           type: 'success',
           text1: 'Login successful!',
@@ -96,15 +98,13 @@ const LoginScreen = () => {
           setTimeout(() => {
             // navigation.replace('ServiceSelection', response)
             navigation.replace('HomeScreen', response)
-
           }, 1000);
         }
         else {
           setTimeout(() => {
-            navigation.replace('SetMpin', response)
+            navigation.navigate('SetMpin', response)
           }, 1000);
         }
-
       } else {
         Toast.show({
           type: 'error',

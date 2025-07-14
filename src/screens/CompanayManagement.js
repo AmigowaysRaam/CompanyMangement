@@ -20,7 +20,7 @@ import { Louis_George_Cafe } from '../resources/fonts';
 import SearchInput from './SearchInput';
 
 const CompanyManagement = () => {
-    
+
     const { themeMode } = useTheme();
     const { t, i18n } = useTranslation();
     const navigation = useNavigation();
@@ -58,11 +58,17 @@ const CompanyManagement = () => {
     });
 
     const filteredCompanies = companyList.filter((company) => {
-        const name = company.name || '';
-        const email = company.email || '';
+        const name = company.company_name || '';     // company name
+        const email = company.email || '';           // email
+        const clientName = company.client_name || ''; // client name
+        const status = company.status || '';         // status
+
+        // Apply search filter for company_name, email, client_name, and status
         return (
             name.toLowerCase().includes(searchText.toLowerCase()) ||
-            email.toLowerCase().includes(searchText.toLowerCase())
+            email.toLowerCase().includes(searchText.toLowerCase()) ||
+            clientName.toLowerCase().includes(searchText.toLowerCase()) ||
+            status.toLowerCase().includes(searchText.toLowerCase()) // Adding status filter
         );
     });
 
@@ -112,6 +118,7 @@ const CompanyManagement = () => {
                     themeMode={themeMode}
                 />
             </View>
+
             <ScrollView style={styles.list}>
                 {loading ? (
                     [1, 2, 3].map((company) => (
@@ -128,21 +135,16 @@ const CompanyManagement = () => {
                         />
                     ))
                 ) : (
-                    companyList
-                        .filter((company) =>
-                            company.company_name
-                                ?.toLowerCase()
-                                .includes(searchText.toLowerCase())
-                        )
-                        .map((company) => (
-                            <CompanyCard
-                                key={company._id}
-                                company={company}
-                                isTamil={isTamil}
-                            />
-                        ))
+                    filteredCompanies.map((company) => (  // Use filteredCompanies instead of companyList
+                        <CompanyCard
+                            key={company._id}
+                            company={company}
+                            isTamil={isTamil}
+                        />
+                    ))
                 )}
             </ScrollView>
+
 
         </View>
     );

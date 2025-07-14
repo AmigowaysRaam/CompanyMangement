@@ -36,7 +36,7 @@ const ConfirmationModal = ({ visible, message, onConfirm, onCancel }) => {
                             <Text style={[styles.message, { color: colors.black }]}>{message}</Text>
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
-                                    style={[styles.confirmBtn, { backgroundColor: colors.buttonBg || '#013CA3' }]}
+                                    style={[styles.confirmBtn, { backgroundColor: colors.buttonBg  }]}
                                     onPress={onConfirm}
                                 >
                                     <Text style={[styles.confirmText, {
@@ -44,7 +44,7 @@ const ConfirmationModal = ({ visible, message, onConfirm, onCancel }) => {
                                     }]}>{t('yes')}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    style={[styles.confirmBtn, { backgroundColor: colors.tabInActive || '#013CA3' }]}
+                                    style={[styles.confirmBtn, { backgroundColor: colors.tabInActive}]}
                                     onPress={onCancel}
                                 >
                                     <Text style={[styles.cancelText, { color: colors.buttonText }]}>{t('no')}</Text>

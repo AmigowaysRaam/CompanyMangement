@@ -1,8 +1,9 @@
 <resources>
-    <string name="facebook_app_id">1082945133132002</string>
-    <string name="fb_login_protocol_scheme">fb1082945133132002</string>
-    <string name="facebook_client_token">2379b7447defb29370e5f68143f4dcb9</string>
-      <string name="app_name">HRMS &amp; Payroll</string>
+  <string name="facebook_app_id">1082945133132002</string>
+  <string name="fb_login_protocol_scheme">fb1082945133132002</string>
+  <string name="facebook_client_token">2379b7447defb29370e5f68143f4dcb9</string>
+  <string name="facebook_install_referrer_key">68a0b0952deb5ef8009d945a06ac8a4daff50e9474afa3585fdb0a2306738fee</string>
+  <string name="app_name">HRMS &amp; Payroll</string>
   <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
 </resources>

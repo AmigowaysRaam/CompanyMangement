@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import HomeScreenLoader from "../HomeScreenLoader";
 import { LoginManager, AccessToken } from "react-native-fbsdk-next";
 import EmployeeTaskDashboard from "../../ScreenComponents/HeaderComponent/EmployeeTaskDashboard";
+import CompanyProjects from "../../ScreenComponents/HeaderComponent/CompanyProjects";
 
 const HomeScreen = () => {
 
@@ -39,29 +40,7 @@ const HomeScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [working, setWorking] = useState(false);
   const [chtCount, setChatCount] = useState(null);
-  // Optional Facebook login logic (currently unused)
-  const facebookLogin = async () => {
-    try {
-      const result = await LoginManager.logInWithPermissions([
-        "public_profile",
-        "email",
-      ]);
 
-      if (result.isCancelled) {
-        console.log("Login cancelled", result);
-        return;
-      }
-
-      const data = await AccessToken.getCurrentAccessToken();
-      if (!data) {
-        console.error("Failed to get access token");
-        return;
-      }
-      console.log("Access Token:", data.accessToken.toString());
-    } catch (error) {
-      console.error("Facebook Login Error: ", error);
-    }
-  };
 
   // Prevent hardware back button action on this screen
   useFocusEffect(
@@ -79,8 +58,9 @@ const HomeScreen = () => {
     dispatch(
       getHomePageData(userdata?.id, (response) => {
         if (response.success && response.data?.length > 0) {
+        // alert(JSON.stringify(response.data[0]), null, 2)
+
           setHomeData(response.data[0]);
-          // alert(JSON.stringify(response.data[0]),null,2)
           setWorking(response?.punchedInToday);
           setChatCount(response?.count?.toString() || null);
         }
@@ -97,10 +77,11 @@ const HomeScreen = () => {
     }, [userdata])
   );
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //   }, [userdata])
-  // );
+  useFocusEffect(
+    React.useCallback(() => {
+      // alert(JSON.stringify(homeData))
+    }, [userdata])
+  );
 
   // Map of component renderers
   const componentMap = {
@@ -108,8 +89,10 @@ const HomeScreen = () => {
     PieChart: (data) => <PieChart data={data} />,
     TaskTable: (data) => <TaskTable tdata={data} />,
     PieChartWebView: (data) => <PieChartWebView data={data} />,
-    PaySlip: (data) => <EmployeeTable data={data} />, // Maps PaySlip key to EmployeeTable
+    // PaySlip: (data) => <EmployeeTable data={data} />, // Maps PaySlip key to EmployeeTable
     Employeetask: (data) => <EmployeeTaskDashboard tdata={data} />,
+    companyProjects:(data) => <CompanyProjects tdata={data} />,
+    
   };
 
   // Swipe gesture to open modal
@@ -147,15 +130,14 @@ const HomeScreen = () => {
         title={t("home")}
         openModal={handleMenuClick}
       />
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={{ backgroundColor: 'red' }}
         onPress={() =>
           facebookLogin()
         }
       >
         <Text>test FaceBook</Text>
-      </TouchableOpacity>
-
+      </TouchableOpacity> */}
 
       {loading ? (
         <HomeScreenLoader />

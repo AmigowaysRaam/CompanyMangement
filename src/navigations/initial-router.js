@@ -67,6 +67,10 @@ import CreateSalarySturctureTab from "../screens/CreateSalarySturctureTab";
 import AdminManagement from "../screens/AdminManagement";
 import AdminCreating from "../screens/AdminCreating";
 import PayrollSettings from "../screens/PayrollSettings";
+import CompanyProjectsList from "../screens/CompanyProjectsList";
+import ProjectOverallDetails from "../screens/ProjectOverallDetails";
+import CreateTaskByCompany from "../screens/CreateTaskByCompany";
+import ShiftsManagement from "../screens/ShiftsManagement";
 
 
 const Stack = createNativeStackNavigator();
@@ -144,6 +148,10 @@ function InitialRouter() {
         <Stack.Screen name="AdminManagement" component={AdminManagement} />
         <Stack.Screen name="AdminCreating" component={AdminCreating} />
         <Stack.Screen name="PayrollSettings" component={PayrollSettings} />
+        <Stack.Screen name="CompanyProjectsList" component={CompanyProjectsList} />
+        <Stack.Screen name="ProjectOverallDetails" component={ProjectOverallDetails} />
+        <Stack.Screen name="CreateTaskByCompany" component={CreateTaskByCompany} />
+        <Stack.Screen name="ShiftsManagement" component={ShiftsManagement} />
       </Stack.Navigator>
 
     </NavigationContainer>

@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
     View,
-    StyleSheet,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    ToastAndroid,
-    ActivityIndicator,
+    StyleSheet, ScrollView, Text, TextInput, TouchableOpacity, ToastAndroid, ActivityIndicator,
     Modal,
 } from 'react-native';
 import { wp } from '../resources/dimensions';
@@ -18,20 +12,9 @@ import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { Louis_George_Cafe } from '../resources/fonts';
-import { updateEmployeeById, getCompabyBranches } from '../redux/authActions';
+import { updateEmployeeById, getCompabyBranches, getShiftsByCompany } from '../redux/authActions';
 import SearchSelectCompany from './SearchSelectCompany';
 import DropdownModal from '../components/DropDownModal';
-
-const designationOptions = [
-    { label: 'Full Stack Trainee', value: '685ce0ed6391dc5ee7c1b84f' },
-    { label: 'Team Lead', value: '685e4929084ac28489c411a1' },
-    { label: 'Junior Hr', value: '686514a9fac9c4b87e45396b' },
-];
-
-const shiftOptions = [
-    { label: 'Full Day', value: '685ce1106391dc5ee7c1b858' },
-    { label: 'Day', value: '685e4973084ac28489c411aa' },
-];
 
 const EmployeeJob = ({ onNext, onRefresh, empDetails, dataObj }) => {
     const { themeMode } = useTheme();
@@ -45,17 +28,14 @@ const EmployeeJob = ({ onNext, onRefresh, empDetails, dataObj }) => {
     const [designation, setDesignation] = useState('');
     const [shift, setShift] = useState('');
     const [salary, setSalary] = useState('');
-
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
-
     const [showCompanyModal, setShowCompanyModal] = useState(false);
     const [showBranchModal, setShowBranchModal] = useState(false);
     const [showDesignationModal, setShowDesignationModal] = useState(false);
     const [showShiftModal, setShowShiftModal] = useState(false);
-
+    const [shiftsData, setShiftsData] = useState([]);
     useAndroidBackHandler(() => navigation.canGoBack() && navigation.goBack());
-
 
     useEffect(() => {
         if (empDetails) {
@@ -98,6 +78,21 @@ const EmployeeJob = ({ onNext, onRefresh, empDetails, dataObj }) => {
                     }
                 })
             );
+            setLoading(false);
+            dispatch(getShiftsByCompany({ _id: company.id }, (res) => {
+                if (res?.success) {
+                    // alert(res?.shifts.length)
+                    setShiftsData(res?.shifts?.map((item) => ({
+                        value: item?._id,
+                        label: item?.shift_name,
+                    })));
+                }
+                
+                else {
+                    setShiftsData([]);
+                    ToastAndroid.show(t('failedToLoadBranches'), ToastAndroid.SHORT);
+                }
+            }))
         }
     }, [company]);
 
@@ -119,7 +114,7 @@ const EmployeeJob = ({ onNext, onRefresh, empDetails, dataObj }) => {
             branchId: branch.id,
             designation,
             shifts: shift,
-            salary:salary,
+            salary: salary,
         };
         setLoading(true);
         dispatch(
@@ -152,14 +147,14 @@ const EmployeeJob = ({ onNext, onRefresh, empDetails, dataObj }) => {
             <ScrollView contentContainerStyle={styles.form} keyboardShouldPersistTaps="handled">
                 <Label text={t('company')} error={errors.company} />
                 <TouchableOpacity style={dropdownStyle} onPress={() => setShowCompanyModal(true)}>
-                    <Text>{company?.name || company?.company_name|| t('selectCompany')}</Text>
+                    <Text>{company?.name || company?.company_name || t('selectCompany')}</Text>
                 </TouchableOpacity>
 
                 <Label text={t('branch')} error={errors.branch} />
                 <TouchableOpacity style={[styles.dropdown, errors.branch && styles.errorBorder]} onPress={() =>
                     branchList.length ? setShowBranchModal(true) : ToastAndroid.show(t('noBranchesAvailable'), ToastAndroid.SHORT)
                 }>
-                    <Text>{branch?.label || branch?.branch_name ||t('selectBranch')}</Text>
+                    <Text>{branch?.label || branch?.branch_name || t('selectBranch')}</Text>
                 </TouchableOpacity>
 
                 <Label text={t('designation')} error={errors.designation} />
@@ -172,7 +167,7 @@ const EmployeeJob = ({ onNext, onRefresh, empDetails, dataObj }) => {
                 <Label text={t('assignedShifts')} error={errors.shift} />
                 <TouchableOpacity style={[styles.dropdown, errors.shift && styles.errorBorder]} onPress={() => setShowShiftModal(true)}>
                     <Text>
-                        {dataObj?.shifts.find(o => o.value === shift)?.label || t('selectShift')}
+                        {shiftsData?.find(o => o.value === shift)?.label || t('selectShift')}
                         {/* {shift} */}
                     </Text>
                 </TouchableOpacity>
@@ -226,7 +221,7 @@ const EmployeeJob = ({ onNext, onRefresh, empDetails, dataObj }) => {
 
             <DropdownModal
                 visible={showShiftModal}
-                items={dataObj?.shifts}
+                items={shiftsData}
                 title={t('selectShift')}
                 selectedValue={shift}
                 onSelect={(i) => { setShift(i.value); setShowShiftModal(false); setErrors(prev => ({ ...prev, shift: null })); }}

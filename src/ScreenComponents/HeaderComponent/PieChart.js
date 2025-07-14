@@ -90,9 +90,10 @@ const styles = StyleSheet.create({
     height: hp(28),
     alignItems: "center",
     justifyContent: "center",
-    marginHorizontal: wp(2),
+    marginHorizontal: wp(3),
     marginVertical: wp(2),
   },
+  
   chartContainer: {
     flexDirection: 'row',
     alignItems: 'center',

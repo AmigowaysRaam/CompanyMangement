@@ -1025,6 +1025,22 @@ export const getCompabyBranches = (payLoad, callback) => async (dispatch) => {
     console.error("getCompabyBranches:", error.message);
   }
 };
+
+
+export const getShiftsByCompany = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_SHIFTS_BY_COMPANY_SUBMIT_URL;
+    const response = await sendRequest(endpoint, payLoad);
+    if (callback) callback(response);
+    console.log(response)
+    return response;
+  } catch (error) {
+    console.error("getShiftsByCompany:", error.message);
+  }
+};
+
+
+
 // create-punch
 export const punchInOutApi = (payLoad, type, callback) => async (dispatch) => {
   try {
@@ -1119,6 +1135,18 @@ export const getProjectsStats = (payLoad, callback) => async (dispatch) => {
   try {
     const endpoint = API_REQUESTS.API_GET_PROJECT_STATS_CONTENT_URL;
     const response = await sendRequest(endpoint, { userid: payLoad });
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getProjectsStats:", error.message);
+  }
+};
+
+
+export const getProjectsStatsById = (payLoad, callback) => async (dispatch) => {
+  try {
+    const endpoint = API_REQUESTS.API_GET_PROJECT_STATS_BY_ID_CONTENT_URL;
+    const response = await sendRequest(endpoint,payLoad);
     if (callback) callback(response);
     return response;
   } catch (error) {
@@ -1690,9 +1718,26 @@ export const deleteHolidayApi = (formFields, callback) => async (dispatch) => {
     if (callback) callback(response);
     return response;
   } catch (error) {
-    console.error("createPosition:", error.message);
+    console.error("deleteHolidayApi:", error.message);
   }
 };
+
+
+// getShiftsListing
+export const getShiftsListing = (formFields, callback) => async (dispatch) => {
+  // alert(JSON.stringify(payLoad))
+  try {
+    const endpoint = API_REQUESTS.API_SHIFTS_LISTING_URL;
+    const response = await sendRequest(endpoint, formFields);
+    if (callback) callback(response);
+    return response;
+  } catch (error) {
+    console.error("getShiftsListing:", error.message);
+  }
+};
+
+
+
 // genearteOverAllPayroll
 export const genearteOverAllPayroll = (formFields, callback) => async (dispatch) => {
   // alert(JSON.stringify(payLoad))
