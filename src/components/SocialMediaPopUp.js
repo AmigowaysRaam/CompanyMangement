@@ -68,19 +68,26 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
 
     // };
 
-    const facebookLogin = async () => {
+    const facebookLogin = async (i) => {
+
+        if (i.name == 'Telegram') {
+            navigation?.navigate('Telegram')
+            return
+        }
+
+
         const data = await AccessToken.getCurrentAccessToken();
         if (data) {
-          console.log('Facebook token:', data.accessToken.toString());
+            console.log('Facebook token:', data.accessToken.toString());
         } else {
-          console.log('No token found');
+            console.log('No token found');
         }
-      };
+    };
 
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
-            onPress={() => facebookLogin()} // replace with connect logic
+            onPress={() => facebookLogin(item)} // replace with connect logic
             style={[styles.card, { backgroundColor: THEMECOLORS[themeMode].card }]}>
             <View style={styles.cardHeader}>
                 <View style={styles.leftection}>

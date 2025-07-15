@@ -71,6 +71,7 @@ import CompanyProjectsList from "../screens/CompanyProjectsList";
 import ProjectOverallDetails from "../screens/ProjectOverallDetails";
 import CreateTaskByCompany from "../screens/CreateTaskByCompany";
 import ShiftsManagement from "../screens/ShiftsManagement";
+import Telegram from "../screens/Telegram";
 
 
 const Stack = createNativeStackNavigator();
@@ -152,6 +153,7 @@ function InitialRouter() {
         <Stack.Screen name="ProjectOverallDetails" component={ProjectOverallDetails} />
         <Stack.Screen name="CreateTaskByCompany" component={CreateTaskByCompany} />
         <Stack.Screen name="ShiftsManagement" component={ShiftsManagement} />
+        <Stack.Screen name="Telegram" component={Telegram} />
       </Stack.Navigator>
 
     </NavigationContainer>
