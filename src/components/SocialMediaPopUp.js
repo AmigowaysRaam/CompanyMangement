@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    View,
-    Text,
-    TouchableOpacity,
-    StyleSheet,
-    ActivityIndicator, RefreshControl, FlatList, Image
+    View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, RefreshControl, FlatList, Image
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,7 +15,7 @@ import { getSocialMediasArray } from '../redux/authActions';
 import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 import { LoginManager, AccessToken, Settings, AppEventsLogger, LoginButton } from "react-native-fbsdk-next";
 // import * as AuthSession from 'expo-auth-session';
-
+import NetInfo from '@react-native-community/netinfo';
 
 const SocialMediaPopUp = ({ isVisible, onCancel }) => {
 
@@ -40,47 +36,47 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
 
 
     useEffect(() => {
+        // Settings.setAppID('1082945133132002');
         Settings.setAdvertiserTrackingEnabled(true);
         AppEventsLogger.logEvent('TestEvent');
         console.log("📣 Sent TestEvent to Facebook App Events");
     }, []);
 
 
-    // const facebookLogin = async () => {
 
-    //     try {
-    //         console.log("Calling Facebook LoginManager...");
-    //         const result = await LoginManager.logInWithPermissions(["email", 'public_profile'], 'limited');
-    //         console.log("LoginManager result received");
-    //         // LoginManager.setLoginBehavior('web_only'); // 👈 this line sets web-only login
+    const facebookLogin = async () => {
+        try {
+            // 1. Initialize Facebook SDK
+            Settings.initializeSDK();
+            console.log('✅ Facebook SDK initialized');
+            // 2. Check internet connection first
+            const netState = await NetInfo.fetch();
+            if (!netState.isConnected) {
+                alert('🚫 No internet connection');
+                return;
+            }
+            console.log('🌐 Internet is connected');
+            // 3. Trigger Facebook login
+            const result = await LoginManager.logInWithPermissions(['public_profile']);
 
-    //         if (result.isCancelled) {
-    //             console.log("User cancelled login");
-    //             // alert("Login was cancelled.");
-    //             return;
-    //         }
-    //         console.log("✅ Granted:", result.grantedPermissions?.toString());
-    //         console.log("❌ Declined:", result.declinedPermissions?.toString());
-    //     } catch (loginError) {
-    //         console.error("LoginManager threw error:", loginError);
-    //         alert("Facebook login failed: " + loginError.message);
-    //     }
+            if (result.isCancelled) {
+                console.log('❌ User cancelled Facebook login');
+                return;
+            }
 
-    // };
+            console.log('✅ Facebook login result:', result);
 
-    const facebookLogin = async (i) => {
+            // 4. Get access token
+            const data = await AccessToken.getCurrentAccessToken();
+            if (!data) {
+                console.log('⚠️ Failed to get Facebook access token');
+                return;
+            }
 
-        if (i.name == 'Telegram') {
-            navigation?.navigate('Telegram')
-            return
-        }
-
-
-        const data = await AccessToken.getCurrentAccessToken();
-        if (data) {
-            console.log('Facebook token:', data.accessToken.toString());
-        } else {
-            console.log('No token found');
+            console.log('🎟️ Facebook access token:', data.accessToken.toString());
+            alert(`Logged in! Token: ${data.accessToken.toString()}`);
+        } catch (error) {
+            console.error('🚨 Facebook login error:', error);
         }
     };
 
@@ -160,7 +156,6 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
         setRefreshing(true);
         fetchLeaveData();
     };
-
     return (
         <Modal
             isVisible={isVisible}
@@ -214,9 +209,7 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
         </Modal>
     );
 };
-
 export default SocialMediaPopUp;
-
 const styles = StyleSheet.create({
     modal: {
         // // margin: 10,
@@ -227,20 +220,15 @@ const styles = StyleSheet.create({
         backgroundColor: '#f9f9f9',
         width: wp(20),
         // padding: wp(6),
-        paddingHorizontal: wp(4),
-        borderTopLeftRadius: wp(4),
+        // paddingHorizontal: wp(3),
+        borderTopLeftRadius: wp(2),
         borderBottomLeftRadius: wp(4),
         position: "absolute",
-        right: wp(-2),
-        top: hp(-1),
-        minHeight: hp(52),
-        alignItems: "center"
+        right: wp(-2), top: hp(-1), minHeight: hp(52), alignItems: "center"
     },
     title: {
         // fontSize: wp(4),
-        textAlign: 'center',
-        marginBottom: hp(2),
-        color: '#fff',
+        textAlign: 'center', marginBottom: hp(2), color: '#fff',
     },
     buttonContainer: {
         flexDirection: 'row',
@@ -286,9 +274,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     icon: {
-        width: wp(8),
-        height: wp(8),
-        // marginRight: wp(3),
+        width: wp(10),
+        height: wp(10),
         borderRadius: wp(2),
     },
     connectBtn: {

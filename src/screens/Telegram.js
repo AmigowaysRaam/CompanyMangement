@@ -15,6 +15,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import { Louis_George_Cafe } from '../resources/fonts'; // Ensure this is defined correctly
 import { hp, wp } from '../resources/dimensions'; // Ensure wp() returns numbers
 import HeaderComponent from '../components/HeaderComponent'; // Your own component
+import { THEMECOLORS } from '../resources/colors/colors';
+import { useTheme } from '../context/ThemeContext';
+// import LinkedInModal from 'react-native-linkedin';
+
 // import TdClient from 'react-native-tdlib';
 // console.log('TdClient:', TdClient);
 
@@ -116,6 +120,8 @@ const Telegram = () => {
       setLoading(false);
     }
   };
+  const { themeMode } = useTheme();
+
 
   const handleCodeSubmit = async () => {
     try {
@@ -135,7 +141,9 @@ const Telegram = () => {
       <HeaderComponent title="Telegram" showBackArray={true} />
       <KeyboardAvoidingView
         behavior={Platform.select({ ios: 'padding', android: undefined })}
-        style={styles.container}
+        style={[styles.container, {
+          backgroundColor: THEMECOLORS[themeMode].background
+        }]}
       >
         <LinearGradient
           colors={['#0088cc', '#1c92d2']}
@@ -143,8 +151,8 @@ const Telegram = () => {
           end={{ x: 0, y: 0 }}
           style={styles.coverBox}
         >
-          <Text style={[Louis_George_Cafe?.bold?.h2 || styles.statusText, styles.offlineText,{
-            lineHeight:hp(8)
+          <Text style={[Louis_George_Cafe?.bold?.h2 || styles.statusText, styles.offlineText, {
+            lineHeight: hp(5)
           }]}>
             {status}
           </Text>
@@ -198,17 +206,14 @@ const Telegram = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
     alignItems: 'center',
     justifyContent: 'center',
   },
   coverBox: {
     width: Math.round(wp(85)),
-    padding: wp(4),
     borderRadius: Math.round(wp(6)),
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 6,
   },
   offlineText: {
     color: '#fff',
@@ -237,10 +242,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 16,
+
   },
   statusText: {
     color: '#fff',
     fontSize: 16,
+
   },
 });
 

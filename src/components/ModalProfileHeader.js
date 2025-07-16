@@ -46,6 +46,7 @@ const ProfileHeader = ({ userdata, themeMode,}) => {
               width: wp(18),
               height: wp(18),
               borderRadius: wp(9),
+              backgroundColor: THEMECOLORS[themeMode].background,
             }}
             onPress={() => {
               setShowDropdown(true);

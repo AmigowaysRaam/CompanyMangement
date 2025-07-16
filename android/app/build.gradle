@@ -1,3 +1,4 @@
+
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
@@ -5,7 +6,7 @@ apply plugin: 'com.google.gms.google-services'  // Add this line
 // apply plugin: 'com.facebook.sdk.applicationId'
 // facebook {
 //     appId = '1082945133132002'
-//     clientToken = '2379b7447defb29370e5f68143f4dcb9'
+//     clientToken = 'a5e69646991fdedbaa1311f72808a515'
 // }
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
