@@ -72,6 +72,8 @@ import ProjectOverallDetails from "../screens/ProjectOverallDetails";
 import CreateTaskByCompany from "../screens/CreateTaskByCompany";
 import ShiftsManagement from "../screens/ShiftsManagement";
 import Telegram from "../screens/Telegram";
+import Linkedin from "../screens/Linkedin";
+import LinkedIPostListing from "../screens/LinkedIPostListing";
 
 
 const Stack = createNativeStackNavigator();
@@ -154,8 +156,9 @@ function InitialRouter() {
         <Stack.Screen name="CreateTaskByCompany" component={CreateTaskByCompany} />
         <Stack.Screen name="ShiftsManagement" component={ShiftsManagement} />
         <Stack.Screen name="Telegram" component={Telegram} />
+        <Stack.Screen name="Linkedin" component={Linkedin} />
+        <Stack.Screen name="LinkedIPostListing" component={LinkedIPostListing} />
       </Stack.Navigator>
-
     </NavigationContainer>
   );
 }

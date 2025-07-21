@@ -27,58 +27,58 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
     const [loading, setLoading] = useState(false);
     const [socialMedias, setSocialMeddia] = useState([]);
     const userdata = useSelector((state) => state.auth.user?.data);
-
     useFocusEffect(
         React.useCallback(() => {
             fetchLeaveData();
         }, [userdata])
     );
-
-
+    const authHandler = (err, data) => {
+        console.log(err, data);
+    };
     useEffect(() => {
-        // Settings.setAppID('1082945133132002');
+        Settings.setAppID('1082945133132002');
         Settings.setAdvertiserTrackingEnabled(true);
         AppEventsLogger.logEvent('TestEvent');
         console.log("📣 Sent TestEvent to Facebook App Events");
     }, []);
 
 
-
-    const facebookLogin = async () => {
-        try {
-            // 1. Initialize Facebook SDK
-            Settings.initializeSDK();
-            console.log('✅ Facebook SDK initialized');
-            // 2. Check internet connection first
-            const netState = await NetInfo.fetch();
-            if (!netState.isConnected) {
-                alert('🚫 No internet connection');
-                return;
-            }
-            console.log('🌐 Internet is connected');
-            // 3. Trigger Facebook login
-            const result = await LoginManager.logInWithPermissions(['public_profile']);
-
-            if (result.isCancelled) {
-                console.log('❌ User cancelled Facebook login');
-                return;
-            }
-
-            console.log('✅ Facebook login result:', result);
-
-            // 4. Get access token
-            const data = await AccessToken.getCurrentAccessToken();
-            if (!data) {
-                console.log('⚠️ Failed to get Facebook access token');
-                return;
-            }
-
-            console.log('🎟️ Facebook access token:', data.accessToken.toString());
-            alert(`Logged in! Token: ${data.accessToken.toString()}`);
-        } catch (error) {
-            console.error('🚨 Facebook login error:', error);
+    const facebookLogin = async (i) => {
+        if (i?.name == 'Telegram') {
+            navigation?.navigate('Telegram')
         }
+        if (i?.name == 'LinkedIn') {
+            navigation?.navigate('Linkedin')
+        }
+        onCancel();
+        // try {
+        //     Settings.initializeSDK();
+        //     console.log('✅ Facebook SDK initialized');
+        //     // const result = await LoginManager.logInWithPermissions(['public_profile','email']);
+        //     // if (result.isCancelled) {
+        //     //     console.log('❌ User cancelled Facebook login');
+        //     //     return;
+        //     // }
+        //     // console.log('✅ Facebook login result:', result);
+        //     // 4. Get access token
+        //     const data = await AccessToken.getCurrentAccessToken();
+        //     alert(JSON.stringify(data))
+        //     if (!data) {
+        //         console.log('⚠️ Failed to get Facebook access token');
+        //         return;
+        //     }
+        //     else{
+        //         console.log("No Token")
+        //     }
+        //     console.log('🎟️ Facebook access token:', data.accessToken.toString());
+        //     alert(`Logged in! Token: ${data.accessToken.toString()}`);
+        // } catch (error) {
+        //     console.error('🚨 Facebook login error:', error);
+        // }
     };
+
+
+
 
 
     const renderItem = ({ item }) => (
@@ -127,6 +127,7 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
                     </TouchableOpacity>
                 } */}
             </View>
+
         </TouchableOpacity>
     );
 
@@ -151,7 +152,6 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
             })
         );
     };
-
     const onRefresh = () => {
         setRefreshing(true);
         fetchLeaveData();
@@ -185,7 +185,7 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
                             :
                             <FlatList
                                 showsHorizontalScrollIndicator={false}
-                                data={socialMedias}
+                                data={socialMedias.filter((i) => i?.name !== 'YouTube')}
                                 renderItem={renderItem}
                                 keyExtractor={(item, index) => `${item.platform}_${index}`}
                                 contentContainerStyle={styles.listContainer}

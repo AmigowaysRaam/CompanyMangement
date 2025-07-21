@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -17,22 +17,16 @@ import { hp, wp } from '../resources/dimensions'; // Ensure wp() returns numbers
 import HeaderComponent from '../components/HeaderComponent'; // Your own component
 import { THEMECOLORS } from '../resources/colors/colors';
 import { useTheme } from '../context/ThemeContext';
-// import LinkedInModal from 'react-native-linkedin';
-
-// import TdClient from 'react-native-tdlib';
-// console.log('TdClient:', TdClient);
-
-// console.log('NativeModules.TdClient:', NativeModules.TdClient);
-// console.log('NativeModules.TdClient:', NativeModules.TdClient);
-// console.log('typeof startTdLib:', typeof NativeModules.TdClient?.startTdLib);
+import LinkedInModal from 'react-native-linkedin';
 
 const Telegram = () => {
-
   const [status, setStatus] = useState('Starting TDLib...');
   const [step, setStep] = useState('');
   const [phone, setPhone] = useState('+91 8110933318');
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
+  const linkedInRef = useRef(null);
+
 
   // useEffect(() => {
   //   console.log('startTdLib:', typeof TdClient.startTdLib);  // Should be 'function'
@@ -145,59 +139,31 @@ const Telegram = () => {
           backgroundColor: THEMECOLORS[themeMode].background
         }]}
       >
-        <LinearGradient
-          colors={['#0088cc', '#1c92d2']}
-          start={{ x: 1, y: 1 }}
-          end={{ x: 0, y: 0 }}
-          style={styles.coverBox}
-        >
-          <Text style={[Louis_George_Cafe?.bold?.h2 || styles.statusText, styles.offlineText, {
-            lineHeight: hp(5)
-          }]}>
-            {status}
-          </Text>
-          {loading && (
-            <ActivityIndicator size="large" color="#fff" style={{ marginTop: 16 }} />
+        <LinkedInModal
+          ref={linkedInRef}
+          clientID="86106fhlniezg7"
+          clientSecret="WPL_AP1.5SqkPCUdjrSwCHvA.q+3TWQ=="
+          redirectUri="https://amigo.scriptzol.in/auth/linkedin"
+          onSuccess={(token) => console.log('✅ LinkedIn token:', token)}
+          onError={(err) => console.error('❌ LinkedIn error:', err)}
+          shouldGetAccessToken={true}
+          permissions={['openid', 'profile', 'email', 'w_member_social']}  // <-- add scopes here
+          renderButton={() => (
+            <TouchableOpacity
+              onPress={() => linkedInRef.current?.open()}
+              style={{
+                padding: 12,
+                backgroundColor: '#0077B5',
+                borderRadius: 5,
+              }}
+            >
+              <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+                Login with LinkedIn
+              </Text>
+            </TouchableOpacity>
           )}
+        />
 
-          {!loading && step === 'phone' && (
-            <View style={styles.form}>
-              <TextInput
-                placeholder="Phone Number"
-                placeholderTextColor="#eee"
-                style={styles.input}
-                value={phone}
-                onChangeText={setPhone}
-                keyboardType="phone-pad"
-              />
-              <TouchableOpacity style={styles.button} onPress={handlePhoneSubmit}>
-                <Text style={styles.buttonText}>Send Code</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {!loading && step === 'code' && (
-            <View style={styles.form}>
-              <TextInput
-                placeholder="Enter Code"
-                placeholderTextColor="#eee"
-                style={styles.input}
-                value={code}
-                onChangeText={setCode}
-                keyboardType="number-pad"
-              />
-              <TouchableOpacity style={styles.button} onPress={handleCodeSubmit}>
-                <Text style={styles.buttonText}>Verify Code</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-
-          {step === 'done' && (
-            <Text style={{ color: '#0f0', fontSize: 16, marginTop: 20 }}>
-              ✅ You're logged in!
-            </Text>
-          )}
-        </LinearGradient>
       </KeyboardAvoidingView>
     </>
   );

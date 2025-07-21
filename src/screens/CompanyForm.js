@@ -98,16 +98,13 @@ const AddCompanyForm = ({ onNext, dataObj, onSubmitSuccess, cId, companyDetails,
             const matchedCompanyType = dataObj.companyTypes.find(
                 (item) => item.value.toLowerCase() === companyDetails.account_type?.toLowerCase()
             )?.value || null;
-
             const matchedCategory = categoryArr.find(
                 (item) => item.value === companyDetails.selected_category_name
             )?.value || null;
-
             setCompanyType(matchedCompanyType);
             setCompanyName(companyDetails.company_name || '');
             setRegisterNumber(companyDetails.registration_number || '');
             setCategory(matchedCategory);
-
             if (matchedCategory) {
                 dispatch(
                     getSubcategoryApiiCall(userdata?.id, matchedCategory, (response) => {
@@ -133,7 +130,6 @@ const AddCompanyForm = ({ onNext, dataObj, onSubmitSuccess, cId, companyDetails,
         }
     }, [companyDetails?.id, categoryArr.length, dataObj?.companyTypes?.length]);
 
-
     useEffect(() => {
         fetchCategories();
     }, []);
@@ -143,8 +139,6 @@ const AddCompanyForm = ({ onNext, dataObj, onSubmitSuccess, cId, companyDetails,
             fetchSubCategories();
         }
     }, [category, categoryArr]);
-
-
 
     // / ✅ Updated validateFields function:
     const validateFields = () => {
@@ -161,13 +155,14 @@ const AddCompanyForm = ({ onNext, dataObj, onSubmitSuccess, cId, companyDetails,
             newErrors.email = t('enterValidEmail');
         }
 
-        // ✅ Password validation
-        if (!password  && !cId) {
-            newErrors.password = t('enterPassword');
-        } else if (password.length < 6) {
-            newErrors.password = t('passwordMinLength');
+        // // ✅ Password validation
+        if (!cId) {
+            if (!password) {
+                newErrors.password = t('enterPassword');
+            } else if (password.length < 6) {
+                newErrors.password = t('passwordMinLength');
+            }
         }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -375,7 +370,7 @@ const AddCompanyForm = ({ onNext, dataObj, onSubmitSuccess, cId, companyDetails,
                 />
                 {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
                 {/* Password */}
-                { !companyDetails?._id  &&
+                {!companyDetails?._id &&
                     <>
                         <Text style={[styles.label, Louis_George_Cafe.bold.h6, { color: THEMECOLORS[themeMode].textPrimary }]}>
                             {t('password')}

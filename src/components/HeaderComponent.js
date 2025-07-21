@@ -200,13 +200,12 @@ function HeaderComponent({
               <View style={{ flexDirection: "row" }}>
                 {showBackArray &&
                   <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconutton}>
-                    <Text style={{ lineHeight: hp(4), marginRight: wp(2) }}>
+                    <Text style={{ lineHeight: hp(3), marginRight: wp(2) }}>
                       <MaterialCommunityIcons
                         name={showBackArray && titleAlign == 'center' ? "close" : "chevron-left"} size={hp(3.5)} color={THEMECOLORS[themeMode].primary} />
                     </Text>
                   </TouchableOpacity>
                 }
-
                 <TouchableWithoutFeedback onPress={onTitleClick}>
                   {/* <Animated.View style={{ transform: [{ translateX: slideAnim }] }}> */}
                   <View style={{ width: wp(75), alignItems: titleAlign }}>
@@ -216,7 +215,7 @@ function HeaderComponent({
                       textTransform: 'capitalize',
                       margin: wp(1),
                       marginHorizontal: wp(2),
-                      lineHeight: hp(4),
+                      lineHeight: hp(2),
                       color: THEMECOLORS[themeMode].primary
                     }]}>
                       {title}

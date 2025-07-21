@@ -38,7 +38,7 @@ const LoginScreen = () => {
   const { dialCode, location } = useCurrentLocation();
   const { themeMode } = useTheme();
   const { language } = useLanguage();
-  const [username, setUsername] = useState(__DEV__ ? "company@amigoways.com" : "");
+  const [username, setUsername] = useState(__DEV__ ? "admin@amigoways.com" : "");
   const [password, setPassword] = useState(__DEV__ ? "1234" : "");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

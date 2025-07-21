@@ -70,7 +70,7 @@ const EmployeeList = () => {
             (response) => {
                 if (response?.success) {
                     const newData = response.employeeList || [];
-                    alert(JSON.stringify(newData, null, 2))
+                    // alert(JSON.stringify(newData, null, 2))
                     if (newData.length < PAGE_SIZE) {
                         setIsEndReached(true);
                         endReachedRef.current = true;

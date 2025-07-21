@@ -146,7 +146,6 @@ const ShiftsManagement = () => {
                     themeMode={themeMode}
                 />
             </View>
-
             {loading ? (
                 <ActivityIndicator
                     size="large"
