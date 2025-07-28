@@ -1,0 +1,17 @@
+diff --git a/node_modules/react-native-linkedin/lib/index.js b/node_modules/react-native-linkedin/lib/index.js
+index ae6fd22..79819ca 100644
+--- a/node_modules/react-native-linkedin/lib/index.js
++++ b/node_modules/react-native-linkedin/lib/index.js
+@@ -210,9 +210,9 @@ LinkedInModal.propTypes = {
+     linkText: PropTypes.string,
+     renderButton: PropTypes.func,
+     renderClose: PropTypes.func,
+-    containerStyle: ViewPropTypes.style,
+-    wrapperStyle: ViewPropTypes.style,
+-    closeStyle: ViewPropTypes.style,
++    containerStyle: PropTypes.style,
++    wrapperStyle: PropTypes.style,
++    closeStyle: PropTypes.style,
+     animationType: PropTypes.string,
+     shouldGetAccessToken: PropTypes.bool,
+ };
