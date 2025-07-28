@@ -35,7 +35,6 @@ const NewLinkedinPostForm = ({ org, accessToken, onClose }) => {
 
     ];
 
-
     // Function to pick images using ImagePicker
     const pickImages = async () => {
         setLoading(true);
@@ -111,6 +110,8 @@ const NewLinkedinPostForm = ({ org, accessToken, onClose }) => {
         }
     };
 
+
+
     // Handle schedule submit action
     const handleScheduleSubmit = () => {
         if (!scheduledDate) return;
@@ -154,7 +155,6 @@ const NewLinkedinPostForm = ({ org, accessToken, onClose }) => {
         setImageActionIndex(index);  // Store the index of the image being selected
         setShowDropdownModal(true);  // Show the dropdown modal
     };
-
     // Handle dropdown modal action (Edit / Remove)
     const handleImageAction = (action) => {
         // alert(action.value)
@@ -165,7 +165,6 @@ const NewLinkedinPostForm = ({ org, accessToken, onClose }) => {
         }
         setShowDropdownModal(false);  // Close dropdown modal after action
     };
-
     return (
         <View>
             {loading ? (
@@ -254,24 +253,14 @@ const NewLinkedinPostForm = ({ org, accessToken, onClose }) => {
                             onChange={handleTimeChange}
                         />
                     )}
-
                     {/* Dropdown Modal for Image Action */}
                     {showDropdownModal && (
-                        // <DropdownModal
-                        //     visible={showDropdownModal}
-                        //     onClose={() => setShowDropdownModal(false)}
-                        //     items={[{ label: "Edit", value: "Edit" }, {
-                        //         label: "Remove", value: "Remove"
-                        //     }]}
-                        //     onSelect={handleImageAction}
-                        // />
-
                         <DropdownModal
                             visible={showDropdownModal}
                             items={dropdownItems}
                             onSelect={handleImageAction}
-                            onClose={() => setShowDropdownModal(false)}
-                            title=""
+                            onCancel={() => setShowDropdownModal(false)}
+                            title="Cvcbvcbhoose"
                         />
                     )}
                     {/* Confirmation Modal */}

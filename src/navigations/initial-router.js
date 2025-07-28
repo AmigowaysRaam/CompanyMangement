@@ -74,6 +74,8 @@ import ShiftsManagement from "../screens/ShiftsManagement";
 import Telegram from "../screens/Telegram";
 import Linkedin from "../screens/Linkedin";
 import LinkedIPostListing from "../screens/LinkedIPostListing";
+import LudoBoard from "../screens/LudoBoard";
+import FaceBook from "../screens/FaceBook";
 
 
 const Stack = createNativeStackNavigator();
@@ -158,6 +160,10 @@ function InitialRouter() {
         <Stack.Screen name="Telegram" component={Telegram} />
         <Stack.Screen name="Linkedin" component={Linkedin} />
         <Stack.Screen name="LinkedIPostListing" component={LinkedIPostListing} />
+        <Stack.Screen name="LudoBoard" component={LudoBoard} />
+        <Stack.Screen name="FaceBook" component={FaceBook} />
+
+
       </Stack.Navigator>
     </NavigationContainer>
   );

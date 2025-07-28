@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
     View, Text, Image, StyleSheet, TouchableOpacity,
-    ActivityIndicator, ScrollView, Alert
+    ActivityIndicator, ScrollView, ToastAndroid,
 } from 'react-native';
 import { wp } from '../resources/dimensions';
 import { useTheme } from '../context/ThemeContext';
@@ -20,20 +20,40 @@ async function fetchOrgAnalytics(orgId, accessToken, postUrn) {
         headers: {
             Authorization: `Bearer ${accessToken}`,
             'X-Restli-Protocol-Version': '2.0.0',
-            'LinkedIn-Version': '202407',
+            'LinkedIn-Version': '202507',  // Replace with the actual version you're using
             Accept: 'application/json',
         },
     });
+    // alert(JSON.stringify(res))
     if (!res.ok) throw new Error(await res.text());
     const data = await res.json();
     return data.elements?.[0]?.totalShareStatistics || {};
 }
-
 async function deleteUGCPost(postUrn, accessToken) {
-    console.log(postUrn);
+    const url = `https://api.linkedin.com/rest/posts/${encodeURIComponent(postUrn)}`;
+    try {
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+                'X-Restli-Protocol-Version': '2.0.0',
+                'LinkedIn-Version': '202306',         // Use an active version (e.g., 202306)
+            },
+        });
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText);
+        }
+        // console.log('Post deleted successfully');
+        ToastAndroid.show(`Post deleted successfully`, ToastAndroid.SHORT);
+        return { success: true };
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        return { success: false, error: error.message };
+    }
 }
 
-const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organization }) => {
+const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organization, onRefresh, handleEditMode }) => {
     const { themeMode } = useTheme();
     const theme = THEMECOLORS[themeMode];
     const [stats, setStats] = useState(null);
@@ -43,7 +63,6 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
     const [modalStartIndex, setModalStartIndex] = useState(0);
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
-
     const content = item?.specificContent?.['com.linkedin.ugc.ShareContent'];
     const text = content?.shareCommentary?.text || '';
     const media = content?.media || [];
@@ -60,12 +79,11 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
         setDropdownVisible(false);
         switch (option.value) {
             case 'edit':
-                alert('Edit functionality not implemented.');
+                // alert('Edit functionality not implemented.');
+                handleEditMode(postUrn);
                 break;
             case 'delete':
-
                 setShowConfirmModal(true);
-
                 break;
             case 'view':
                 alert('Open in browser (not yet implemented).');
@@ -79,14 +97,11 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
         setShowConfirmModal(false);
         try {
             await deleteUGCPost(postUrn, accessToken);
-            // alert('Post deleted successfully.');
-            // TODO: Optional - call a parent refresh function if needed
+            onRefresh();
         } catch (err) {
             alert(`Failed to delete post: ${err.message}`);
         }
     };
-
-
     useEffect(() => {
         const load = async () => {
             try {
@@ -97,11 +112,9 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
                 const commentCount = Number(s.commentCount) || 0;
                 const shareCount = Number(s.shareCount) || 0;
                 const clickCount = Number(s.clickCount) || 0;
-
                 const engagements = likeCount + commentCount + shareCount;
                 const engagementRate = impressionCount > 0 ? (engagements / impressionCount) * 100 : 0;
                 const ctr = impressionCount > 0 ? (clickCount / impressionCount) * 100 : 0;
-
                 setStats({
                     impressions: impressionCount,
                     engagements,
@@ -118,7 +131,6 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
                 setLoading(false);
             }
         };
-
         if (isExpanded && !stats && !loading) load();
     }, [isExpanded]);
 
@@ -136,6 +148,7 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
         setModalStartIndex(index);
         setModalVisible(true);
     };
+
     return (
         <View style={[styles.card, { backgroundColor: theme.card, borderColor: "#CCC" }]}>
             {/* <Text>{item?.id}</Text> */}
@@ -186,11 +199,11 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
             {isExpanded && (
                 <View style={styles.analytics}>
                     {loading ? (
-                        <ActivityIndicator color={theme.textPrimary} />
+                        <ActivityIndicator color={theme.textPrimary} style={{marginTop:wp(5)}} />
                     ) : error ? (
                         <Text style={[styles.errorText, { color: theme.error }]}>{error}</Text>
                     ) : stats && (
-                        <>
+                        <View style={{marginTop:wp(4)}}> 
                             {infoRow('eye', 'Impressions', stats.impressions)}
                             {infoRow('activity', 'Engagements', stats.engagements)}
                             {infoRow('percent', 'Engagement Rate', `${stats.engagementRate}%`)}
@@ -199,7 +212,7 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
                             {infoRow('thumbs-up', 'Reactions', stats.reactions)}
                             {infoRow('message-square', 'Comments', stats.comments)}
                             {infoRow('repeat', 'Reposts', stats.reposts)}
-                        </>
+                        </View>
                     )}
                 </View>
             )}
@@ -208,7 +221,7 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
                 items={dropdownItems}
                 onSelect={handleDropdownSelect}
                 onCancel={() => setDropdownVisible(false)}
-                title=""
+                title="Choose"
             />
             <ConfirmationModal
                 visible={showConfirmModal}
@@ -222,7 +235,6 @@ const PostListTable = ({ item, isExpanded, toggleExpand, accessToken, organizati
 };
 
 export default React.memo(PostListTable);
-
 const styles = StyleSheet.create({
     card: {
         marginVertical: wp(2), borderRadius: wp(2), borderWidth: wp(0.3), padding: wp(1),
@@ -233,21 +245,18 @@ const styles = StyleSheet.create({
     thumb: {
         width: wp(12), height: wp(12), borderRadius: wp(1.5), marginRight: wp(3),
     },
-    headContent: {
-        flex: 1,
-    },
+    headContent: { flex: 1, },
     text: {
         ...Louis_George_Cafe.regular.h9, fontSize: wp(3.4), marginBottom: wp(1),
     },
     toggleText: {
         fontSize: wp(3), fontWeight: 'bold',
     },
-    imageScroll: { marginVertical: wp(2), paddingLeft: wp(3) },
-    expandedImage: {
+    imageScroll: { marginVertical: wp(2), paddingLeft: wp(3) }, expandedImage: {
         width: wp(20), height: wp(20), borderRadius: wp(1.5), marginRight: wp(2),
     },
     analytics: {
-        borderTopWidth: wp(0.2), paddingHorizontal: wp(4), paddingBottom: wp(3),
+        borderTopWidth: wp(0.5), paddingHorizontal: wp(4), paddingBottom: wp(3),borderColor:"#ccc"
     },
     metricRow: {
         flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',

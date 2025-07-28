@@ -1,19 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ToastAndroid,
-  BackHandler,
-  ActivityIndicator,
-  Animated,
-  TouchableWithoutFeedback
+  View, TouchableOpacity, StyleSheet, ToastAndroid, BackHandler, ActivityIndicator,
+  Animated, TouchableWithoutFeedback
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { wp, hp } from "../resources/dimensions";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Text, Menu } from "react-native-paper";
-import { Louis_George_Cafe,  } from "../resources/fonts";
+import { Louis_George_Cafe, } from "../resources/fonts";
 import { THEMECOLORS } from "../resources/colors/colors";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from 'react-i18next';
@@ -22,19 +16,10 @@ import { getLanguageList, setLanguageSelected } from "../redux/authActions";
 import { useDispatch, useSelector } from "react-redux";
 
 function HeaderComponent({
-  title,
-  value,
-  onChangeText,
-  placeholder,
-  openModal,
-  showBackArray,
-  working,
-  onTitleClick,
-  chatCount,
-  titleAlign,
-  rightSideArr,
-  rIconFunction,
-  ...props
+  title, value, onChangeText, placeholder,
+  openModal, showBackArray, working,
+  onTitleClick, chatCount, titleAlign,
+  rightSideArr, rIconFunction, ...props
 }) {
   const navigation = useNavigation();
   const { themeMode } = useTheme();
@@ -71,15 +56,13 @@ function HeaderComponent({
         // console.warn('Translation response is invalid or missing data.');
       }
     }));
-
     i18n.changeLanguage(langCode);
     closeMenu();
   };
+
   useEffect(() => {
     Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 500, // duration of the animation
-      useNativeDriver: true,
+      toValue: 0, duration: 500, // duration of the animation      useNativeDriver: true,
     }).start();
   }, []);
 
@@ -145,6 +128,7 @@ function HeaderComponent({
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.iconButton} onPress={() =>
                   navigation.navigate('Notifications')
+                  // navigation.navigate('LudoBoard')
                 }>
                   <MaterialCommunityIcons name="bell-outline" size={hp(3)} color={THEMECOLORS[themeMode].primary} />
                 </TouchableOpacity>

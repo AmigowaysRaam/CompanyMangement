@@ -11,17 +11,23 @@ import OrganizationPostsList from './OrganizationPostsList';
 // import ScheduledPostsList from './ScheduledPostsList'; // Optional when ready
 import { THEMECOLORS } from '../resources/colors/colors';
 import NewLinkedinPostForm from './NewLinkedinPostForm';
+import EditLInkedinPost from './EditLInkedinPost';
 
 const CreateLinkedinPost = ({ onCancel, selctedOrg, accessToken, }) => {
   const { themeMode } = useTheme();
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'scheduled' | 'create'
+  const [seletedPostUrn, setSeletedPostUrn] = useState(null);
 
-
-
+  function handleEditPostUrn(urn) {
+    // setSeletedPostUrn(urn);
+    setCurrentView('edit');
+  }
   const handlePost = () => {
     setCurrentView('dashboard'); // Go back to dashboard after post
   };
-
+  if (currentView == 'edit' && seletedPostUrn) {
+    return <EditLInkedinPost onClose={handlePost} org={selctedOrg} accessToken={accessToken} seletedPostUrn={seletedPostUrn} />
+  }
   const orgLogo =
     selctedOrg?.logoV2?.['original~']?.elements?.[0]?.identifiers?.[0]?.identifier || null;
 
@@ -41,7 +47,6 @@ const CreateLinkedinPost = ({ onCancel, selctedOrg, accessToken, }) => {
                 onPress={onCancel}
                 style={styles.closeButton}
               />
-
               {orgLogo && (
                 <Image source={{ uri: orgLogo }} style={styles.orgLogo} />
               )}
@@ -156,7 +161,8 @@ const CreateLinkedinPost = ({ onCancel, selctedOrg, accessToken, }) => {
         {currentView === 'create' ? (
           <NewLinkedinPostForm onClose={handlePost} org={selctedOrg} accessToken={accessToken} />
         ) : currentView === 'dashboard' ? (
-          <OrganizationPostsList orgId={selctedOrg?.id} accessToken={accessToken} profile={selctedOrg} />
+          <OrganizationPostsList orgId={selctedOrg?.id} accessToken={accessToken} profile={selctedOrg} handleEditMode={(urn) => { setSeletedPostUrn(urn), handleEditPostUrn(urn) }
+          } />
         ) : (
           <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
             <Text style={{ fontSize: wp(4.5), color: '#666' }}>

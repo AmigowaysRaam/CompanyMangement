@@ -31,7 +31,6 @@ const Linkedin = () => {
   // New: confirmation modal visibility state
   const [logoutConfirmVisible, setLogoutConfirmVisible] = useState(false);
   const navigation = useNavigation();
-
   useEffect(() => {
     const loadStoredData = async () => {
       try {
@@ -65,14 +64,25 @@ const Linkedin = () => {
       });
       if (res.status === 401) throw new Error('Unauthorized');
       const json = await res.json();
-      // alert(JSON.stringify(json))
-      setPosts(json.elements || []);
+      // Assuming json.elements contains an array of posts
+      const postsData = json.elements || [];
+      // Now you can extract the author ID for each post (which will be in the "owner" field)
+      const postsWithAuthorIds = postsData.map(post => {
+        const authorId = post.owner?.slice(post.owner.lastIndexOf(':') + 1); // Extract the ID from urn:li:person:{id}
+        return {
+          ...post,
+          authorId, // Attach authorId to each post
+        };
+      });
+  
+      setPosts(postsWithAuthorIds); // Now your posts will have the authorId attached to them.
     } catch (err) {
       console.error('Error fetching posts:', err);
       Alert.alert('Error', 'Session expired. Please login again.');
       handleLogout();
     }
   }, []);
+  
 
   const fetchLinkedInPages = async (token) => {
     try {
@@ -120,6 +130,7 @@ const Linkedin = () => {
           },
         }
       );
+      // alert(JSON.stringify(meRes))
       const meJson = await meRes.json();
       const imgEl = meJson.profilePicture?.['displayImage~']?.elements?.slice(-1)[0]?.identifiers?.[0]?.identifier;
       const emailRes = await fetch(
@@ -131,7 +142,6 @@ const Linkedin = () => {
           },
         }
       );
-
       const emailJson = await emailRes.json();
       const email = emailJson?.elements?.[0]?.['handle~']?.emailAddress;
       const profileData = {
@@ -169,9 +179,12 @@ const Linkedin = () => {
   const onRefresh = async () => {
     if (!accessToken || !profile?.id) return;
     setRefreshing(true);
-    await Promise.all([fetchUserPosts(accessToken, profile.id), fetchLinkedInPages(accessToken)]);
+    await Promise.all([fetchUserPosts(accessToken, profile.id),
+    fetchLinkedInPages(accessToken)]);
     setRefreshing(false);
   };
+
+
 
   const renderPostItem = ({ item }) => {
     const txt = item.text?.text || 'No content available';
@@ -197,6 +210,7 @@ const Linkedin = () => {
       ))}
     </View>
   );
+  
   return (
     <>
       <HeaderComponent
@@ -228,21 +242,13 @@ const Linkedin = () => {
               }}
               shouldGetAccessToken
               permissions={[
-                'openid',
-                'profile',
-                'r_basicprofile',
-                'email',
-                'r_ads',
-                'r_ads_reporting',
-                'r_organization_social',
-                'r_organization_admin',
-                'rw_organization_admin',
-                'w_organization_social',
-                'w_member_social',
-                'rw_ads',
-                'rw_events',
-                'r_events',
+                'openid', 'profile', 'r_basicprofile', 'email',
+                'r_ads', 'r_ads_reporting', 'r_organization_social',
+                'r_organization_admin', 'rw_organization_admin',
+                'w_organization_social', 'w_member_social',
+                'rw_ads', 'rw_events', 'r_events',
                 'r_1st_connections_size',
+                // 'r_liteprofile'
               ]}
               renderButton={() => (
                 <TouchableOpacity onPress={() => linkedInRef.current.open()} style={styles.linkedinButton}>
@@ -259,7 +265,7 @@ const Linkedin = () => {
             ListHeaderComponent={
               <>
                 <TouchableOpacity style={styles.profileContainer}
-                // onPress={() => navigation.navigate('LinkedIPostListing', { posts })}
+                // onPress={()=>navigation?.navigate('LinkedIPostListing',{accessToken})}
                 >
                   <Image source={{ uri: profile.picture }} style={styles.profileImage} />
                   <View>
@@ -311,29 +317,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9', marginHorizontal: wp(5), marginVertical: wp(1), padding: wp(3), borderRadius: 6, borderWidth: 1, borderColor: '#ddd',
   },
   postText: { fontSize: wp(3.5), },
-});
-
-// Styles for ConfirmationModal
-const stylesModal = StyleSheet.create({
-  overlay: {
-    flex: 1, backgroundColor: 'rgba(0,0,0,0)', justifyContent: 'center', alignItems: 'center', width: wp(100), alignSelf: 'center',
-  },
-  container: {
-    borderRadius: wp(4), padding: wp(5), width: wp(95), position: 'absolute',
-    bottom: wp(1), alignItems: 'center', borderWidth: wp(0.3),
-  },
-  message: {
-    fontSize: wp(4), marginBottom: hp(2), textAlign: 'center',
-  },
-  buttonRow: { flexDirection: 'row' },
-  confirmBtn: {
-    width: wp(32), paddingVertical: hp(1), paddingHorizontal: wp(5), borderRadius: wp(2), alignItems: 'center', marginHorizontal: wp(3),
-  },
-  cancelBtn: {
-    width: wp(32),
-    alignItems: 'center', paddingVertical: hp(1), paddingHorizontal: wp(5), borderRadius: wp(2),
-  }, confirmText: { color: '#fff', fontWeight: 'bold' },
-  cancelText: { fontWeight: 'bold' },
 });
 
 export default Linkedin;

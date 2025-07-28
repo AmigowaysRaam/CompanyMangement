@@ -9,7 +9,7 @@ import { useTheme } from '../context/ThemeContext';
 import PostListTable from './PostListTable';
 const PAGE_SIZE = 10;
 
-const OrganizationUGCPosts = ({ accessToken, orgId, profile }) => {
+const OrganizationUGCPosts = ({ accessToken, orgId, profile,handleEditMode }) => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedPosts, setExpandedPosts] = useState({});
@@ -64,7 +64,6 @@ const OrganizationUGCPosts = ({ accessToken, orgId, profile }) => {
     await loadInitialPosts();
     setRefreshing(false);
   }, [accessToken, orgId]);
-
   useEffect(() => {
     if (accessToken && orgId) {
       loadInitialPosts();
@@ -75,22 +74,29 @@ const OrganizationUGCPosts = ({ accessToken, orgId, profile }) => {
     const toggleExpand = () => {
       setExpandedPosts((prev) => ({ ...prev, [item.id]: !prev[item.id] }));
     };
-    console.log(JSON.stringify(item, null, 2))
+    // console.log(JSON.stringify(item, null, 2))
+    const hanleFhandleEditMode = (postUrn) =>{
+      handleEditMode(postUrn)
+    }
     return (
       <PostListTable
+        onRefresh={onRefresh}
         accessToken={accessToken}
         item={item}
         orgLogo={orgLogo}
         organization={profile}
         isExpanded={isExpanded}
         toggleExpand={toggleExpand}
+        handleEditMode={hanleFhandleEditMode}
       />
     );
   };
+  
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
+        
         {Array.from({ length: 10 }).map((_, i) => (
           <View
             key={i}

@@ -42,24 +42,30 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
         console.log("📣 Sent TestEvent to Facebook App Events");
     }, []);
 
-
     const facebookLogin = async (i) => {
+        // console.log('i', i)
         if (i?.name == 'Telegram') {
             navigation?.navigate('Telegram')
+            return
         }
         if (i?.name == 'LinkedIn') {
             navigation?.navigate('Linkedin')
+            return
+        }
+        if (i?.name == 'Facebook') {
+            navigation?.navigate('FaceBook')
+            return
         }
         onCancel();
         // try {
         //     Settings.initializeSDK();
         //     console.log('✅ Facebook SDK initialized');
-        //     // const result = await LoginManager.logInWithPermissions(['public_profile','email']);
-        //     // if (result.isCancelled) {
-        //     //     console.log('❌ User cancelled Facebook login');
-        //     //     return;
-        //     // }
-        //     // console.log('✅ Facebook login result:', result);
+        //     const result = await LoginManager.logInWithPermissions(['email']);
+        //     if (result.isCancelled) {
+        //         console.log('❌ User cancelled Facebook login');
+        //         return;
+        //     }
+        //     console.log('✅ Facebook login result:', result);
         //     // 4. Get access token
         //     const data = await AccessToken.getCurrentAccessToken();
         //     alert(JSON.stringify(data))
