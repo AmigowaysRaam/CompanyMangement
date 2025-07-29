@@ -76,6 +76,8 @@ import Linkedin from "../screens/Linkedin";
 import LinkedIPostListing from "../screens/LinkedIPostListing";
 import LudoBoard from "../screens/LudoBoard";
 import FaceBook from "../screens/FaceBook";
+import LInkedInChatList from "../screens/LInkedInChatList";
+import LinkedInChatScreen from "../screens/LinkedInChatScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -162,7 +164,9 @@ function InitialRouter() {
         <Stack.Screen name="LinkedIPostListing" component={LinkedIPostListing} />
         <Stack.Screen name="LudoBoard" component={LudoBoard} />
         <Stack.Screen name="FaceBook" component={FaceBook} />
-
+        <Stack.Screen name="LinkedInChatList" component={LInkedInChatList} />
+        {/* <LinkedInChatScreen */}
+        <Stack.Screen name="LinkedInChatScreen" component={LinkedInChatScreen} />
 
       </Stack.Navigator>
     </NavigationContainer>

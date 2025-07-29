@@ -15,6 +15,9 @@ import LinkedinOrganizationList from './ListOrganizationList';
 import { useTranslation } from 'react-i18next';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 const Linkedin = () => {
   const linkedInRef = useRef(null);
@@ -53,6 +56,9 @@ const Linkedin = () => {
     loadStoredData();
   }, []);
 
+  
+
+
   const fetchUserPosts = useCallback(async (token, userId) => {
     try {
       const url = `https://api.linkedin.com/v2/shares?q=owners&owners=${encodeURIComponent(`urn:li:person:${userId}`)}&sharesPerOwner=100`;
@@ -74,7 +80,7 @@ const Linkedin = () => {
           authorId, // Attach authorId to each post
         };
       });
-  
+
       setPosts(postsWithAuthorIds); // Now your posts will have the authorId attached to them.
     } catch (err) {
       console.error('Error fetching posts:', err);
@@ -82,7 +88,7 @@ const Linkedin = () => {
       handleLogout();
     }
   }, []);
-  
+
 
   const fetchLinkedInPages = async (token) => {
     try {
@@ -210,13 +216,12 @@ const Linkedin = () => {
       ))}
     </View>
   );
-  
   return (
     <>
       <HeaderComponent
         title="LinkedIn"
         showBackArray
-        rightSideArr={profile ? 'logout' : 'login'}
+        rightSideArr={profile ? 'logout' : null}
         rIconFunction={profile ? handleLogoutPress : () => linkedInRef.current.open()}
       />
       <KeyboardAvoidingView
@@ -267,15 +272,28 @@ const Linkedin = () => {
                 <TouchableOpacity style={styles.profileContainer}
                 // onPress={()=>navigation?.navigate('LinkedIPostListing',{accessToken})}
                 >
-                  <Image source={{ uri: profile.picture }} style={styles.profileImage} />
-                  <View>
-                    <Text style={[Louis_George_Cafe.bold.h7, styles.profileName, {
-                      color: THEMECOLORS[themeMode].textPrimary
+                  <View style={{ flexDirection: "row" }}>
+                    <Image source={{ uri: profile.picture }} style={styles.profileImage} />
+                    <View>
+                      <Text style={[Louis_George_Cafe.bold.h8, styles.profileName, {
+                        color: THEMECOLORS[themeMode].textPrimary
 
-                    }]}>{profile.name}</Text>
-                    <Text style={[Louis_George_Cafe.regular.h7, styles.profileHeadline, {
-                      color: THEMECOLORS[themeMode].textPrimary
-                    }]}>{profile.headline}</Text>
+                      }]}>{profile.name}</Text>
+                      <Text style={[Louis_George_Cafe.regular.h9, styles.profileHeadline, {
+                        color: THEMECOLORS[themeMode].textPrimary
+                      }]}>{profile.headline}</Text>
+                    </View>
+                  </View>
+                  <View>
+                    <MaterialCommunityIcons
+                      onPress={() =>navigation?.navigate('LinkedInChatList',{
+                        data:accessToken
+                      })}
+                      name={"chat-outline"}
+                      size={hp(3)}
+                      color={THEMECOLORS[themeMode].textPrimary}
+                      style={{ marginVertical: wp(2), marginRight: wp(1) }}
+                    />
                   </View>
                 </TouchableOpacity>
                 <LinkedinOrganizationList profile={profile} organizations={orgsList} onCreatePost={(org) => handleCreateOrgPost(org)} />
@@ -312,7 +330,7 @@ const styles = StyleSheet.create({
   },
   profileImage: { width: wp(14), height: wp(14), borderRadius: wp(7), marginRight: hp(2) },
   profileName: { fontSize: wp(4), fontWeight: '600', },
-  profileHeadline: { fontSize: wp(3.2), color: '#444', marginTop: wp(1) },
+  profileHeadline: { color: '#444', marginTop: wp(1), width: wp(70) },
   postItem: {
     backgroundColor: '#f9f9f9', marginHorizontal: wp(5), marginVertical: wp(1), padding: wp(3), borderRadius: 6, borderWidth: 1, borderColor: '#ddd',
   },

@@ -12,11 +12,21 @@ import OrganizationPostsList from './OrganizationPostsList';
 import { THEMECOLORS } from '../resources/colors/colors';
 import NewLinkedinPostForm from './NewLinkedinPostForm';
 import EditLInkedinPost from './EditLInkedinPost';
+import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 
 const CreateLinkedinPost = ({ onCancel, selctedOrg, accessToken, }) => {
+
+
+
   const { themeMode } = useTheme();
   const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard' | 'scheduled' | 'create'
   const [seletedPostUrn, setSeletedPostUrn] = useState(null);
+
+  useAndroidBackHandler(() => {
+    onCancel();
+  });
+
+
 
   function handleEditPostUrn(urn) {
     // setSeletedPostUrn(urn);

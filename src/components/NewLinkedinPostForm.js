@@ -13,6 +13,7 @@ import ConfirmationModal from './ConfirmationModal';
 import ImagePicker from 'react-native-image-crop-picker';
 import { postToLinkedIn } from '../api/linkedinApi';
 import DropdownModal from './DropDownModal';
+import { useAndroidBackHandler } from '../hooks/useAndroidBackHandler';
 
 const NewLinkedinPostForm = ({ org, accessToken, onClose }) => {
     const [postText, setPostText] = useState('');
@@ -28,6 +29,10 @@ const NewLinkedinPostForm = ({ org, accessToken, onClose }) => {
     const { themeMode } = useTheme();
     const theme = THEMECOLORS[themeMode];
     const hasContent = postText.trim() !== '' || selectedImages.length > 0;
+
+    useAndroidBackHandler(() => {
+        onClose();
+      });
 
     const dropdownItems = [
         { label: 'Edit', value: 'Edit' },
@@ -110,15 +115,12 @@ const NewLinkedinPostForm = ({ org, accessToken, onClose }) => {
         }
     };
 
-
-
     // Handle schedule submit action
     const handleScheduleSubmit = () => {
         if (!scheduledDate) return;
         ToastAndroid.show(`Scheduled: ${scheduledDate.toLocaleString()}`, ToastAndroid.SHORT);
         setScheduleMode(false);
     };
-
     // Handle date picker change
     const handleDateChange = (_, date) => {
         if (date) {

@@ -1,19 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  NativeModules,
+  Text, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 // import TdClient from 'react-native-tdlib';
-import { Louis_George_Cafe } from '../resources/fonts'; // Ensure this is defined correctly
-import { hp, wp } from '../resources/dimensions'; // Ensure wp() returns numbers
+import { wp } from '../resources/dimensions'; // Ensure wp() returns numbers
 import HeaderComponent from '../components/HeaderComponent'; // Your own component
 import { THEMECOLORS } from '../resources/colors/colors';
 import { useTheme } from '../context/ThemeContext';
@@ -26,7 +16,7 @@ const Telegram = () => {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const linkedInRef = useRef(null);
-
+  const { themeMode } = useTheme();
 
   // useEffect(() => {
   //   console.log('startTdLib:', typeof TdClient.startTdLib);  // Should be 'function'
@@ -69,66 +59,6 @@ const Telegram = () => {
   //   initTelegram();
   // }, []);
 
-  const checkAuthState = async (authState = null) => {
-    try {
-      const state = authState || (await TdClient.getAuthorizationState());
-      if (!state || !state['@type']) return;
-
-      switch (state['@type']) {
-        case 'authorizationStateWaitPhoneNumber':
-          setStatus('Enter your phone number');
-          setStep('phone');
-          break;
-
-        case 'authorizationStateWaitCode':
-          setStatus('Enter the code sent to Telegram');
-          setStep('code');
-          break;
-
-        case 'authorizationStateReady':
-          setStatus('🎉 Authenticated!');
-          setStep('done');
-          break;
-
-        case 'authorizationStateWaitPassword':
-          setStatus('2FA password required (not handled)');
-          break;
-
-        default:
-          setStatus(`Waiting for: ${state['@type']}`);
-      }
-    } catch (err) {
-      console.error('❌ Error checking auth state:', err);
-    }
-  };
-
-  const handlePhoneSubmit = async () => {
-    try {
-      setLoading(true);
-      await TdClient.login({ phoneNumber: phone });
-      setStatus('Code sent...');
-    } catch (err) {
-      console.error('❌ Phone submit error:', err);
-      setStatus('Failed to send code');
-    } finally {
-      setLoading(false);
-    }
-  };
-  const { themeMode } = useTheme();
-
-
-  const handleCodeSubmit = async () => {
-    try {
-      setLoading(true);
-      await TdClient.verifyPhoneNumber(code);
-      setStatus('Verifying code...');
-    } catch (err) {
-      console.error('❌ Code verification error:', err);
-      setStatus('Invalid code');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <>

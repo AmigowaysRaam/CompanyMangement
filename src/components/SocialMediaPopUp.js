@@ -41,22 +41,22 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
         AppEventsLogger.logEvent('TestEvent');
         console.log("📣 Sent TestEvent to Facebook App Events");
     }, []);
-
     const facebookLogin = async (i) => {
-        // console.log('i', i)
         if (i?.name == 'Telegram') {
             navigation?.navigate('Telegram')
+            onCancel();
             return
         }
         if (i?.name == 'LinkedIn') {
             navigation?.navigate('Linkedin')
+            onCancel();
             return
         }
         if (i?.name == 'Facebook') {
             navigation?.navigate('FaceBook')
+            onCancel();
             return
         }
-        onCancel();
         // try {
         //     Settings.initializeSDK();
         //     console.log('✅ Facebook SDK initialized');
@@ -82,10 +82,6 @@ const SocialMediaPopUp = ({ isVisible, onCancel }) => {
         //     console.error('🚨 Facebook login error:', error);
         // }
     };
-
-
-
-
 
     const renderItem = ({ item }) => (
         <TouchableOpacity
